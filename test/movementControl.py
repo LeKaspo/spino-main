@@ -23,22 +23,22 @@ class MovementControl:
     def turnleft(self):
         self.g_bot.set_car_motion(0,0,-0.1)
 
-    def turnleft(self):
+    def turnright(self):
         self.g_bot.set_car_motion(0,0,0.1)
 
 
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
-    controller.right()
-    time.sleep(2)
-    controller.left()
-    time.sleep(2)
-    controller.turnright()
-    time.sleep(2)
-    controller.turnleft()
-    time.sleep(2)
-    print("Fahrzeug wird gestoppt...")
+    #controller.right()
+    #time.sleep(2)
+    #controller.left()
+    #time.sleep(2)
+    #controller.turnright()
+    #time.sleep(2)
+    #controller.turnleft()
+    #time.sleep(2)
+    #print("Fahrzeug wird gestoppt...")
     controller.stop()
 
 
