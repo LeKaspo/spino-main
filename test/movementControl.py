@@ -4,38 +4,42 @@ import time
 class MovementControl:
     def __init__(self):
         self.g_bot = Rosmaster()
-        self.speedX = 0
-        self.speedY = 0
-        self.speedZ = 0
 
     def stop(self):
         self.g_bot.set_car_motion(0,0,0)
-    
-    def drive(self):
-        self.g_bot.set_car_motion(self.speedX, self.speedY, self.speedZ)
-    
-    def setSpeedX(self, speed):
-        self.setSpeedX = speed
-
-    def setSpeedY(self, speed):
-        self.setSpeedY = speed
-
-    def setSpeedZ(self, speed):
-        self.setSpeedZ = speed
 
     def forwards(self):
-        self.setSpeedX(0.1)
-        self.drive
+        self.g_bot.set_car_motion(0.1,0,0)
+
+    def backwards(self):
+        self.g_bot.set_car_motion(-0.1,0,0)
+
+    def right(self):
+        self.g_bot.set_car_motion(0,-0.1,0)
+
+    def left(self):
+        self.g_bot.set_car_motion(0,0.1,0)
+
+    def turnleft(self):
+        self.g_bot.set_car_motion(0,0,-0.1)
+
+    def turnleft(self):
+        self.g_bot.set_car_motion(0,0,0.1)
+
 
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
-    print("Fahrzeug fährt los...")
-    controller.forwards()
-    time.sleep(2)
+    controller.right()
+    time.wait(2)
+    controller.left()
+    time.wait(2)
+    controller.turnright()
+    time.wait(2)
+    controller.turnleft()
+    time.wait(2)
     print("Fahrzeug wird gestoppt...")
     controller.stop()
-
 
 
 """
