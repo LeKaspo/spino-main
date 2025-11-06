@@ -1,3 +1,6 @@
+from Rosmaster_Lib import Rosmaster
+import time
+
 class MovementControl:
     def __init__(self):
         self.g_bot = Rosmaster()
@@ -28,7 +31,24 @@ class MovementControl:
 if __name__ == "__main__":
     controller = MovementControl()
     print("Fahrzeug fährt los...")
-    controller.forwards(0.1)
+    controller.forwards()
     time.sleep(2)
     print("Fahrzeug wird gestoppt...")
     controller.stop()
+
+
+
+"""
+Nutzung
+Datei im leichen Vrrzeichniss oder Import ensprechend anpassen
+
+from movement_control import MovementControl
+
+# Objekt erstellen
+controller = MovementControl()
+
+# Methode aufrufen
+controller.Stop()
+"""
+
+
