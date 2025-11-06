@@ -5,16 +5,15 @@
 Sparse Checkout erlaubt es, nur bestimmte Ordner des Repositories lokal auszuwählen.
 
 ```bash
-# Sparse Checkout aktivieren
-git config core.sparseCheckout true
 
-# Gewünschte Ordner definieren, z. B. nur den client-Ordner
-echo "client/" >> .git/info/sparse-checkout
+git clone --no-checkout https://github.com/LeKaspo/spino-main.git
+cd spino-main
+git sparse-checkout init
 
-# Daten abrufen und auschecken
-git pull origin main
+git sparse-checkout set --no-cone "!server/"
 
-# Nun ist lokal nur der client-Ordner sichtbar.
+git checkout main
+
 ```
 
 ## Virtuelle Umgebung einrichten
