@@ -10,7 +10,7 @@ git clone --no-checkout https://github.com/LeKaspo/spino-main.git
 cd spino-main
 git sparse-checkout init
 
-git sparse-checkout set --no-cone "!server/"
+git sparse-checkout set --no-cone "/*" "!server/"
 
 git checkout main
 
