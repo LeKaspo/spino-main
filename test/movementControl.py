@@ -31,13 +31,13 @@ class MovementControl:
 if __name__ == "__main__":
     controller = MovementControl()
     controller.right()
-    time.wait(2)
+    time.sleep(2)
     controller.left()
-    time.wait(2)
+    time.sleep(2)
     controller.turnright()
-    time.wait(2)
+    time.sleep(2)
     controller.turnleft()
-    time.wait(2)
+    time.sleep(2)
     print("Fahrzeug wird gestoppt...")
     controller.stop()
 
