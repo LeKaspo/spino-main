@@ -34,7 +34,7 @@ class MovementControl:
 if __name__ == "__main__":
     controller = MovementControl()
     controller.g_bot.set_pid_param(kp=0.2, ki=0.3, kd=0.2, forever=False)
-    print(get_motion_pid () )
+    print(controller.g_bot.get_motion_pid () )
     running = True
     print("Steuerung mit W/A/S/D, Drehen mit Q/E, Beenden mit X")
     while running:
