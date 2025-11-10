@@ -12,27 +12,28 @@ class MovementControl:
         self.g_bot.set_car_motion(0,0,0)
 
     def forwards(self):
-        self.g_bot.set_car_motion(0.1,0,0)
+        self.g_bot.set_car_motion(0.5,0,0)
 
     def backwards(self):
-        self.g_bot.set_car_motion(-0.1,0,0)
+        self.g_bot.set_car_motion(-0.5,0,0)
 
     def right(self):
-        self.g_bot.set_car_motion(0,-0.1,0)
+        self.g_bot.set_car_motion(0,-0.5,0)
 
     def left(self):
-        self.g_bot.set_car_motion(0,0.1,0)
-
-    def turnleft(self):
-        self.g_bot.set_car_motion(0,0,-0.1)
+        self.g_bot.set_car_motion(0,0.5,0)
 
     def turnright(self):
-        self.g_bot.set_car_motion(0,0,0.1)
+        self.g_bot.set_car_motion(0,0,-0.5)
+
+    def turnleft(self):
+        self.g_bot.set_car_motion(0,0,0.5)
 
 
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
+    controller.g_bot.set_pid_param(kp=0.8, ki=0.3, kd=0.2, forever=False)
     running = True
     print("Steuerung mit W/A/S/D, Drehen mit Q/E, Beenden mit X")
     while running:
