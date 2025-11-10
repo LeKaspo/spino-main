@@ -33,7 +33,8 @@ class MovementControl:
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
-    controller.g_bot.set_pid_param(kp=0.8, ki=0.3, kd=0.2, forever=False)
+    controller.g_bot.set_pid_param(kp=0.2, ki=0.3, kd=0.2, forever=False)
+    print(get_motion_pid () )
     running = True
     print("Steuerung mit W/A/S/D, Drehen mit Q/E, Beenden mit X")
     while running:
@@ -55,6 +56,12 @@ if __name__ == "__main__":
                 running = False
             else:
                 controller.stop()
+            
+        target_speed = 0.5 
+        a_x, a_y, a_z = controller.g_bot.get_accelerometer_data() 
+        print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
+        print(f"Aktuelle Beschleunigung: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
+
 
 
 """
