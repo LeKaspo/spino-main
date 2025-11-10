@@ -1,5 +1,8 @@
 from Rosmaster_Lib import Rosmaster
 import time
+import sys
+import select
+
 
 class MovementControl:
     def __init__(self):
@@ -30,16 +33,28 @@ class MovementControl:
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
-    #controller.right()
-    #time.sleep(2)
-    #controller.left()
-    #time.sleep(2)
-    #controller.turnright()
-    #time.sleep(2)
-    #controller.turnleft()
-    #time.sleep(2)
-    #print("Fahrzeug wird gestoppt...")
-    controller.stop()
+    running = True
+    print("Steuerung mit W/A/S/D, Drehen mit Q/E, Beenden mit X")
+    while running:
+        if select.select([sys.stdin], [], [], 0.1)[0]:
+            key = sys.stdin.read(1)
+            match key:
+            case 'w':
+                controller.forwards()
+            case 'a':
+                controller.left()
+            case 's':
+                controller.backwards()
+            case 'd':
+                right()
+            case 'q':
+                controller.turnleft()
+            case 'e':
+                controller.turnright()
+            case 'x':
+                running = False
+            case _:
+                controller.stop()
 
 
 """
