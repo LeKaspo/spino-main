@@ -60,10 +60,12 @@ if __name__ == "__main__":
         
         target_speed = 0.5 
         a_x, a_y, a_z = controller.g_bot.get_motion_data()
+        print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
+        print(f"Aktuelle geschwindigkeit: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
 
-        if a_x != 0 or a_y != 0 or a_z != 0:
-            print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
-            print(f"Aktuelle geschwindigkeit: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
+        #if a_x != 0 or a_y != 0 or a_z != 0:
+         #   print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
+          #  print(f"Aktuelle geschwindigkeit: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
 
 
 
