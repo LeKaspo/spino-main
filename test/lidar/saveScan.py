@@ -16,7 +16,8 @@ NUM_SCANS = 25
 MIN_QUALITY = 15  # Mindestqualität
 MAX_DISTANCE = 3000  # Maximale Distanz in mm
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-csv_filename = f'lidar_scans_{timestamp}.csv'
+# csv_filename = f'lidar_scans_{timestamp}.csv'
+csv_filename = 'lidar_scans_1.csv'
 
 print(f"\nAufnahme von {NUM_SCANS} Scans...")
 print(f"Filter: Qualität >= {MIN_QUALITY}, Distanz <= {MAX_DISTANCE}mm")
