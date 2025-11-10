@@ -5,7 +5,7 @@ import subprocess
 # Dateiname der zu plottenden CSV:
 csv_filename = "lidar_scans_1.csv"  # Hier anpassen!
 
-proc = subprocess.Popen("path", )
+proc = subprocess.Popen("path")
 
 proc.kill()
 
