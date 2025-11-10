@@ -39,22 +39,22 @@ if __name__ == "__main__":
         if select.select([sys.stdin], [], [], 0.1)[0]:
             key = sys.stdin.read(1)
             match key:
-            case 'w':
-                controller.forwards()
-            case 'a':
-                controller.left()
-            case 's':
-                controller.backwards()
-            case 'd':
-                right()
-            case 'q':
-                controller.turnleft()
-            case 'e':
-                controller.turnright()
-            case 'x':
-                running = False
-            case _:
-                controller.stop()
+                case 'w':
+                    controller.forwards()
+                case 'a':
+                    controller.left()
+                case 's':
+                    controller.backwards()
+                case 'd':
+                    controller.right()
+                case 'q':
+                    controller.turnleft()
+                case 'e':
+                    controller.turnright()
+                case 'x':
+                    running = False
+                case _:
+                    controller.stop()
 
 
 """
