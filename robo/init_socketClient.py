@@ -1,6 +1,6 @@
 import socket
 
-TCP_IP = '192.168.0.165'
+TCP_IP = '172.30.32.1'
 TCP_PORT = 50069
 BUFFER_SIZE = 1024
 MESSAGE = "Hallo Server!"
