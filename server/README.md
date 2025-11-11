@@ -6,8 +6,8 @@
 # Virtuelle Umgebung erstellen
 python -m venv spino_venv
 
-# Virtuelle Umgebung aktivieren (Linux/Mac)
-source spino_venv/bin/activate
+# Virtuelle Umgebung aktivieren (Windows)
+.\spino_venv\Scripts\activate
 
 # Abhängigkeiten installieren
 pip install -r requirements.txt
