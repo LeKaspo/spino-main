@@ -1,38 +1,38 @@
-
-import pygame
 import cv2
-import numpy as np
 
-# Pygame initialisieren
-pygame.init()
-screen = pygame.display.set_mode((1280, 720))
-clock = pygame.time.Clock()
-running = True
-
+# Stream-URL
 stream_url = 'http://192.168.0.145:8090/?action=stream'
 
+# VideoCapture öffnen
 cap = cv2.VideoCapture(stream_url)
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+if not cap.isOpened():
+    print("Fehler: Stream konnte nicht geöffnet werden.")
+    exit()
 
-    # Frame von Webcam holen
+while True:
     ret, frame = cap.read()
     if not ret:
-        continue
+        print("Fehler: Kein Frame empfangen.")
+        break
 
-    # Frame konvertieren (BGR → RGB)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    frame = np.rot90(frame)  # Optional: drehen
-    frame = pygame.surfarray.make_surface(frame)
+     # Text auf das Frame zeichnen
+    text = "Wuiiii Text"
+    position = (10, 30)  # x, y Position
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    font_scale = 1
+    color = (0, 255, 0)  # Grün
+    thickness = 2
+
+    cv2.putText(frame, text, position, font, font_scale, color, thickness)
 
     # Frame anzeigen
-    screen.blit(frame, (0, 0))
-    pygame.display.flip()
-    clock.tick(30)
+    cv2.imshow('Live Stream', frame)
+
+    # Mit 'q' beenden
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Aufräumen
 cap.release()
-pygame.quit()
+cv2.destroyAllWindows()
