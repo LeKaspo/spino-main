@@ -3,7 +3,7 @@ import csv
 import math
 from datetime import datetime
 
-lidar = RPLidar('/dev/ttyUSB0')
+lidar = RPLidar('/dev/ttyUSB1')
 
 info = lidar.get_info()
 print(f"Lidar Info: {info}")
