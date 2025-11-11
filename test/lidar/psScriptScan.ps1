@@ -27,5 +27,3 @@ if ($LASTEXITCODE -eq 0) {
 } else {
     Write-Host "Fehler beim Ausführen des Python-Skripts!" -ForegroundColor Red
 }
-
-Read-Host "Drücke Enter zum Beenden"
