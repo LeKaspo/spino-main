@@ -2,12 +2,18 @@ import csv
 import math
 import matplotlib.pyplot as plt
 import subprocess
-# Dateiname der zu plottenden CSV:
-csv_filename = "lidar_scans_1.csv"  # Hier anpassen!
+import sys
 
-proc = subprocess.Popen("path")
+# proc = subprocess.call([".\\test\\lidar\\psScriptScan.ps1"])
+
+proc = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./test/lidar/psScriptScan.ps1"])
+
+proc.wait()
 
 proc.kill()
+
+# Dateiname der zu plottenden CSV:
+csv_filename = "lidar_scans_1.csv"  # Hier anpassen!
 
 xs = []
 ys = []

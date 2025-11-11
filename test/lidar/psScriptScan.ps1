@@ -8,7 +8,7 @@ $LocalPath = ".\$CsvDatei"
 Write-Host "Verbinde zu $Host..." -ForegroundColor Cyan
 
 # Python-Skript auf dem Zielsystem ausführen
-ssh "$User@$Spino" "cd $RemotePath && python3 saveScan.py"
+Write-Output 12345678 | ssh "$User@$Spino" "cd $RemotePath && python3 saveScan.py"
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "Python-Skript erfolgreich ausgeführt!" -ForegroundColor Green
