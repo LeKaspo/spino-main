@@ -4,7 +4,7 @@
 DEVICE="/dev/video0"
 
 # Auflösung und Framerate
-RESOLUTION="640x480"
+RESOLUTION="1920x1080"
 FRAMERATE="30"
 
 # MJPG-Streamer Pfade
