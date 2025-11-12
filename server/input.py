@@ -1,8 +1,8 @@
 import asyncio
-import keyboard
+#import keyboard
 
 async def send_input():
-    reader, writer = await asyncio.open_connection(HOST, 9999)
+    reader, writer = await asyncio.open_connection('192.168.0.145' , 9999)
     print("verbunden")
     try:
         while True:
