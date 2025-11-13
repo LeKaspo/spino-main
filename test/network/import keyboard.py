@@ -6,7 +6,7 @@ import socket
 
 ### aktuell funktioniert ganz gut, jetzt muss multithreaded sein um asyncio und Tastatur gleichzeitig zu haben, und zu wissen wie man an asyncio thread loop sended
 
-TCP_IP = '172.30.32.1'
+TCP_IP = '192.168.0.229'
 TCP_PORT = 50069
 BUFFER_SIZE = 256
 MESSAGE = "Hallo Server!"
