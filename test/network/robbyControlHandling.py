@@ -5,8 +5,8 @@ TCP_IP = '192.168.0.229'
 TCP_PORT = 50069
 BUFFER_SIZE = 256
 
-s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-s.bind('/tmp/socketderfunktionierenmussbittebitte')
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(TCP_IP)
 s.listen(1)
 
 print("Server gestartet, wartet auf Verbindung...")
