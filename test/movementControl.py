@@ -33,8 +33,6 @@ class MovementControl:
 #passiert wenn dieses script aufgerufen wird
 if __name__ == "__main__":
     controller = MovementControl()
-    controller.g_bot.set_pid_param(kp=0.2, ki=0.3, kd=0.2, forever=False)
-    print(controller.g_bot.get_motion_pid () )
     running = True
     print("Steuerung mit W/A/S/D, Drehen mit Q/E, Beenden mit X")
     while running:
@@ -42,31 +40,35 @@ if __name__ == "__main__":
             key = sys.stdin.read(1)
             if key == 'w':
                 controller.forwards()
+                time.sleep(1)
+                controller.stop()
             elif key == 'a':
                 controller.left()
+                time.sleep(1)
+                controller.stop()
             elif key == 's':
                 controller.backwards()
+                time.sleep(1)
+                controller.stop()
             elif key == 'd':
                 controller.right()
+                time.sleep(1)
+                controller.stop()
             elif key == 'q':
                 controller.turnleft()
+                time.sleep(1)
+                controller.stop()
             elif key == 'e':
                 controller.turnright()
+                time.sleep(1)
+                controller.stop()
             elif key == 'x':
                 running = False
             else:
                 controller.stop()
            
         
-        target_speed = 0.5 
-        a_x, a_y, a_z = controller.g_bot.get_motion_data()
-        print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
-        print(f"Aktuelle geschwindigkeit: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
-
-        #if a_x != 0 or a_y != 0 or a_z != 0:
-         #   print(f"Zielgeschwindigkeit: {target_speed:.2f} m/s")
-          #  print(f"Aktuelle geschwindigkeit: ax={a_x:.2f}, ay={a_y:.2f}, az={a_z:.2f}")
-
+        
 
 
 
