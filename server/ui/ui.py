@@ -11,28 +11,28 @@ def index():
 @app.route('/button-click', methods=['POST'])
 def button_click():
     data = request.get_json()
-    sendcommands.Buttonclicked({data['id']})
+    sendcommands.ButtonClicked(f"{data['id']}")
     return '', 204
 @app.route('/button-press', methods=['POST'])
 def button_press():
     data = request.get_json()
-    sendcommands.Buttonclicked(f"button gedrückt: {data['id']}")
+    sendcommands.ButtonPress(f"{data['id']}")
     return '', 204
 @app.route('/button-release', methods=['POST'])
 def button_release():
     data = request.get_json()
-    sendcommands.Buttonclicked(f"button losgelassen: {data['id']}")
+    sendcommands.ButtonRelease(f"{data['id']}")
     return '', 204
 
 @app.route('/key-down', methods=['POST'])
 def key_down():
     data = request.get_json()
-    print(f"Taste gedrückt: {data['key']}")
+    sendcommands.ButtonPress(f"{data['key']}")
     return '', 204
 @app.route('/key-up', methods=['POST'])
 def key_up():
     data = request.get_json()
-    print(f"Taste losgelassen: {data['key']}")
+    sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
 if __name__ == '__main__':
