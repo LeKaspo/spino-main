@@ -10,6 +10,7 @@ class MovementControl:
 
     def stop(self):
         self.g_bot.set_car_motion(0,0,0)
+        print("debug stop")
 
     def forwards(self):
         self.g_bot.set_car_motion(0.5,0,0)
