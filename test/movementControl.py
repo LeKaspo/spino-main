@@ -19,10 +19,10 @@ class MovementControl:
         self.g_bot.set_car_motion(-self.speed,0,0)
 
     def right(self):
-        self.g_bot.set_car_motion(0,self.speed,0)
+        self.g_bot.set_car_motion(0,-self.speed,0)
 
     def left(self):
-        self.g_bot.set_car_motion(0,-self.speed,0)
+        self.g_bot.set_car_motion(0,self.speed,0)
 
     def turnright(self):
         self.g_bot.set_car_motion(0,0,-self.speed)
@@ -72,7 +72,7 @@ if __name__ == "__main__":
                 time.sleep(1)
                 controller.stop()
             elif key == 'y':
-                controller.turn180
+                controller.turn180()
             elif key == 'x':
                 running = False
             else:
