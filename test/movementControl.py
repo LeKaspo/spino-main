@@ -7,27 +7,35 @@ import select
 class MovementControl:
     def __init__(self):
         self.g_bot = Rosmaster()
+        self.speed = 0.5
 
     def stop(self):
         self.g_bot.set_car_motion(0,0,0)
 
     def forwards(self):
-        self.g_bot.set_car_motion(0.5,0,0)
+        self.g_bot.set_car_motion(self.speed,0,0)
 
     def backwards(self):
-        self.g_bot.set_car_motion(-0.5,0,0)
+        self.g_bot.set_car_motion(self.speed,0,0)
 
     def right(self):
-        self.g_bot.set_car_motion(0,-0.5,0)
+        self.g_bot.set_car_motion(0,self.speed,0)
 
     def left(self):
-        self.g_bot.set_car_motion(0,0.5,0)
+        self.g_bot.set_car_motion(0,self.speed,0)
 
     def turnright(self):
-        self.g_bot.set_car_motion(0,0,-0.5)
+        self.g_bot.set_car_motion(0,0,-self.speed)
 
     def turnleft(self):
-        self.g_bot.set_car_motion(0,0,0.5)
+        self.g_bot.set_car_motion(0,0,self.speed)
+    
+    def setspeed(self, speed):
+        self.speed = speed
+
+    def turn180(self):
+        self.g_bot.set_car_motion(0,0,-1)
+        time.sleep(5)
 
 
 #passiert wenn dieses script aufgerufen wird
