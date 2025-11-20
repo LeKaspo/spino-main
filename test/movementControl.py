@@ -16,13 +16,13 @@ class MovementControl:
         self.g_bot.set_car_motion(self.speed,0,0)
 
     def backwards(self):
-        self.g_bot.set_car_motion(self.speed,0,0)
+        self.g_bot.set_car_motion(-self.speed,0,0)
 
     def right(self):
         self.g_bot.set_car_motion(0,self.speed,0)
 
     def left(self):
-        self.g_bot.set_car_motion(0,self.speed,0)
+        self.g_bot.set_car_motion(0,-self.speed,0)
 
     def turnright(self):
         self.g_bot.set_car_motion(0,0,-self.speed)
@@ -36,6 +36,7 @@ class MovementControl:
     def turn180(self):
         self.g_bot.set_car_motion(0,0,-1)
         time.sleep(5)
+        self.stop
 
 
 #passiert wenn dieses script aufgerufen wird
@@ -70,6 +71,8 @@ if __name__ == "__main__":
                 controller.turnright()
                 time.sleep(1)
                 controller.stop()
+            elif key == 'y':
+                controller.turn180
             elif key == 'x':
                 running = False
             else:
