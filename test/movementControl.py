@@ -1,4 +1,4 @@
-from Rosmaster_Lib import Rosmaster
+from Rosmaster_Lib import Rosmaster # type: ignore
 import time
 import sys
 import select
@@ -35,7 +35,7 @@ class MovementControl:
 
     def turn180(self):
         self.g_bot.set_car_motion(0,0,-1)
-        time.sleep(5)
+        time.sleep(3,6)
         self.stop()
 
 
