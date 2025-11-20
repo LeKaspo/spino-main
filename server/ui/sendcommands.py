@@ -5,7 +5,7 @@ def ButtonClicked(clickedButton):
             "type": clickedButton,
             "params": {}
         }
-    sendJason(json.dumps(data))
+    sendJson(json.dumps(data))
 
 
 def ButtonPress(pressedButton):
@@ -24,7 +24,7 @@ def ButtonPress(pressedButton):
                 "type": command,
                 "params": {}
             }
-        sendJason(json.dumps(data))
+        sendJson(json.dumps(data))
 
 def ButtonRelease(releasedButton):
     commands = {
@@ -42,8 +42,8 @@ def ButtonRelease(releasedButton):
                 "type": command,
                 "params": {}
             }
-        sendJason(json.dumps(data))
+        sendJson(json.dumps(data))
 
-def sendJason(json):
+def sendJson(json):
     print(json)
 

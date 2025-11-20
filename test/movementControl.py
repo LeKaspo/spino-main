@@ -46,9 +46,9 @@ class MovementControl:
 
 """
 Nutzung
-Datei im leichen Vrrzeichniss oder Import ensprechend anpassen
+Datei im gleichen Verzeichniss oder Import ensprechend anpassen
 
-from movement_control import MovementControl
+from movementControl import MovementControl
 
 # Objekt erstellen
 controller = MovementControl()
