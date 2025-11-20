@@ -12,7 +12,22 @@ def printsmth():
     print("hat geklappt")
 
 dict = {
-    "message": tst.somefunctionality
+    "movement": tst.somefunctionality
 }
 
-execute_command("message", dict)
+command = {
+        "type" : "movement",
+        "params" : {
+            "param" : 2077
+        }
+    }
+
+command_type = command["type"]
+print(command_type) 
+
+command_param = command["params"]
+print(command_param)
+
+
+
+execute_command(command_type, dict)
