@@ -10,4 +10,6 @@ if __name__ == "__main__":
     while True:
         data = client.recv(256)
         if not data: break
+        #--> Decode JSON Command-Format
         print(f"Received {data.decode()}")
+        #--> Command Execution

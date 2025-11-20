@@ -27,6 +27,12 @@ def getAudio():
     conn.close()
     s.close()
 
+def processAudio():
+    while True:
+        audio_Chunk = audioQ.get()
+        if audio_Chunk is None: break
+        #Do something with Audio Data
+
 def getLidar():
     s, conn = openConnection(PORT_LIDAR)
     while True:
@@ -36,36 +42,40 @@ def getLidar():
     conn.close()
     s.close() 
 
+def processLidar():
+    while True:
+        lidar_Scan = lidarQ.get()
+        if lidar_Scan is None: break
+        #Do something with Lidar Data
+
 def sendCommand():
     s, conn = openConnection(PORT_COMMANDS)
     while True:
-        conn.send("Command".encode())
+        conn.send(commandQ.get().encode())
         time.sleep(3)
 
 
 if __name__ == "__main__":
     
-    stop_event = threading.Event()
+    commandQ = queue.Queue()
+    audioQ = queue.Queue()
+    lidarQ = queue.Queue()
 
-    #Receive Audio
-    print("Starting Audio")
-    t1 = threading.Thread(target=getAudio, args=(), daemon=True)
-    #Receive Lidar
-    print("Starting Lidar")
-    t2 = threading.Thread(target=getLidar, args=(), daemon=True)
+    #Receive Audio + Processing
+    print("Init Audio")
+    t1 = threading.Thread(target=getAudio, daemon=True)
+    t2 = threading.Thread(target=processAudio, daemon=True)
+    #Receive Lidar + Processing
+    print("Init Lidar")
+    t3 = threading.Thread(target=getLidar, daemon=True)
+    t4 = threading.Thread(target=processLidar, daemon=True)
     #Send Commands
-    print("Starting Commands")
-    t3 = threading.Thread(target=sendCommand, args=(), daemon=True)
-    
+    print("Init Commands")
+    t5 = threading.Thread(target=sendCommand, daemon=True)
+
     t1.start()
     t2.start()
     t3.start()
+    t4.start()
+    t5.start()
     
-    try:
-        threading.Event().wait()
-    except KeyboardInterrupt:
-        stop_event.set()
-        t1.join()
-        t2.join()
-        t3.join()
-        
