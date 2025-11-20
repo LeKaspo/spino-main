@@ -3,7 +3,7 @@ import json
 
 TCP_IP = '192.168.0.229'
 TCP_PORT = 50069
-BUFFER_SIZE = 256
+BUFFER_SIZE = 144
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(TCP_IP)
