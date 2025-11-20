@@ -36,7 +36,7 @@ class MovementControl:
     def turn180(self):
         self.g_bot.set_car_motion(0,0,-1)
         time.sleep(5)
-        self.stop
+        self.stop()
 
 
 #passiert wenn dieses script aufgerufen wird
