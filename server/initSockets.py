@@ -2,6 +2,7 @@ import threading
 import socket
 import time
 import queue
+import json
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
@@ -51,7 +52,9 @@ def processLidar():
 def sendCommand():
     s, conn = openConnection(PORT_COMMANDS)
     while True:
-        conn.send(commandQ.get().encode())
+        cmd = commandQ.get()
+        cmd_json = json.dumps(cmd).encode('utf-8')
+        conn.send(cmd_json)
         time.sleep(3)
 
 
@@ -78,4 +81,16 @@ if __name__ == "__main__":
     t3.start()
     t4.start()
     t5.start()
+
+    testCommand = {
+        "type" : "movement",
+        "params" : {
+            "param" : 2077
+        }
+    }
+
+    commandQ.put(testCommand)
+
+    while True:
+       pass
     
