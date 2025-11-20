@@ -36,7 +36,7 @@ class MovementControl:
     def turnLeft(self):
         self.g_bot.set_car_motion(0,0,self.speed)
     
-    def setspeed(self, speed):
+    def setSpeed(self, speed):
         self.speed = speed
 
     def turn180(self):

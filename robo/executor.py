@@ -4,13 +4,18 @@ class CommandExecutor:
     
     def __init__(self):
         self.command_dict = {
-            "stop" : mc.stop,
+            "fullstop" : mc.fullstop,
+            "stopRotate" : mc.stopRotate,
+            "stopLeftRight" : mc.stopLeftRight,
+            "stopForwardsBackwards" : mc.stopForwardsBackwards,
             "forwards" : mc.forwards,
             "backwards" : mc.backwards,
             "right" : mc.right,
             "left" : mc.left,
-            "turnright" : mc.turnright,
-            "turnleft" : mc.turnleft
+            "turnRight" : mc.turnRight,
+            "turnLeft" : mc.turnLeft,
+            "setSpeed" : mc.setSpeed,
+            "turn180" : mc.turn180
         }
         pass
         
