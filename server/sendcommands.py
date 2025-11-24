@@ -44,6 +44,14 @@ def ButtonRelease(releasedButton):
             }
         sendJson(json.dumps(data))
 
+def voicecommand(command):
+    data = {
+            "type": command,
+            "params": {}
+        }
+    sendJson(json.dumps(data))
+    
+
 def sendJson(json):
     print(json)
 

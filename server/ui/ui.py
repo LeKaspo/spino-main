@@ -1,6 +1,6 @@
 #starte den Flaskserver übern den das web UI läuft
 from flask import Flask, render_template, request
-import sendcommands
+from .. import sendcommands
 
 app = Flask(__name__)
 @app.route('/')
