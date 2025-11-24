@@ -1,4 +1,6 @@
 import json
+from connection import conn
+
 
 def ButtonClicked(clickedButton):
     data = {
@@ -53,5 +55,6 @@ def voicecommand(command):
     
 
 def sendJson(json):
-    print(json)
+    conn.commandQ.put(json)
+    #print(json)
 

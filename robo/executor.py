@@ -17,7 +17,6 @@ class CommandExecutor:
             "setSpeed" : mc.setSpeed,
             "turn180" : mc.turn180
         }
-        pass
         
     def executeCommand(self, command):
         command_type = command["type"]
