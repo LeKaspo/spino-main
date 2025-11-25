@@ -20,7 +20,8 @@ class CommandExecutor:
         }
         
     def executeCommand(self, command):
-        
+        if isinstance(command, str):
+            command = json.loads(command)
         print(f"Typ vom Command {type(command)}")
         command_type = command["type"]
         command_params = list(command["params"].values())
