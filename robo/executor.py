@@ -1,4 +1,5 @@
 from movementControl import MovementControl as mc
+import json
 
 class CommandExecutor:
     
@@ -19,7 +20,8 @@ class CommandExecutor:
         }
         
     def executeCommand(self, command):
-        print("Typ vom Command" + type(command))
+        
+        print(f"Typ vom Command {type(command)}")
         command_type = command["type"]
         command_params = list(command["params"].values())
         
