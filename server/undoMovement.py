@@ -1,63 +1,127 @@
 import datetime
-import sendcommands
+from . import sendcommands
 import time
+import json
 
 class UndoMovement:
-    def __init__(self):
-        self.stack = []
-        lastTime = 0
-        self.x
-        self.y
-        self.z
-        self.lastx
-        self.lasty
-        self.lastz
-        
+    
+    # Singleton
+    _instance = None  
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
 
+    def __init__(self):
+        if not hasattr(self, 'initialized'):
+            self.stack = []
+            self.last_time = 0
+            self.last_x = 0
+            self.last_y = 0
+            self.last_z = 0
+            self.initialized = True 
+    
+    @classmethod
+    def getInstance(cls):
+        return cls()
+
+    # quasi initialisierung für startpunkt der aufnahme
     def start(self):
         self.stack = []
-        self.stack.append({0, 0 , 0 , 0})
+        self.stack.append({
+                "duration": 0,
+                "x": 0,
+                "y": 0,
+                "z": 0
+            })
+        self.last_time = None
+        self.last_x = 0
+        self.last_y = 0
+        self.last_z = 0
 
+    # hinzufügen zum stack mit umdrehen der richtung und aufzeichnung der dauer
     def put(self, command):
+        now = datetime.datetime.now()
+        if self.last_time is not None:
+            duration = (now - self.last_time).total_seconds()
+            self.stack.append({
+                "duration": duration,
+                "x": self.last_x,
+                "y": self.last_y,
+                "z": self.last_z
+            })
+        self.last_time = now
+
         match command:
-            case "forwards" | "backwards" | "stopForwardsBackwards":
-                self.x = self.last.x
-                self.lastx = command
-            case "left" | "right" | "stopLeftRight":
-                self.y = self.last.y
-                self.lasty = command
-            case "turnLeft" | "turnRight" |  "stopRotate":
-                self.z = self.last.xz
-                self.lastz = command
+            case "forwards":
+                self.last_x = -1
+            case "backwards":
+                self.last_x = 1
+            case "stopForwardsBackwards":
+                self.last_x = 0
+            case "left" :
+                self.last_y = -1
+            case "right":
+                self.last_y = 1
+            case "stopLeftRight":
+                self.last_y = 0
+            case "turnLeft":
+                self.last_z = -1
+            case  "turnRight":
+                self.last_z = 1
+            case "stopRotate":
+                self.last_z = 0
             case "fullStop":
-                self.x = self.last.x
-                self.lastx = command
-                self.y = self.last.y
-                self.lasty = command
-                self.z = self.last.xz
-                self.lastz = command
-                
-        if (self.lastTime == 0):
-            self.lastTime = datetime.now()
-        else:
-            time = datetime.now()
-            difference = self.lastTime - time
-            duration = difference.total_seconds()
-            self.lastTime = time
+                self.last_x = 0
+                self.last_y = 0
+                self.last_z = 0
 
-            self.stack.append({duration, self.x , self.y , self.z})
-
+    # stack abarbeiten
     def undoMovement(self):
-        while not bool(self.stack):
-            commands = self.stack.pop()
-            for i in range(1, 3): 
-                data = {
-                    "type": commands[i],
-                    "params": {}
-                }
-                sendcommands(data)
-            time.sleep(commands[0])
+        curx = 0
+        cury = 0 
+        curz = 0
+        while self.stack:
+            state = self.stack.pop()
+            duration = state["duration"]
 
+            if state["x"] != curx:
+                command_x = self.get_command(state["x"], 'x')
+                sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
+                curx = state["x"]
+            if state["y"] != cury:
+                command_y = self.get_command(state["y"], 'y')
+                sendcommands.sendJson(json.dumps({"type":command_y, "params": {}}))
+                cury = state["y"]
+            if state["z"] != curz:
+                command_z = self.get_command(state["z"], 'z')
+                sendcommands.sendJson(json.dumps({"type": command_z, "params": {}}))
+                curz = state["z"]
+
+            time.sleep(duration)
+
+    def get_command(self, command, axis):
+        mapx = {
+            -1: "backwards",
+            1: "forwards",
+            0: "stopForwardsBackwards" }
+        mapy = {
+           -1: "right",
+            1: "left",
+            0: "stopLeftRight"
+        }
+        mapz = {
+            -1: "turnRight",
+            1: "turnLeft",
+            0: "stopRotate"
+        }
+        match axis:
+            case 'x':
+                return mapx.get(command)
+            case 'y':
+                return mapy.get(command)
+            case 'z':
+                return mapz.get(command)
     
 
 
