@@ -1,4 +1,4 @@
-python cameraHändler.py
+python /camera/cameraHändler.py
 
 
 #python sendAudio.py &
