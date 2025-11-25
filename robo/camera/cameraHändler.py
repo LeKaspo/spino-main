@@ -1,3 +1,3 @@
 import subprocess
 
-subprocess.run(["bash", "/camera/start_camera.sh"])
+subprocess.run(["bash", "./camera/start_camera.sh"])
