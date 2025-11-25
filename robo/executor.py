@@ -1,9 +1,10 @@
-from movementControl import MovementControl as mc
+from movementControl import MovementControl
 import json
 
 class CommandExecutor:
     
     def __init__(self):
+        mc = MovementControl()
         self.command_dict = {
             "fullstop" : mc.fullstop,
             "stopRotate" : mc.stopRotate,
@@ -19,9 +20,11 @@ class CommandExecutor:
             "turn180" : mc.turn180
         }
         
-    def executeCommand(self, command):
-        if isinstance(command, str):
-            command = json.loads(command)
+    def executeCommand(self, commandString):
+        
+        if isinstance(commandString, str):
+            print("Loading Command to JSON")
+            command = json.loads(commandString)
         print(f"Typ vom Command {type(command)}")
         command_type = command["type"]
         command_params = list(command["params"].values())
