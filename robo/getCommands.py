@@ -15,7 +15,11 @@ def getCommands():
         data = client.recv(256)
         if not data: break
         #Decode JSON Command-Format
+        print(type(data))
+        print(data)
         command_json = json.loads(data.decode('utf-8'))
+        print(type(command_json))
+        print(command_json)
         commandQ.put(command_json)
 
 def execCommands():
