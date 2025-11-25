@@ -32,7 +32,8 @@ class UndoMovement:
                 "duration": 0,
                 "x": 0,
                 "y": 0,
-                "z": 0
+                "z": 0,
+                "special": None
             })
         self.last_time = None
         self.last_x = 0
@@ -48,7 +49,8 @@ class UndoMovement:
                 "duration": duration,
                 "x": self.last_x,
                 "y": self.last_y,
-                "z": self.last_z
+                "z": self.last_z,
+                "special": None 
             })
         self.last_time = now
 
@@ -75,6 +77,15 @@ class UndoMovement:
                 self.last_x = 0
                 self.last_y = 0
                 self.last_z = 0
+            case "turn180":
+                self.stack.append({
+                    "duration": 0,
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "special": "turn180"
+                })
+
 
     # stack abarbeiten
     def undoMovement(self):
@@ -83,22 +94,29 @@ class UndoMovement:
         curz = 0
         while self.stack:
             state = self.stack.pop()
-            duration = state["duration"]
 
-            if state["x"] != curx:
-                command_x = self.get_command(state["x"], 'x')
-                sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
-                curx = state["x"]
-            if state["y"] != cury:
-                command_y = self.get_command(state["y"], 'y')
-                sendcommands.sendJson(json.dumps({"type":command_y, "params": {}}))
-                cury = state["y"]
-            if state["z"] != curz:
-                command_z = self.get_command(state["z"], 'z')
-                sendcommands.sendJson(json.dumps({"type": command_z, "params": {}}))
-                curz = state["z"]
+            #special commands anders bearbeiten
+            if state.get("special") is not None:
+                sendcommands.sendJson(json.dumps({"type": state.get("special"), "params": {}}))
+            else:
+                duration = state["duration"]
 
-            time.sleep(duration)
+                if state["x"] != curx:
+                    command_x = self.get_command(state["x"], 'x')
+                    sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
+                    curx = state["x"]
+                if state["y"] != cury:
+                    command_y = self.get_command(state["y"], 'y')
+                    sendcommands.sendJson(json.dumps({"type":command_y, "params": {}}))
+                    cury = state["y"]
+                if state["z"] != curz:
+                    command_z = self.get_command(state["z"], 'z')
+                    sendcommands.sendJson(json.dumps({"type": command_z, "params": {}}))
+                    curz = state["z"]
+                # nur warten wenn auch gefahren wird
+                if state["x"] != 0 or state["y"] != 0 or state["z"] != 0:   
+                    time.sleep(duration)
+
 
     def get_command(self, command, axis):
         mapx = {
