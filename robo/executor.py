@@ -25,15 +25,4 @@ class CommandExecutor:
         if (command_params == []):
             self.command_dict[command_type]()
         else:
-            self.command_dict[command_type](*command_params)     
-
-
-# if __name__ == "__main__":
-#     #testing Stuff
-#     jason = {
-#         "type" : "movement",
-#         "params" : {}
-#     }
-
-#     cmdExc = CommandExecutor()
-#     cmdExc.executeCommand(jason)
+            self.command_dict[command_type](*command_params)
