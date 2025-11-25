@@ -19,6 +19,7 @@ class CommandExecutor:
         }
         
     def executeCommand(self, command):
+        print("Typ vom Command" + type(command))
         command_type = command["type"]
         command_params = list(command["params"].values())
         
