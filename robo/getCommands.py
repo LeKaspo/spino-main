@@ -6,7 +6,7 @@ import time
 from executor import CommandExecutor
 
 PORT = 50003
-IP = 'localhost'
+IP = '192.168.0.4'
 
 def getCommands():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

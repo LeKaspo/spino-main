@@ -6,7 +6,7 @@ import json
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = 'localhost'
+IP = '192.168.0.4'
 BUFFER_SIZE = 128
 
 class connectionHändler:
