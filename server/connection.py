@@ -6,23 +6,28 @@ import json
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = '192.168.0.4'
+IP = '192.168.0.229'
 BUFFER_SIZE = 128
 
 class connectionHändler:
+    
     _instance = None
     _initialized = False
 
     def __new__(cls):
+        print("New Object")
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
     def __init__(self):
+        print("Initialize Singleton")
         if hasattr(self, "_initialized") and self._initialized:
+            print("Singleton Already Initialized")
             return
         self._initialized = True
 
+        print("Starting Sockets")
         self.commandQ = queue.Queue()
         self.audioQ = queue.Queue()
         self.lidarQ = queue.Queue()
@@ -33,6 +38,12 @@ class connectionHändler:
         t1.start()
         t2.start()
         t3.start()
+
+    @staticmethod
+    def getInstance():
+        if connectionHändler._instance is None:
+            connectionHändler._instance = connectionHändler()
+        return connectionHändler._instance
 
     @staticmethod
     def _openConnection(IP, PORT):
@@ -81,59 +92,15 @@ class connectionHändler:
     def getAudio(self):
         return self.audioQ.get()
 
-    
-    
-    # def processAudio(self):
-    #     while True:
-    #         audio_Chunk = self.audioQ.get()
-    #         if audio_Chunk is None: break
-    #         #Do something with Audio Data
 
-    # def processLidar(self):
-    #     while True:
-    #         lidar_Scan = self.lidarQ.get()
-    #         if lidar_Scan is None: break
-    #         #Do something with Lidar Data
+print("Initializing conn Object")
+conn = connectionHändler.getInstance()
+print("object initailized")
+conn2 = connectionHändler.getInstance()
 
-    
+print(conn == conn2)
 
 if __name__ == "__main__":
-    conn = connectionHändler()
     while True:
         pass
-#     tcp = TCP_Server()
-#     commandQ = queue.Queue()
-#     audioQ = queue.Queue()
-#     lidarQ = queue.Queue()
 
-#     #Receive Audio + Processing
-#     print("Init Audio")
-#     t1 = threading.Thread(target=tcp._getAudio, daemon=True)
-#     t2 = threading.Thread(target=tcp.processAudio, daemon=True)
-#     #Receive Lidar + Processing
-#     print("Init Lidar")
-#     t3 = threading.Thread(target=tcp._getLidar, daemon=True)
-#     t4 = threading.Thread(target=tcp.processLidar, daemon=True)
-#     #Send Commands
-#     print("Init Commands")
-#     t5 = threading.Thread(target=tcp._sendCommand, daemon=True)
-
-#     t1.start()
-#     t2.start()
-#     t3.start()
-#     t4.start()
-#     t5.start()
-
-
-#     testCommand = {
-#         "type" : "movement",
-#         "params" : {
-#             "param" : 2077
-#         }
-#     }
-
-#     commandQ.put(testCommand)
-
-#     while True:
-#        pass
-    
