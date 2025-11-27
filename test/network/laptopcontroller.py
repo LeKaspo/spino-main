@@ -8,7 +8,7 @@ import socket
 
 TCP_IP = '192.168.0.229'
 TCP_PORT = 50069
-BUFFER_SIZE = 256
+BUFFER_SIZE = 144
 MESSAGE = "Hallo Server!"
 
 conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
