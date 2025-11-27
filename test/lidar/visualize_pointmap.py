@@ -6,11 +6,13 @@ import sys
 
 # proc = subprocess.call([".\\test\\lidar\\psScriptScan.ps1"])
 
+
 proc = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./test/lidar/psScriptScan.ps1"])
 
 proc.wait()
 
 proc.kill()
+
 
 # Dateiname der zu plottenden CSV:
 csv_filename = "lidar_scans_1.csv"  # Hier anpassen!
