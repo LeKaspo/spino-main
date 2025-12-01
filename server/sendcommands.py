@@ -73,4 +73,4 @@ def voicecommand(command):
     
 def sendJson(json):
     conn.commandQ.put(json)
-    #print(json)
+    print(json)

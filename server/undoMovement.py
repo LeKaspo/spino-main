@@ -97,6 +97,7 @@ class UndoMovement:
 
             #special commands anders bearbeiten
             if state.get("special") is not None:
+                print (state.get("special"))
                 sendcommands.sendJson(json.dumps({"type": state.get("special"), "params": {}}))
             else:
                 duration = state["duration"]
