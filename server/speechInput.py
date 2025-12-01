@@ -26,11 +26,13 @@ import types
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
 from scipy import signal
+from huggingface_hub.errors import LocalEntryNotFoundError
 
 # =============================================================================
 # COMPATIBILITY LAYER: pkg_resources Polyfill
@@ -73,17 +75,18 @@ except ImportError:
     # Inject it into sys.modules so 'import pkg_resources' succeeds inside webrtcvad
     sys.modules["pkg_resources"] = mock_pkg
 
+
 # Now we can safely import webrtcvad; it will use the real package or our shim.
 import webrtcvad
 # =============================================================================
 
 
-# Whisper: make sure this is openai-whisper
+# Faster Whisper
 try:
-    import whisper
-except Exception as e:
-    print("Failed to import the 'whisper' module:", e, file=sys.stderr)
-    print("Install it with: pip install -U openai-whisper", file=sys.stderr)
+    from faster_whisper import WhisperModel
+except ImportError:
+    print("Failed to import 'faster_whisper'.", file=sys.stderr)
+    print("Install it with: pip install faster-whisper", file=sys.stderr)
     sys.exit(1)
 
 try:
@@ -97,6 +100,7 @@ logger = logging.getLogger("speechInput")
 SAMPLE_RATE = 16000
 FRAME_DURATION_MS = 20  # 10/20/30 ms allowed for WebRTC VAD
 FRAME_SIZE = int(SAMPLE_RATE * FRAME_DURATION_MS / 1000)
+DEFAULT_MODELS_ROOT = (Path(__file__).resolve().parent.parent / "models").as_posix()
 
 
 class Recorder:
@@ -356,8 +360,8 @@ def transcribe_utterance(
             meta.frame_count,
             debug_path or "-",
         )
-        res = wmodel.transcribe(wavpath, language=language)
-        text = res.get("text", "").strip()
+        segments, _ = wmodel.transcribe(wavpath, language=language, beam_size=5)
+        text = " ".join(segment.text for segment in segments).strip()
         latency = time.perf_counter() - started
         logger.info(
             "Utterance %s -> Whisper done in %.2f s | transcript=%s",
@@ -394,12 +398,45 @@ def _cleanup_done_futures(pending: deque):
         pending.popleft()
 
 
+def resolve_model_dir(args) -> Path:
+    if args.model_path:
+        candidate = Path(args.model_path).expanduser().resolve()
+    else:
+        root = Path(args.models_root).expanduser().resolve()
+        candidate = root / f"faster-whisper-{args.model}"
+
+    if not candidate.exists():
+        raise FileNotFoundError(
+            f"Faster-Whisper model directory not found: {candidate}. "
+            f"Place the exported model there or pass --model-path."
+        )
+    return candidate
+
+
+def create_whisper_model(args, model_dir: Path | None = None):
+    """Create a Faster-Whisper model with CLI overrides."""
+    model_dir = model_dir or resolve_model_dir(args)
+
+    try:
+        return WhisperModel(
+            str(model_dir),
+            device=args.device,
+            compute_type=args.compute_type,
+            local_files_only=True,
+        )
+    except LocalEntryNotFoundError as err:
+        logger.error("Failed to load Faster-Whisper model from %s", model_dir)
+        raise err
+
+
+
 def run_live(args):
     recorder = Recorder()
     vad = webrtcvad.Vad(args.vad_aggressiveness)
 
-    logger.info("Loading Whisper model: %s", args.model)
-    wmodel = whisper.load_model(args.model)
+    model_dir = resolve_model_dir(args)
+    logger.info("Loading Faster Whisper model from %s", model_dir)
+    wmodel = create_whisper_model(args, model_dir)
 
     executor = ThreadPoolExecutor(max_workers=args.workers, thread_name_prefix="whisper")
     pending: deque = deque()
@@ -504,8 +541,9 @@ def run_live(args):
 def run_file(args):
     """Optional: process a WAV file instead of microphone (for quick testing)."""
     vad = webrtcvad.Vad(args.vad_aggressiveness)
-    logger.info("Loading Whisper model: %s", args.model)
-    wmodel = whisper.load_model(args.model)
+    model_dir = resolve_model_dir(args)
+    logger.info("Loading Faster Whisper model from %s", model_dir)
+    wmodel = create_whisper_model(args, model_dir)
     print("Processing file:", args.file)
 
     frame_buffer: list[bytes] = []
@@ -584,10 +622,29 @@ def main():
         help="Whisper model name (tiny, base, small, medium, large)",
     )
     parser.add_argument(
+        "--model-path",
+        help="Explicit path to a Faster-Whisper model directory (skips auto lookup).",
+    )
+    parser.add_argument(
+        "--models-root",
+        default=DEFAULT_MODELS_ROOT,
+        help="Directory containing faster-whisper-* folders (default: %(default)s)",
+    )
+    parser.add_argument(
         "--language",
         choices=["de", "en"],
         default="de",
         help="Language for Whisper transcription (de or en)",
+    )
+    parser.add_argument(
+        "--device",
+        default="cpu",
+        help="Device for Faster Whisper (cpu, cuda, auto, etc.)",
+    )
+    parser.add_argument(
+        "--compute-type",
+        default="int8",
+        help="Quantization compute type (int8, int8_float16, float16, etc.)",
     )
     parser.add_argument(
         "--vad-aggressiveness",
