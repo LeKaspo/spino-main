@@ -4,9 +4,9 @@ import time
 class MovementControl:
     def __init__(self):
         self.g_bot = Rosmaster()
-        self.speedx = 0.5
-        self.speedy = 0.5
-        self.speedz = 1 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedx = 0
+        self.speedy = 0
+        self.speedz = 0 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.speed = 0.5
 
     def fullstop(self):
