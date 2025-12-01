@@ -20,6 +20,9 @@ import queue
 import sys
 import tempfile
 import time
+import warnings
+import importlib.util
+import types
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -27,8 +30,53 @@ from dataclasses import dataclass
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
-import webrtcvad
 from scipy import signal
+
+# =============================================================================
+# COMPATIBILITY LAYER: pkg_resources Polyfill
+# =============================================================================
+# The 'webrtcvad' library depends on 'pkg_resources', which is deprecated and 
+# scheduled for removal in late 2025. This block ensures the code continues 
+# to work even if 'pkg_resources' is removed from your Python environment.
+try:
+    # 1. Try to import the genuine pkg_resources (clean logs today)
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=UserWarning, module="webrtcvad")
+        # We check if we can import it to suppress the specific warning
+        import pkg_resources
+except ImportError:
+    # 2. If pkg_resources is GONE (Post-Nov 2025), we inject a shim.
+    # This prevents the script from crashing when setuptools is updated.
+    
+    def _shim_resource_filename(package_or_requirement, resource_name):
+        """
+        A minimal replacement for pkg_resources.resource_filename.
+        It finds the directory of the requested package using modern importlib.
+        """
+        try:
+            # Resolve the package name (e.g., 'webrtcvad') to its file location
+            spec = importlib.util.find_spec(package_or_requirement)
+            if spec and spec.origin:
+                # Get the directory containing the package
+                package_dir = os.path.dirname(spec.origin)
+                # Construct the full path to the resource (e.g., the .pyd/.so file)
+                return os.path.join(package_dir, resource_name)
+        except Exception:
+            pass
+        # Fallback: assume resource is in the current working directory
+        return os.path.abspath(resource_name)
+
+    # Create a dummy module
+    mock_pkg = types.ModuleType("pkg_resources")
+    mock_pkg.resource_filename = _shim_resource_filename
+    
+    # Inject it into sys.modules so 'import pkg_resources' succeeds inside webrtcvad
+    sys.modules["pkg_resources"] = mock_pkg
+
+# Now we can safely import webrtcvad; it will use the real package or our shim.
+import webrtcvad
+# =============================================================================
+
 
 # Whisper: make sure this is openai-whisper
 try:
@@ -38,7 +86,11 @@ except Exception as e:
     print("Install it with: pip install -U openai-whisper", file=sys.stderr)
     sys.exit(1)
 
-from sendcommands import voicecommand
+try:
+    from sendcommands import voicecommand
+except ImportError:
+    def voicecommand(cmd):
+        print(f"DEBUG: Mock execution of command '{cmd}'")
 
 logger = logging.getLogger("speechInput")
 
@@ -236,7 +288,7 @@ COMMANDS = [
             "turn around left",
             "spin left",
             "look to the left",
-            "look left"
+            "look left",
             "drehe dich nach links",
             "dreh dich nach links",
             "schaue nach links",
