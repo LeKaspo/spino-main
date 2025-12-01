@@ -1,5 +1,9 @@
 from test.lidar.BreezySlam.rplidar import RPLidar
-lidar = RPLidar('/dev/ttyUSB1')
+
+LIDAR_DEVICE            = '/dev/ttyUSB1'
+
+lidar = RPLidar(LIDAR_DEVICE)
+stopLidar = False
 
 info = lidar.get_info()
 print(info)
@@ -12,9 +16,7 @@ iterator = lidar.iter_scans()
 scan = next(iterator)
 print(type(scan))
 
-i = 0
-
-while i < 20:
+while (not stopLidar):
     if scan != next(iterator):
         print(f"Schicke Scan")
 
@@ -27,8 +29,6 @@ while i < 20:
 
         for distances, angles in scan:
             print(f"Winkel: {angles:.1f}°, Distanz: {distances:.1f} mm")
-        
-        i += 1
     else:
         print("No new Scan")
 
