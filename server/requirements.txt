@@ -10,10 +10,8 @@ numpy>=1.26.0
 matplotlib>=3.9.0
 
 # Audio Processing
-numpy
 sounddevice
 soundfile
 scipy
 huggingface_hub
-webrtcvad
 faster-whisper

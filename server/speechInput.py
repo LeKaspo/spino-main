@@ -1,7 +1,7 @@
 """
 Continuous speech -> Whisper (de/en) -> command execution.
 
-- Listens to the default microphone with WebRTC VAD.
+- Listens to the default microphone with a lightweight energy-based VAD.
 - When an utterance ends (speech followed by silence), it:
   * sends the audio to Whisper for transcription (de or en),
   * prints the transcribed text,
@@ -20,9 +20,6 @@ import queue
 import sys
 import tempfile
 import time
-import warnings
-import importlib.util
-import types
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -33,52 +30,6 @@ import sounddevice as sd
 import soundfile as sf
 from scipy import signal
 from huggingface_hub.errors import LocalEntryNotFoundError
-
-# =============================================================================
-# COMPATIBILITY LAYER: pkg_resources Polyfill
-# =============================================================================
-# The 'webrtcvad' library depends on 'pkg_resources', which is deprecated and 
-# scheduled for removal in late 2025. This block ensures the code continues 
-# to work even if 'pkg_resources' is removed from your Python environment.
-try:
-    # 1. Try to import the genuine pkg_resources (clean logs today)
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=UserWarning, module="webrtcvad")
-        # We check if we can import it to suppress the specific warning
-        import pkg_resources
-except ImportError:
-    # 2. If pkg_resources is GONE (Post-Nov 2025), we inject a shim.
-    # This prevents the script from crashing when setuptools is updated.
-    
-    def _shim_resource_filename(package_or_requirement, resource_name):
-        """
-        A minimal replacement for pkg_resources.resource_filename.
-        It finds the directory of the requested package using modern importlib.
-        """
-        try:
-            # Resolve the package name (e.g., 'webrtcvad') to its file location
-            spec = importlib.util.find_spec(package_or_requirement)
-            if spec and spec.origin:
-                # Get the directory containing the package
-                package_dir = os.path.dirname(spec.origin)
-                # Construct the full path to the resource (e.g., the .pyd/.so file)
-                return os.path.join(package_dir, resource_name)
-        except Exception:
-            pass
-        # Fallback: assume resource is in the current working directory
-        return os.path.abspath(resource_name)
-
-    # Create a dummy module
-    mock_pkg = types.ModuleType("pkg_resources")
-    mock_pkg.resource_filename = _shim_resource_filename
-    
-    # Inject it into sys.modules so 'import pkg_resources' succeeds inside webrtcvad
-    sys.modules["pkg_resources"] = mock_pkg
-
-
-# Now we can safely import webrtcvad; it will use the real package or our shim.
-import webrtcvad
-# =============================================================================
 
 
 # Faster Whisper
@@ -98,9 +49,82 @@ except ImportError:
 logger = logging.getLogger("speechInput")
 
 SAMPLE_RATE = 16000
-FRAME_DURATION_MS = 20  # 10/20/30 ms allowed for WebRTC VAD
+FRAME_DURATION_MS = 20  # fixed 20 ms frames (legacy WebRTC-compatible size)
 FRAME_SIZE = int(SAMPLE_RATE * FRAME_DURATION_MS / 1000)
 DEFAULT_MODELS_ROOT = (Path(__file__).resolve().parent.parent / "models").as_posix()
+
+
+class EnergyVAD:
+    """Energy-based VAD with hangover to avoid premature cut-offs."""
+
+    THRESHOLD_MULTIPLIERS = {
+        0: 1.25,
+        1: 1.55,
+        2: 1.8,
+        3: 2.3,
+    }
+
+    def __init__(
+        self,
+        aggressiveness: int = 2,
+        hangover_ms: int = 380,
+        attack_ms: int = 55,
+        min_energy: float = 40.0,
+    ):
+        self.aggressiveness = int(np.clip(aggressiveness, 0, 3))
+        self.min_energy = float(max(1.0, min_energy))
+        self.alpha = 0.995  # how quickly the noise estimate adapts to quieter frames
+        self.noise_floor = max(self.min_energy, 250.0)
+
+        frame_ms = max(1, FRAME_DURATION_MS)
+        self.hangover_frames = max(1, int(hangover_ms / frame_ms))
+        self.activation_frames = max(1, int(attack_ms / frame_ms))
+
+        self._activation_run = 0
+        self._hangover_left = 0
+
+    def _frame_energy(self, frame_bytes: bytes) -> float:
+        frame = np.frombuffer(frame_bytes, dtype=np.int16)
+        if not frame.size:
+            return 0.0
+        return float(np.sqrt(np.mean(frame.astype(np.float32) ** 2)))
+
+    def _update_noise_floor(self, energy: float, threshold: float) -> None:
+        if energy <= 0.0:
+            return
+        if energy < threshold:
+            target = max(self.min_energy, energy)
+        else:
+            target = max(self.min_energy, min(energy, self.noise_floor * 3))
+        self.noise_floor = self.alpha * self.noise_floor + (1 - self.alpha) * target
+
+    def is_speech(self, frame_bytes: bytes, sample_rate: int) -> bool:  # noqa: D401
+        """Return True if speech is active, using hangover to smooth drops."""
+
+        _ = sample_rate  # kept for API compatibility
+        energy = self._frame_energy(frame_bytes)
+
+        threshold = max(
+            self.noise_floor * self.THRESHOLD_MULTIPLIERS[self.aggressiveness],
+            self.min_energy * 2,
+        )
+
+        self._update_noise_floor(energy, threshold)
+
+        if energy >= threshold:
+            self._activation_run = min(self.activation_frames, self._activation_run + 1)
+        else:
+            self._activation_run = max(0, self._activation_run - 1)
+
+        if self._activation_run >= self.activation_frames:
+            self._hangover_left = self.hangover_frames
+            return True
+
+        if self._hangover_left > 0:
+            self._hangover_left -= 1
+            return True
+
+        return False
 
 
 class Recorder:
@@ -241,9 +265,9 @@ COMMANDS = [
         "phrases": [
             "move forward",
             "go forward",
-            "fahre geradeaus",
-            "fahre vorwärts",
-            "fahre nach vorne",
+            " geradeaus",
+            " vorwärts",
+            "nach vorne",
         ]
     },
     {
@@ -251,8 +275,8 @@ COMMANDS = [
         "phrases": [   
             "move backward",
             "go backward",
-            "fahre rückwärts",
-            "fahre nach hinten",
+            " rückwärts",
+            "nach hinten",
         ]
     },
     {
@@ -260,7 +284,7 @@ COMMANDS = [
         "phrases": [
             "turn left",
             "go left",
-            "fahre nach links",
+            "nach links",
             "biege links ab",
         ]
     },
@@ -269,20 +293,20 @@ COMMANDS = [
         "phrases": [
             "turn right",
             "go right",
-            "fahre nach rechts",
+            "nach rechts",
             "biege rechts ab",
         ]
     },
     {
         "name": "fullstop",
         "phrases": [
-            "stop",
-            "halt",
-            "wait",
-            "stopp",
-            "anhalten",
-            "warte",
-            "stoppe"
+            " stop",
+            " halt",
+            " wait",
+            " stopp",
+            " anhalten",
+            " warte",
+            " stoppe"
         ]
     },
     {
@@ -324,12 +348,20 @@ COMMANDS = [
 ]
 
 
+def _normalize_command_text(text: str) -> str:
+    cleaned = [
+        (ch if (ch.isalnum() or ch.isspace()) else " ")
+        for ch in text.lower()
+    ]
+    return " ".join("".join(cleaned).split())
+
+
 def check_commands(transcript: str):
     """Case-insensitive substring match of command phrases in the transcript."""
-    text = transcript.lower()
+    text = _normalize_command_text(transcript)
     for cmd in COMMANDS:
         for phrase in cmd["phrases"]:
-            if phrase.lower() in text:
+            if _normalize_command_text(phrase) in text:
                 logger.info("Command triggered: %s via phrase '%s'", cmd["name"], phrase)
                 voicecommand(cmd["name"])
                 return
@@ -432,7 +464,12 @@ def create_whisper_model(args, model_dir: Path | None = None):
 
 def run_live(args):
     recorder = Recorder()
-    vad = webrtcvad.Vad(args.vad_aggressiveness)
+    vad = EnergyVAD(
+        aggressiveness=args.vad_aggressiveness,
+        hangover_ms=args.vad_hangover_ms,
+        attack_ms=args.vad_attack_ms,
+        min_energy=args.vad_min_energy,
+    )
 
     model_dir = resolve_model_dir(args)
     logger.info("Loading Faster Whisper model from %s", model_dir)
@@ -540,7 +577,12 @@ def run_live(args):
 
 def run_file(args):
     """Optional: process a WAV file instead of microphone (for quick testing)."""
-    vad = webrtcvad.Vad(args.vad_aggressiveness)
+    vad = EnergyVAD(
+        aggressiveness=args.vad_aggressiveness,
+        hangover_ms=args.vad_hangover_ms,
+        attack_ms=args.vad_attack_ms,
+        min_energy=args.vad_min_energy,
+    )
     model_dir = resolve_model_dir(args)
     logger.info("Loading Faster Whisper model from %s", model_dir)
     wmodel = create_whisper_model(args, model_dir)
@@ -651,7 +693,25 @@ def main():
         type=int,
         choices=[0, 1, 2, 3],
         default=2,
-        help="WebRTC VAD aggressiveness (0 = least, 3 = most aggressive).",
+        help="Energy VAD aggressiveness (0 = least, 3 = most aggressive).",
+    )
+    parser.add_argument(
+        "--vad-hangover-ms",
+        type=int,
+        default=380,
+        help="How long to keep speech active after energy dips (ms).",
+    )
+    parser.add_argument(
+        "--vad-attack-ms",
+        type=int,
+        default=55,
+        help="Minimum duration above threshold before speech is considered active (ms).",
+    )
+    parser.add_argument(
+        "--vad-min-energy",
+        type=float,
+        default=40.0,
+        help="Lower RMS bound to stabilize adaptive energy thresholds.",
     )
     parser.add_argument(
         "--silence-ms",
@@ -668,7 +728,7 @@ def main():
     parser.add_argument(
         "--min-avg-amplitude",
         type=float,
-        default=500.0,
+        default=650.0,
         help="Drop utterances with mean absolute amplitude below this (0-32767).",
     )
     parser.add_argument(
