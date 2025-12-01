@@ -1,4 +1,4 @@
-from ..BreezySlam.rplidar import RPLidar
+from rplidar import RPLidar
 
 lidar = RPLidar('/dev/ttyUSB1')
 
