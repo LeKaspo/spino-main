@@ -1,5 +1,4 @@
 import json
-import datetime
 from .undoMovement import  UndoMovement
 from server.connection import connectionHändler
 
@@ -72,7 +71,6 @@ def voicecommand(command):
         }
     sendJson(json.dumps(data))
     
-
 def sendJson(json):
     conn.commandQ.put(json)
     #print(json)
