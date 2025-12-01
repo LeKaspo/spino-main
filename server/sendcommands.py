@@ -1,4 +1,7 @@
 import json
+from server.connection import connectionHändler
+
+conn = connectionHändler.getInstance()
 
 def ButtonClicked(clickedButton):
     data = {
@@ -53,5 +56,5 @@ def voicecommand(command):
     
 
 def sendJson(json):
-    print(json)
-
+    conn.commandQ.put(json)
+    #print(json)

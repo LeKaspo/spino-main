@@ -4,37 +4,53 @@ import time
 class MovementControl:
     def __init__(self):
         self.g_bot = Rosmaster()
+        self.speedx = 0
+        self.speedy = 0
+        self.speedz = 0 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.speed = 0.5
 
     def fullstop(self):
-        self.g_bot.set_car_motion(0,0,0)
+        self.speedx = 0
+        self.speedy = 0
+        self.speedz = 0 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def stopRotate(self):
-        self.g_bot.set_car_motion(0,0,0)
+        self.speedz = 0 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
+        
 
     def stopLeftRight(self):
-        self.g_bot.set_car_motion(0,0,0)
+        self.speedy = 0 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def stopForwardsBackwards(self):
-        self.g_bot.set_car_motion(0,0,0)
+        self.speedx = 0
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def forwards(self):
-        self.g_bot.set_car_motion(self.speed,0,0)
+        self.speedx = self.speed 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def backwards(self):
-        self.g_bot.set_car_motion(-self.speed,0,0)
+        self.speedx = -self.speed 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def right(self):
-        self.g_bot.set_car_motion(0,-self.speed,0)
+        self.speedy = -self.speed 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def left(self):
-        self.g_bot.set_car_motion(0,self.speed,0)
+        self.speedy = self.speed 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnRight(self):
-        self.g_bot.set_car_motion(0,0,-self.speed)
+        self.speedz = -1 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnLeft(self):
-        self.g_bot.set_car_motion(0,0,self.speed)
+        self.speedz = 1 
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
     
     def setSpeed(self, speed):
         self.speed = speed

@@ -1,9 +1,8 @@
-#python cameraHändler.py
-#python audioHändler.py
-#python commandHändler.py
+python ./camera/cameraHändler.py &
 
-python sendAudio.py &
-python sendLidar.py &
+
+#python sendAudio.py &
+#python sendLidar.py &
 python getCommands.py &
 
 wait
