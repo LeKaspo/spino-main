@@ -17,7 +17,7 @@ def button_click():
 @app.route('/button-click-inside', methods=['POST'])
 def button_click_inside():
     data = request.get_json()
-    sendcommands.ButtonClickedInside(f"{data['id']}")
+    server.sendcommands.ButtonClickedInside(f"{data['id']}")
     return '', 204
 @app.route('/button-press', methods=['POST'])
 def button_press():
