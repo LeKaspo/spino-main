@@ -6,7 +6,7 @@ import time
 from executor import CommandExecutor
 
 PORT = 50003
-IP = 'localhost'
+IP = '192.168.0.229'
 
 def getCommands():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,7 +15,17 @@ def getCommands():
         data = client.recv(256)
         if not data: break
         #Decode JSON Command-Format
-        command_json = json.loads(data.decode('utf-8'))
+        print("Bytes")
+        print(type(data))
+        print(data)
+        command_string = data.decode('utf-8')
+        print("String")
+        print(type(command_string))
+        print(command_string)
+        command_json = json.loads(command_string)
+        print("JSON")
+        print(type(command_json))
+        print(command_json)
         commandQ.put(command_json)
 
 def execCommands():

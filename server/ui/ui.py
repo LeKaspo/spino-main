@@ -1,6 +1,7 @@
 #starte den Flaskserver übern den das web UI läuft
 from flask import Flask, render_template, request
-from .. import sendcommands
+import server.sendcommands
+
 
 app = Flask(__name__)
 @app.route('/')
@@ -11,7 +12,7 @@ def index():
 @app.route('/button-click', methods=['POST'])
 def button_click():
     data = request.get_json()
-    sendcommands.ButtonClicked(f"{data['id']}")
+    server.sendcommands.ButtonClicked(f"{data['id']}")
     return '', 204
 @app.route('/button-click-inside', methods=['POST'])
 def button_click_inside():
@@ -21,24 +22,24 @@ def button_click_inside():
 @app.route('/button-press', methods=['POST'])
 def button_press():
     data = request.get_json()
-    sendcommands.ButtonPress(f"{data['id']}")
+    server.sendcommands.ButtonPress(f"{data['id']}")
     return '', 204
 @app.route('/button-release', methods=['POST'])
 def button_release():
     data = request.get_json()
-    sendcommands.ButtonRelease(f"{data['id']}")
+    server.sendcommands.ButtonRelease(f"{data['id']}")
     return '', 204
 
 @app.route('/key-down', methods=['POST'])
 def key_down():
     data = request.get_json()
-    sendcommands.ButtonPress(f"{data['key']}")
+    server.sendcommands.ButtonPress(f"{data['key']}")
     return '', 204
 @app.route('/key-up', methods=['POST'])
 def key_up():
     data = request.get_json()
-    sendcommands.ButtonRelease(f"{data['key']}")
+    server.sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False)

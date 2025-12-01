@@ -1,6 +1,9 @@
 import json
 import datetime
 from .undoMovement import  UndoMovement
+from server.connection import connectionHändler
+
+conn = connectionHändler.getInstance()
 
 def ButtonClicked(clickedButton):
     data = {
@@ -71,5 +74,5 @@ def voicecommand(command):
     
 
 def sendJson(json):
-    print(datetime.datetime.now())
-    print(json)
+    conn.commandQ.put(json)
+    #print(json)
