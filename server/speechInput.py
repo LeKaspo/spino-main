@@ -684,13 +684,13 @@ def main():
     parser.add_argument(
         "--workers",
         type=int,
-        default=1,
+        default=2,
         help="Number of background Whisper worker threads.",
     )
     parser.add_argument(
         "--max-pending",
         type=int,
-        default=2,
+        default=5,
         help="Maximum pending utterances before cancelling the oldest.",
     )
     parser.add_argument(
