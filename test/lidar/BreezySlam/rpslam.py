@@ -31,7 +31,7 @@ MIN_SAMPLES   = 200
 
 from breezyslam.algorithms import RMHC_SLAM
 from breezyslam.sensors import RPLidarA1 as LaserModel
-from rplidar import RPLidar as Lidar
+from test.lidar.BreezySlam.rplidar import RPLidar as Lidar
 from roboviz import MapVisualizer
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-from rplidar import RPLidar
+from test.lidar.BreezySlam.rplidar import RPLidar
 lidar = RPLidar('/dev/ttyUSB1')
 
 info = lidar.get_info()
@@ -7,14 +7,6 @@ print(info)
 health = lidar.get_health()
 print(health)
 
-'''
-for i, scan in enumerate(lidar.iter_scans()):
-    if i > 3:
-        break
-    print(f"Scan {i}:")
-    for quality, angle, distance in scan:
-        print(f"  Qualität: {quality}, Winkel: {angle:.1f}°, Distanz: {distance:.1f} mm")
-'''
 
 iterator = lidar.iter_scans()
 scan = next(iterator)
@@ -24,6 +16,7 @@ i = 0
 
 while i < 20:
     if scan != next(iterator):
+        print(f"Schicke Scan")
 
         scan = next(iterator)
 
@@ -32,12 +25,14 @@ while i < 20:
         distances = [item[2] for item in items]
         angles    = [item[1] for item in items]
 
-        
         for distances, angles in scan:
             print(f"Winkel: {angles:.1f}°, Distanz: {distances:.1f} mm")
         
-    print(f"Schicke next Scan")
-    i += 1
+        i += 1
+    else:
+        print("No new Scan")
+
+
 
 lidar.stop()
 lidar.stop_motor()

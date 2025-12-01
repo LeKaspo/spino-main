@@ -1,4 +1,14 @@
-from rplidar import RPLidar
+from test.lidar.BreezySlam.rplidar import RPLidar
+
+'''
+for i, scan in enumerate(lidar.iter_scans()):
+    if i > 3:
+        break
+    print(f"Scan {i}:")
+    for quality, angle, distance in scan:
+        print(f"  Qualität: {quality}, Winkel: {angle:.1f}°, Distanz: {distance:.1f} mm")
+'''
+
 
 def sector(angle, sectors=16):
     '''Teilt 360° in gleich große Sektoren, gibt Index zurück'''

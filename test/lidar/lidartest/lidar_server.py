@@ -1,7 +1,7 @@
 # lidar_server.py
 # Läuft auf Raspberry Pi, sendet Lidar-Daten über Netzwerk
 
-from rplidar import RPLidar
+from test.lidar.BreezySlam.rplidar import RPLidar
 import socket
 import json
 import math

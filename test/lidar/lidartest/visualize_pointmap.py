@@ -7,7 +7,7 @@ import sys
 # proc = subprocess.call([".\\test\\lidar\\psScriptScan.ps1"])
 
 
-proc = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./test/lidar/psScriptScan.ps1"])
+proc = subprocess.Popen(["powershell.exe", "-ExecutionPolicy", "Bypass", "-File", "./psScriptScan.ps1"])
 
 proc.wait()
 

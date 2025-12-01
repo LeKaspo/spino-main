@@ -1,4 +1,4 @@
-from rplidar import RPLidar
+from test.lidar.BreezySlam.rplidar import RPLidar
 import csv
 import math
 from datetime import datetime
