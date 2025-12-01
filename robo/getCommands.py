@@ -11,28 +11,33 @@ IP = '192.168.0.229'
 def getCommands():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect((IP, PORT))
-    while True:
-        data = client.recv(256)
-        if not data: break
-        #Decode JSON Command-Format
-        print("Bytes")
-        print(type(data))
-        print(data)
-        command_string = data.decode('utf-8')
-        print("String")
-        print(type(command_string))
-        print(command_string)
-        command_json = json.loads(command_string)
-        print("JSON")
-        print(type(command_json))
-        print(command_json)
-        commandQ.put(command_json)
+    try:
+        while True:
+            data = client.recv(128)
+            if not data: break
+            print("Bytes")
+            print(type(data))
+            print(data)
+            command_string = data.decode('utf-8')
+            print("String")
+            print(type(command_string))
+            print(command_string)
+            command_json = json.loads(command_string)
+            print("JSON")
+            print(type(command_json))
+            print(command_json)
+            commandQ.put(command_json)
+    except Exception as e:
+        print(f"Error: {e}")
+    except KeyboardInterrupt:
+        print("Programm closed")
+    finally:
+        client.close()
 
 def execCommands():
     while True:
         print("Waiting for Commands")
         command = commandQ.get()
-        #Execute the Commands from the Q
         commandExc.executeCommand(command)
         
 

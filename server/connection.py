@@ -57,31 +57,48 @@ class connectionHändler:
 
     def _getAudio(self):
         s, conn = self._openConnection(IP, PORT_AUDIO)
-        while True:
-            data = conn.recv(BUFFER_SIZE)
-            if not data: break
-            self.audioQ.put(data)     
-            #print(f"Received {data.decode()} on Port {PORT_AUDIO}")
-        conn.close()
-        s.close()
+        try:
+            while True:
+                data = conn.recv(BUFFER_SIZE)
+                if not data: break
+                self.audioQ.put(data)     
+        except Exception as e:
+            print(f"Error while getting Audio: {e}")
+        except KeyboardInterrupt:
+            print("Closed getAudio Thread")
+        finally:
+            conn.close()
+            s.close()
 
     def _getLidar(self):
         s, conn = self._openConnection(IP, PORT_LIDAR)
-        while True:
-            data = conn.recv(BUFFER_SIZE)
-            if not data: break
-            self.lidarQ.put(data)
-            #print(f"Received {data.decode()} on Port {PORT_LIDAR}")
-        conn.close()
-        s.close()
+        try:
+            while True:
+                data = conn.recv(BUFFER_SIZE)
+                if not data: break
+                self.lidarQ.put(data)
+        except Exception as e:
+            print(f"Error while getting Lidar: {e}")
+        except KeyboardInterrupt:
+            print("Closed getLidarThread")
+        finally:
+            conn.close()
+            s.close()
 
     def _sendCommand(self):
         s, conn = self._openConnection(IP, PORT_COMMANDS)
-        while True:
-            cmd = self.commandQ.get()
-            ##TO DO: konvertierung überprüfen            
-            cmd_json = json.dumps(cmd).encode('utf-8')
-            conn.send(cmd_json)
+        try:
+            while True:
+                cmd = self.commandQ.get()         
+                cmd_json = json.dumps(cmd).encode('utf-8')
+                conn.send(cmd_json)
+        except Exception as e:
+            print(f"Error while sending Command: {e}")
+        except KeyboardInterrupt:
+            print("Closed sendCommand Thread")
+        finally:
+            conn.close()
+            s.close()
 
     def putCommand(self, cmd):
         self.commandQ.put(cmd)
