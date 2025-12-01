@@ -1,4 +1,3 @@
-import datetime
 from . import sendcommands
 import time
 import json
@@ -29,7 +28,7 @@ class UndoMovement:
     def start(self):
         self.stack = []
         self.stack.append({
-                "duration": 0,
+                "duration": 0.0,
                 "x": 0,
                 "y": 0,
                 "z": 0,
@@ -42,9 +41,9 @@ class UndoMovement:
 
     # hinzufügen zum stack mit umdrehen der richtung und aufzeichnung der dauer
     def put(self, command):
-        now = datetime.datetime.now()
+        now = time.perf_counter()
         if self.last_time is not None:
-            duration = (now - self.last_time).total_seconds()
+            duration = now - self.last_time
             self.stack.append({
                 "duration": duration,
                 "x": self.last_x,
