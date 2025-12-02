@@ -1,0 +1,49 @@
+#starte den Flaskserver übern den das web UI läuft
+from flask import Flask, render_template, request, Response
+import server.sendcommands
+import numpy as np
+import threading
+import gesture
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template("../ui/templates/index.html")
+
+#verarbeite Button und Tasteneingaben
+@app.route('/button-click', methods=['POST'])
+def button_click():
+    data = request.get_json()
+    server.sendcommands.ButtonClicked(f"{data['id']}")
+    return '', 204
+@app.route('/button-press', methods=['POST'])
+def button_press():
+    data = request.get_json()
+    server.sendcommands.ButtonPress(f"{data['id']}")
+    return '', 204
+@app.route('/button-release', methods=['POST'])
+def button_release():
+    data = request.get_json()
+    server.sendcommands.ButtonRelease(f"{data['id']}")
+    return '', 204
+
+@app.route('/key-down', methods=['POST'])
+def key_down():
+    data = request.get_json()
+    server.sendcommands.ButtonPress(f"{data['key']}")
+    return '', 204
+@app.route('/key-up', methods=['POST'])
+def key_up():
+    data = request.get_json()
+    server.sendcommands.ButtonRelease(f"{data['key']}")
+    return '', 204
+
+@app.route('/video_gesture')
+def video_feed():
+    return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    t = threading.Thread(target=gesture.capture_loop, daemon=True)
+    t.start()
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)

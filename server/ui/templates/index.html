@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Live Stream</h1>
-        <img src="http://192.168.0.145:8090/?action=stream">
+        <img src="{{ url_for('video_gesture') }}">
         <button id="turn180" class="actionButton">Um 180 grad drehen</button>
         <button id="fullstop" class="actionButton">stop!</button>
         <button id="d" class="holdButton">&rarr;</button>
