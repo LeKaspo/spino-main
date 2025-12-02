@@ -130,13 +130,14 @@ class RoboLidar:
                         #client.sendall(self.latest_scan.encode('utf-8'))
                         
                         data = pickle.dumps(self.latest_scan)
+                        print(type(data))
     
                         # Mit Längen-Präfix versenden
                         length = struct.pack('!I', len(data))
                         client.sendall(length)
                         client.sendall(data)
                         time.sleep(0.1)  # Send data every 100ms
-                        
+
                 except Exception as e:
                     print(f"Error in sending data: {e}")
 
