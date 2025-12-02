@@ -2,6 +2,7 @@ import threading
 import socket
 import queue
 import json
+import struct
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
@@ -89,9 +90,12 @@ class connectionHändler:
         s, conn = self._openConnection(IP, PORT_COMMANDS)
         try:
             while True:
-                cmd = self.commandQ.get()         
+                cmd = self.commandQ.get()       
                 cmd_json = json.dumps(cmd).encode('utf-8')
-                conn.send(cmd_json)
+                cmd_len = len(cmd_json)
+                print(f"sending command of length {cmd_len}")
+                pre_len = struct.pack("!I", cmd_len)
+                conn.sendall(pre_len + cmd_json)
         except Exception as e:
             print(f"Error while sending Command: {e}")
         except KeyboardInterrupt:
