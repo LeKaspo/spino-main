@@ -20,10 +20,15 @@ hand_detector = vision.HandLandmarker.create_from_options(hand_options)
 
 def capture_loop():
     global latest_frame
-    cap = cv2.VideoCapture("http://192.168.0.145:8090/?action=stream")
-    if not cap.isOpened():
-        print("Failed to open cv2.VideoCapture")
-        return
+    cap = None
+
+    while cap is None or not cap.isOpened():
+        print("Versuche Verbindung zum Stream...")
+        cap = cv2.VideoCapture("http://192.168.0.145:8090/?action=stream")
+        if not cap.isOpened():
+            time.sleep(2)
+        else:
+            print("Successfully connected to stream.")
 
     while True:
         try:
