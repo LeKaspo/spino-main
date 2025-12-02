@@ -84,6 +84,7 @@ class UndoMovement:
                     "z": 0,
                     "special": "turn180"
                 })
+                self.last_time = None
 
     # stack abarbeiten
     def undoMovement(self):
