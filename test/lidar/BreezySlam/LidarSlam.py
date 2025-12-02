@@ -73,9 +73,8 @@ class RoboLidar:
         - min_distance: mm
         """
         print("in update")
-        iterator = self.lidar.iter_scans()
-        next(iterator)
-        for i, scan in iterator:
+
+        for i, scan in enumerate(self.lidar.iter_scans()):
             if self._stop_update_thread:
                 break
             
