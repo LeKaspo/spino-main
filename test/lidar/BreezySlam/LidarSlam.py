@@ -128,7 +128,7 @@ class RoboLidar:
                         #data = json.dumps(self.latest_scan)
                         # Serialisieren
                         #client.sendall(self.latest_scan.encode('utf-8'))
-                        
+                        print(type(self.latest_scan))
                         data = pickle.dumps(self.latest_scan)
                         print(type(data))
     
