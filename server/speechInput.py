@@ -43,8 +43,8 @@ except ImportError:
 try:
     import server.sendcommands
     print("import funktioniert")
-except ImportError:
-    print("Import hat nicht funktioniert")
+except ImportError as imp:
+    print(f"Import hat nicht funktioniert: {imp}")
     def voicecommand(cmd):
         print(f"DEBUG: Mock execution of command '{cmd}'")
 
