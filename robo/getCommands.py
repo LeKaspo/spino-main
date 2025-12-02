@@ -2,7 +2,7 @@ import socket
 import queue
 import json
 import threading
-import time
+import struct
 from executor import CommandExecutor
 
 PORT = 50003
@@ -13,7 +13,10 @@ def getCommands():
     client.connect((IP, PORT))
     try:
         while True:
-            data = client.recv(64)
+            pre = client.recv(4)
+            data_len = struct.unpack("!I", pre)
+            print(f"receiving data of length {data_len}")
+            data = client.recv(data_len)
             if not data: break
             print("Bytes")
             print(type(data))
