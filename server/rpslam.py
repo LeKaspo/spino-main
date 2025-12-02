@@ -19,15 +19,14 @@ You should have received a copy of the GNU Lesser General Public License
 along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from server.connection import connectionHändler
+from connection import connectionHändler
 
 def main():
+    BreezySlam()
+
+
+def BreezySlam():
     conn = connectionHändler.getInstance()
-    BreezySlam(conn)
-
-
-def BreezySlam(conn):
-
     MAP_SIZE_PIXELS         = 500
     MAP_SIZE_METERS         = 10
 
@@ -38,9 +37,9 @@ def BreezySlam(conn):
     # at that rate.
     MIN_SAMPLES   = 200
 
-    from python.breezyslam.algorithms import RMHC_SLAM
-    from python.breezyslam.sensors import RPLidarA1 as LaserModel
-    from visualize.roboviz import MapVisualizer
+    from lidar.python.breezyslam.algorithms import RMHC_SLAM
+    from lidar.python.breezyslam.sensors import RPLidarA1 as LaserModel
+    from lidar.visualize.roboviz import MapVisualizer
 
 
     # Create an RMHC SLAM object with a laser model and optional robot model
