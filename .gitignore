@@ -1,3 +1,5 @@
 spino_venv/
 __pycache__/
-/models
+
+/models/faster-whisper-small
+/models/faster-whisper-tiny
