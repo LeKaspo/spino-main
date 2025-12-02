@@ -89,7 +89,8 @@ class connectionHändler:
         s, conn = self._openConnection(IP, PORT_COMMANDS)
         try:
             while True:
-                cmd = self.commandQ.get()         
+                cmd = self.commandQ.get()       
+                print(f"command sent: {cmd}")  
                 cmd_json = json.dumps(cmd).encode('utf-8')
                 conn.send(cmd_json)
         except Exception as e:

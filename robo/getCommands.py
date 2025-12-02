@@ -13,7 +13,7 @@ def getCommands():
     client.connect((IP, PORT))
     try:
         while True:
-            data = client.recv(128)
+            data = client.recv(64)
             if not data: break
             print("Bytes")
             print(type(data))
