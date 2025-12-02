@@ -18,7 +18,15 @@ GNU General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License 
 along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
-def BreezySlam():
+
+from server.connection import connectionHändler
+
+def main():
+    conn = connectionHändler.getInstance()
+    BreezySlam(conn)
+
+
+def BreezySlam(conn):
 
     MAP_SIZE_PIXELS         = 500
     MAP_SIZE_METERS         = 10
@@ -61,9 +69,8 @@ def BreezySlam():
     #Receive next scan from Queue
 
     while True:
-
         # Extract (quality, angle, distance) triples from current scan
-        items = [item for item in queue.next()]
+        items = [item for item in conn.getLidar()]
 
         # Extract distances and angles from triples
         distances = [item[2] for item in items]
@@ -89,6 +96,8 @@ def BreezySlam():
         if not viz.display(x/1000., y/1000., theta, mapbytes):
             exit(0)
  
-    # Shut down the lidar connection
-    lidar.stop()
-    lidar.disconnect()
+
+
+
+if __name__ == "__main__":
+    main()

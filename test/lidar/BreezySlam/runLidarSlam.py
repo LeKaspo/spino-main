@@ -1,32 +1,27 @@
 from rplidar import RPLidar
-
-LIDAR_DEVICE            = '/dev/rplidar'
-
-lidar = RPLidar(LIDAR_DEVICE)
-stopLidar = False
-
-info = lidar.get_info()
-print(info)
-
-health = lidar.get_health()
-print(health)
+from LidarSlam import RoboLidar
 
 
-iterator = lidar.iter_scans()
-scan = oldscan = next(iterator)
+def LidarSlamSend(self):
+    LIDAR_DEVICE            = '/dev/rplidar'
 
-while (not stopLidar):
-    scan = next(iterator)
+    lidar = RPLidar(LIDAR_DEVICE)
 
-    if scan != oldscan:
-        print(f"Schicke Scan")
-        
+    info = lidar.get_info()
+    print(info)
 
-    else:
-        print("No new Scan")
+    health = lidar.get_health()
+    print(health)
+
+
+    iterator = self.lidar.iter_scans()
+    for scan in iterator:
+        if self._stop_update_thread:
+            break
+            
 
 
 
-lidar.stop()
-lidar.stop_motor()
-lidar.disconnect()
+    lidar.stop()
+    lidar.stop_motor()
+    lidar.disconnect()
