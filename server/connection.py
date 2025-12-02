@@ -82,11 +82,11 @@ class connectionHändler:
 
         while True:
             
-            length_data = conn.recv_all(s, 4)
+            length_data = self.recv_all(s, 4)
             if not length_data:
                 break
             length = struct.unpack('!I', length_data)[0]
-            data = conn.recv_all(s, length)
+            data = self.recv_all(s, length)
             if not data:
                 break
             realdata = pickle.loads(data)
