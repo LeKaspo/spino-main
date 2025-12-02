@@ -51,7 +51,7 @@ Then go onto the website where the flask server is run and you can see the camer
     - Verbindung zum Roboter
     - Alle für die Sprachaktivierung erforderlichen Libraries im venv
     - Einen Ordner models in spino-main erstellen
-    - Modell "faster-whisper-small" von https://huggingface.co/Systran/faster-whisper-small herunterladen
+    - Modell "faster-whisper-small" von https://huggingface.co/Systran/faster-whisper-small herunterladen und in den models ordner verschieben
     - Andere Faster-Whisper Modelle gehen natürlich auch, aber dann müssen die commands angepasst werden
 
 - **Ausführen:**
