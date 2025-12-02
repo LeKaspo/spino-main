@@ -13,13 +13,14 @@ print(health)
 
 
 iterator = lidar.iter_scans()
-scan = next(iterator)
+scan = oldscan = next(iterator)
 
 while (not stopLidar):
-    if scan != next(iterator):
-        print(f"Schicke Scan")
+    scan = next(iterator)
 
-        scan = next(iterator)
+    if scan != oldscan:
+        print(f"Schicke Scan")
+        
 
     else:
         print("No new Scan")
