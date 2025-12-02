@@ -1,5 +1,5 @@
 import json
-from server.connection import connectionHändler
+from connection import connectionHändler
 
 conn = connectionHändler.getInstance()
 
