@@ -18,6 +18,16 @@ hand_options = vision.HandLandmarkerOptions(
 )
 hand_detector = vision.HandLandmarker.create_from_options(hand_options)
 
+def gen_frames():
+    global latest_frame
+    while True:
+        with lock:
+            frame = latest_frame.copy()
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+
 def capture_loop():
     global latest_frame
     cap = None
