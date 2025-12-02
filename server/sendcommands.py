@@ -1,5 +1,9 @@
 import json
-from server.connection import connectionHändler
+
+try:
+    from server.connection import connectionHändler
+except ImportError:
+    from connection import connectionHändler
 
 conn = connectionHändler.getInstance()
 

@@ -23,6 +23,10 @@ python -m venv spino_venv
 
 # Virtuelle Umgebung aktivieren (Linux/Mac)
 source spino_venv/bin/activate
+# Auf Windows (Eingabeaufforderung):
+spino_venv\Scripts\activate.bat
+# Auf Windows (Powershell):
+spino_venv\Scripts\Activate.ps1
 
 # Abhängigkeiten installieren
 pip install -r requirements.txt
