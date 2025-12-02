@@ -6,11 +6,15 @@ import threading
 import gesture
 from pathlib import Path
 
-app = Flask(__name__)
+BASE_DIR = Path(__file__).resolve().parent.parent  # server/src/
+TEMPLATE_DIR = BASE_DIR / "ui" / "templates"
+STATIC_FOLDER = BASE_DIR / "ui" / "static"
+
+app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_FOLDER))
 
 @app.route('/')
 def index():
-    return render_template(Path(__file__).resolve().parent.parent / "/ui/templates/index.html")
+    return render_template("index.html")
 
 #verarbeite Button und Tasteneingaben
 @app.route('/button-click', methods=['POST'])
@@ -40,7 +44,7 @@ def key_up():
     sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
-@app.route('/video_gesture')
+@app.route('/video_gesture', endpoint='video_gesture')
 def video_feed():
     return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 

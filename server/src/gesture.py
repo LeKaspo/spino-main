@@ -22,11 +22,18 @@ def gen_frames():
     global latest_frame
     while True:
         with lock:
+            if latest_frame is None:
+                continue  # Warten bis erstes Frame verfügbar ist
             frame = latest_frame.copy()
-        _, buffer = cv2.imencode('.jpg', frame)
-        frame_bytes = buffer.tobytes()
+
+        ret, buffer = cv2.imencode('.jpg', frame)
+        if not ret:
+            continue
+
         yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+               b'Content-Type: image/jpeg\r\n\r\n' +
+               buffer.tobytes() +
+               b'\r\n')
 
 def capture_loop():
     global latest_frame
