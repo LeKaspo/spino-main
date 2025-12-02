@@ -107,8 +107,8 @@ class RoboLidar:
         while True:
             while True:
                 try:
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    sock.connect((ip, port))
+                    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    client.connect((ip, port))
                     print(f"Lidar Connected to {ip}:{port}")
                     break
                 except ConnectionRefusedError:
@@ -116,14 +116,14 @@ class RoboLidar:
                     time.sleep(2)
                 except Exception as e:
                     print(f"Error while trying to connect {e}")
-                    sock.close()
+                    client.close()
                     return
-            with sock:
+            with client:
                 try:
                     while not self._stop_tcp_thread:
                         # Convert latest_scan to JSON string aa
                         data = json.dumps(self.latest_scan)
-                        sock.sendall(self.latest_scan.encode('utf-8'))
+                        client.sendall(self.latest_scan.encode('utf-8'))
                         time.sleep(0.1)  # Send data every 100ms
                 except Exception as e:
                     print(f"Error in sending data: {e}")
@@ -153,12 +153,13 @@ def main():
     try:
         robolidar.start_working_thread()
         print("Started working thread")
-        '''
         robolidar.start_tcp_tread("192.168.0.229", 50002)
         print("Started tcp thread")
+        
         '''
         robolidar.start_print_thread()
         print("Started printing thread")
+        '''
         
     finally:
         del robolidar
