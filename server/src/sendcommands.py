@@ -1,7 +1,7 @@
 import json
-#from connection import connectionHändler
+from connection import connectionHändler
 
-#conn = connectionHändler.getInstance()
+conn = connectionHändler.getInstance()
 
 def ButtonClicked(clickedButton):
     data = {
@@ -78,5 +78,5 @@ def gesture_command(gesture):
 
 def sendJson(json):
     print("Sending command:", json)
-    #conn.commandQ.put(json)
+    conn.commandQ.put(json)
     #print(json)
