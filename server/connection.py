@@ -82,7 +82,7 @@ class connectionHändler:
 
         while True:
             
-            '''
+
             length_data = self.recv_all(s, 4)
             if not length_data:
                 break
@@ -98,6 +98,8 @@ class connectionHändler:
             data = conn.recv(length)
 
             realdata = pickle.loads(data)
+            '''
+            print(realdata)
             self.lidarQ.put(realdata)
         conn.close()
         s.close()
