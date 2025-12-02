@@ -754,7 +754,7 @@ def main():
     parser.add_argument(
         "--max-pending",
         type=int,
-        default=5,
+        default=10,
         help="Maximum pending utterances before cancelling the oldest.",
     )
     parser.add_argument(
