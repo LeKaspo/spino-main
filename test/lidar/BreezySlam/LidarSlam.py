@@ -71,6 +71,7 @@ class RoboLidar:
         """
         print("in update")
         iterator = self.lidar.iter_scans()
+        next(iterator)
         for scan in iterator:
             if self._stop_update_thread:
                 break
