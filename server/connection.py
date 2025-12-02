@@ -82,24 +82,15 @@ class connectionHändler:
 
         while True:
             
-
-            length_data = self.recv_all(s, 4)
-            if not length_data:
-                break
-            length = struct.unpack('!I', length_data)[0]
-            data = self.recv_all(s, length)
-            if not data:
-                break
-            realdata = pickle.loads(data)
-            '''
             # Empfangen
             length_data = conn.recv(4)
             length = struct.unpack('!I', length_data)[0]
             data = conn.recv(length)
 
             realdata = pickle.loads(data)
-            '''
+
             print(realdata)
+
             self.lidarQ.put(realdata)
         conn.close()
         s.close()
