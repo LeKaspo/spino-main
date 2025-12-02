@@ -14,7 +14,7 @@ def getCommands():
     try:
         while True:
             pre = client.recv(4)
-            data_len = struct.unpack("!I", pre)
+            data_len = struct.unpack("!I", pre)[0]
             print(f"receiving data of length {data_len}")
             data = client.recv(data_len)
             if not data: break
