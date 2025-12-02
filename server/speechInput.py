@@ -41,12 +41,14 @@ except ImportError:
     sys.exit(1)
 
 try:
-    import sendcommands
-    print("import funktioniert")
-except ImportError as imp:
-    print(f"Import hat nicht funktioniert: {imp}")
-    def voicecommand(cmd):
-        print(f"DEBUG: Mock execution of command '{cmd}'")
+    from sendcommands import voicecommand
+except ImportError:
+    try:
+        from server.sendcommands import voicecommand
+    except ImportError as imp:
+        print(f"Import hat nicht funktioniert: {imp}")
+        def voicecommand(cmd):
+            print(f"DEBUG: Mock execution of command '{cmd}'")
 
 logger = logging.getLogger("speechInput")
 
@@ -365,7 +367,7 @@ def check_commands(transcript: str):
         for phrase in cmd["phrases"]:
             if _normalize_command_text(phrase) in text:
                 logger.info("Command triggered: %s via phrase '%s'", cmd["name"], phrase)
-                sendcommands.voicecommand(cmd["name"])
+                voicecommand(cmd["name"])
                 return
 
 
