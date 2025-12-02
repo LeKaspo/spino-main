@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request
 import server.sendcommands
 
+
 app = Flask(__name__)
 @app.route('/')
 def index():
@@ -12,11 +13,6 @@ def index():
 def button_click():
     data = request.get_json()
     server.sendcommands.ButtonClicked(f"{data['id']}")
-    return '', 204
-@app.route('/button-click-inside', methods=['POST'])
-def button_click_inside():
-    data = request.get_json()
-    server.sendcommands.ButtonClickedInside(f"{data['id']}")
     return '', 204
 @app.route('/button-press', methods=['POST'])
 def button_press():
