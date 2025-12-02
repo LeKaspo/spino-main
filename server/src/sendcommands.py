@@ -1,7 +1,7 @@
 import json
-from connection import connectionHändler
+#from connection import connectionHändler
 
-conn = connectionHändler.getInstance()
+#conn = connectionHändler.getInstance()
 
 def ButtonClicked(clickedButton):
     data = {
@@ -54,7 +54,29 @@ def voicecommand(command):
         }
     sendJson(json.dumps(data))
     
+def gesture_command(gesture):
+    gesture_commands = {
+        "fist_normal": "fullstop",
+        "fist_rotated_left": "turnLeft",
+        "fist_rotated_right": "turnRight",
+        "palm_normal": "forwards",
+        "palm_rotated_left": "left",
+        "palm_rotated_right": "right",
+        "back_normal": "backwards",
+        "back_rotated_left": "left", 
+        "back_rotated_right": "right"
+    }
+    command = gesture_commands.get(gesture, "unknownCommand")
+
+    if command != "unkownCommand":        
+        data = {
+                "type": command,
+                "params": {}
+            }
+        sendJson(json.dumps(data))
+
 
 def sendJson(json):
-    conn.commandQ.put(json)
+    print("Sending command:", json)
+    #conn.commandQ.put(json)
     #print(json)

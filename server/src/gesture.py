@@ -7,6 +7,7 @@ from mediapipe.framework.formats import landmark_pb2
 import time
 import threading
 from pathlib import Path
+import sendcommands
 
 latest_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 lock = threading.Lock()
@@ -111,10 +112,12 @@ def draw_hand_landmarks(image, detection_result):
             hand_label = handedness[0].category_name
 
             gesture = classify_gesture(hand_proto.landmark, hand_label)
+            sendcommands.gesture_command(gesture)
 
             cv2.putText(image, f"{hand_label} - {gesture}", (text_x, text_y),
                         cv2.FONT_HERSHEY_DUPLEX, 1,
                         (0, 255, 0), 1, cv2.LINE_AA)
+            
     except Exception as e:
         print("Fehler beim Zeichnen der Hand-Landmarks:", e)
 
