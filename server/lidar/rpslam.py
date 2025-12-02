@@ -30,9 +30,9 @@ def BreezySlam():
     # at that rate.
     MIN_SAMPLES   = 200
 
-    from breezyslam.algorithms import RMHC_SLAM
-    from breezyslam.sensors import RPLidarA1 as LaserModel
-    from roboviz import MapVisualizer
+    from python.breezyslam.algorithms import RMHC_SLAM
+    from python.breezyslam.sensors import RPLidarA1 as LaserModel
+    from visualize.roboviz import MapVisualizer
 
 
     # Create an RMHC SLAM object with a laser model and optional robot model
