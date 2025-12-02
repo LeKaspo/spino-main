@@ -11,7 +11,7 @@ latest_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 lock = threading.Lock()
 
 hand_options = vision.HandLandmarkerOptions(
-    base_options=python.BaseOptions(model_asset_path='hand_landmarker.task'),
+    base_options=python.BaseOptions(model_asset_path="../hand_landmarker.task"),
     num_hands=4,
     running_mode=vision.RunningMode.VIDEO
 )
