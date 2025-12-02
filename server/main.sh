@@ -1,4 +1,4 @@
-python ./ui/ui.py &
-python speechInput.py --model small --language de
+python ./server/ui/ui.py &
+python ./server/speechInput.py --model small --language de
 
 wait
