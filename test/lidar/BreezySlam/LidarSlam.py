@@ -4,6 +4,8 @@ import socket
 import threading
 import json 
 import atexit
+import pickle
+import struct
 
 class RoboLidar:
 
@@ -123,9 +125,18 @@ class RoboLidar:
                 try:
                     while not self._stop_tcp_thread:
                         # Convert latest_scan to JSON string aa
-                        data = json.dumps(self.latest_scan)
-                        client.sendall(self.latest_scan.encode('utf-8'))
+                        #data = json.dumps(self.latest_scan)
+                        # Serialisieren
+                        #client.sendall(self.latest_scan.encode('utf-8'))
+                        
+                        data = pickle.dumps(self.latest_scan)
+    
+                        # Mit Längen-Präfix versenden
+                        length = struct.pack('!I', len(data))
+                        client.sendall(length)
+                        client.sendall(data)
                         time.sleep(0.1)  # Send data every 100ms
+                        
                 except Exception as e:
                     print(f"Error in sending data: {e}")
 
@@ -154,6 +165,7 @@ def main():
     try:
         robolidar.start_working_thread()
         print("Started working thread")
+
         robolidar.start_tcp_tread("192.168.0.229", 50002)
         print("Started tcp thread")
         

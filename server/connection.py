@@ -81,6 +81,7 @@ class connectionHändler:
         s, conn = self._openConnection(IP, PORT_LIDAR)
 
         while True:
+            '''
             length_data = self.recv_all(s, 4)
             if not length_data:
                 break
@@ -89,7 +90,12 @@ class connectionHändler:
             if not data:
                 break
             msg = pickle.loads(data)
-            self.lidarQ.put(msg)
+            '''
+            # Empfangen
+            length_data = conn.recv(4)
+            length = struct.unpack('!I', length_data)[0]
+            data = conn.recv(length)
+            self.lidarQ.put(data)
         
         conn.close()
         s.close()
