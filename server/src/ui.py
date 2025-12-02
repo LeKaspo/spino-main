@@ -4,12 +4,13 @@ import sendcommands
 import numpy as np
 import threading
 import gesture
+from pathlib import Path
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template("../ui/templates/index.html")
+    return render_template(Path(__file__).resolve().parent.parent / "/ui/templates/index.html")
 
 #verarbeite Button und Tasteneingaben
 @app.route('/button-click', methods=['POST'])
