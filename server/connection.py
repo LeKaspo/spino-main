@@ -89,8 +89,6 @@ class connectionHändler:
 
             realdata = pickle.loads(data)
 
-            print(realdata)
-
             self.lidarQ.put(realdata)
         conn.close()
         s.close()

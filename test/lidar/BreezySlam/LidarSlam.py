@@ -35,6 +35,7 @@ class RoboLidar:
         # Attributes
         self.latest_obstacle = [False, False, False]
         self.latest_scan = []
+        self.last_scan = []
         self._stop_update_thread = False
         self._stop_tcp_thread = False
         self._stop_print_thread = False
@@ -74,12 +75,13 @@ class RoboLidar:
         print("in update")
         iterator = self.lidar.iter_scans()
         next(iterator)
-        for scan in iterator:
+        for i, scan in iterator:
             if self._stop_update_thread:
                 break
             
             # Update latest_scan
-            self.latest_scan = scan
+            if i % 5 == 0:
+                self.latest_scan = scan
             # [{"quality": quality, "angle": angle, "distance": distance} for quality, angle, distance in scan] # JSON-compatible list of dictionaries
 
             fow = self.field_of_view / 2
@@ -124,19 +126,21 @@ class RoboLidar:
             with client:
                 try:
                     while not self._stop_tcp_thread:
-                        # Convert latest_scan to JSON string aa
-                        #data = json.dumps(self.latest_scan)
-                        # Serialisieren
-                        #client.sendall(self.latest_scan.encode('utf-8'))
+                        if self.latest_scan != self.last_scan:
+                            # Convert latest_scan to JSON string aa
+                            #data = json.dumps(self.latest_scan)
+                            # Serialisieren
+                            #client.sendall(self.latest_scan.encode('utf-8'))
 
-                        # Mit Längen-Präfix versenden
-                        print(self.latest_scan)
-                        data = pickle.dumps(self.latest_scan)
-                        print(type(data))
-                        length = struct.pack('!I', len(data))
-                        print(length)
-                        client.sendall(length + data)
-                        time.sleep(0.1)  # Send data every 100ms
+                            # Mit Längen-Präfix versenden
+                            self.last_scan = self.latest_scan
+                            print(self.latest_scan)
+                            data = pickle.dumps(self.latest_scan)
+                            print(type(data))
+                            length = struct.pack('!I', len(data))
+                            print(length)
+                            client.sendall(length + data)
+                            time.sleep(0.5)  # Send data every 500ms
 
                 except Exception as e:
                     print(f"Error in sending data: {e}")
