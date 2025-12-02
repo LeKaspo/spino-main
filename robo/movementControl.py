@@ -6,7 +6,7 @@ class MovementControl:
         self.g_bot = Rosmaster()
         self.speedx = 0
         self.speedy = 0
-        self.speedz = 0 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedz = 0 
         self.speed = 0.5
 
     def fullstop(self):
@@ -45,11 +45,11 @@ class MovementControl:
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnRight(self):
-        self.speedz = -1 
+        self.speedz = -1 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnLeft(self):
-        self.speedz = 1 
+        self.speedz = 1 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
     
     def setSpeed(self, speed):

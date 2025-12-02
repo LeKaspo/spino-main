@@ -78,13 +78,12 @@ class UndoMovement:
                 self.last_z = 0
             case "turn180":
                 self.stack.append({
-                    "duration": 0,
+                    "duration": 3.59,
                     "x": 0,
                     "y": 0,
                     "z": 0,
                     "special": "turn180"
                 })
-
 
     # stack abarbeiten
     def undoMovement(self):
@@ -98,9 +97,8 @@ class UndoMovement:
             if state.get("special") is not None:
                 print (state.get("special"))
                 sendcommands.sendJson(json.dumps({"type": state.get("special"), "params": {}}))
+                time.sleep(state["duration"])
             else:
-                duration = state["duration"]
-
                 if state["x"] != curx:
                     command_x = self.get_command(state["x"], 'x')
                     sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
@@ -115,7 +113,7 @@ class UndoMovement:
                     curz = state["z"]
                 # nur warten wenn auch gefahren wird
                 if state["x"] != 0 or state["y"] != 0 or state["z"] != 0:   
-                    time.sleep(duration)
+                    time.sleep(state["duration"])
 
 
     def get_command(self, command, axis):
