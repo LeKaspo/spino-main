@@ -10,9 +10,6 @@ def ButtonClicked(clickedButton):
         }
     sendJson(json.dumps(data))
 
-
-
-
 def ButtonPress(pressedButton):
     commands = {
         "w": "forwards",
@@ -50,7 +47,6 @@ def ButtonRelease(releasedButton):
                 "params": {}
             }
         sendJson(json.dumps(data))
-
 
 def voicecommand(command):
     data = {
