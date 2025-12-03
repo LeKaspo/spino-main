@@ -33,6 +33,11 @@ def getCommands():
         print("Programm closed")
     finally:
         client.close()
+        fullstop = {
+                "type": "fullstop",
+                "params": {}
+            }
+        commandQ.put(fullstop)
 
 def execCommands():
     while True:

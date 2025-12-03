@@ -10,7 +10,6 @@ def ButtonClicked(clickedButton):
         }
     sendJson(json.dumps(data))
 
-
 def ButtonPress(pressedButton):
     commands = {
         "w": "forwards",
@@ -28,6 +27,8 @@ def ButtonPress(pressedButton):
                 "params": {}
             }
         sendJson(json.dumps(data))
+    
+
 
 def ButtonRelease(releasedButton):
     commands = {
@@ -54,7 +55,6 @@ def voicecommand(command):
         }
     sendJson(json.dumps(data))
     
-
 def sendJson(json):
     conn.commandQ.put(json)
-    #print(json)
+    print(json)

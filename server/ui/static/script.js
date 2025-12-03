@@ -15,6 +15,7 @@ for (const button of actionButtons) {
   });
 }
 
+
 // Auswertung Button zum gedrückthalten
 const holdButtons = document.getElementsByClassName('holdButton');
     for (const button of holdButtons) {
