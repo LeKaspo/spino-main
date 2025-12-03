@@ -267,8 +267,8 @@ COMMANDS = [
     {
         "name": "forwards",
         "phrases": [
-            "move forward",
-            "go forward",
+            #"move forward",
+            #"go forward",
             " geradeaus",
             " vorwärts",
             "nach vorne",
@@ -277,17 +277,43 @@ COMMANDS = [
     {
         "name": "backwards",
         "phrases": [   
-            "move backward",
-            "go backward",
+            #"move backward",
+            #"go backward",
             " rückwärts",
             "nach hinten",
         ]
     },
     {
+        "name": "turnLeft",
+        "phrases": [
+            #"rotate left",
+            #"turn around left",
+            #"spin left",
+            #"look to the left",
+            #"look left",
+            "drehe dich nach links",
+            "dreh dich nach links",
+            "schaue nach links",
+        ]
+    },
+    {
+        "name": "turnRight",
+        "phrases": [
+            #"rotate right",
+            #"turn around right",
+            #"spin right",
+            #"look to the right",
+            #"look right",
+            "drehe dich nach rechts",
+            "dreh dich nach rechts",
+            "schaue nach rechts",
+        ]
+    },
+    {
         "name": "left",
         "phrases": [
-            "turn left",
-            "go left",
+            #"turn left",
+            #"go left",
             "nach links",
             "biege links ab",
         ]
@@ -295,8 +321,8 @@ COMMANDS = [
     {
         "name": "right",
         "phrases": [
-            "turn right",
-            "go right",
+            #"turn right",
+            #"go right",
             "nach rechts",
             "biege rechts ab",
         ]
@@ -314,39 +340,44 @@ COMMANDS = [
         ]
     },
     {
-        "name": "turnLeft",
-        "phrases": [
-            "rotate left",
-            "turn around left",
-            "spin left",
-            "look to the left",
-            "look left",
-            "drehe dich nach links",
-            "dreh dich nach links",
-            "schaue nach links",
-        ]
-    },
-    {
-        "name": "turnRight",
-        "phrases": [
-            "rotate right",
-            "turn around right",
-            "spin right",
-            "look to the right",
-            "look right",
-            "drehe dich nach rechts",
-            "dreh dich nach rechts",
-            "schaue nach rechts",
-        ]
-    },
-    {
         "name": "turn180",
         "phrases": [
-            "turn around",
-            "rotate around",
-            "spin around",
+            #"turn around",
+            #"rotate around",
+            #"spin around",
             "drehe dich um",
             "dreh dich um",
+        ]
+    },
+    {
+        "name": "garmin",
+        "phrases": [
+            "okay garmin",
+            "ok garmin",
+            "hey garmin",
+        ]
+    },
+    {
+        "name": "setSpeedSlower",
+        "phrases": [
+            "langsamer",
+            "weniger schnell",
+            "reduziere die geschwindigkeit",
+            "verringere die geschwindigkeit",
+            #"go slower",
+            #"move slower",
+            #"reduce speed",
+        ]
+    },
+    {
+        "name": "setSpeedFaster",
+        "phrases": [
+            "schneller",
+            "erhöhe die geschwindigkeit",
+            "steigere die geschwindigkeit",
+            #"go faster",
+            #"move faster",
+            #"increase speed",
         ]
     }
 ]

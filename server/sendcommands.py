@@ -52,11 +52,33 @@ def ButtonRelease(releasedButton):
         sendJson(json.dumps(data))
 
 def voicecommand(command):
-    data = {
-            "type": command,
-            "params": {}
-        }
-    sendJson(json.dumps(data))
+    commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180"}
+    commandParamsList = {"setSpeedSlower",}
+    if command in commandList:
+        data = {
+                "type": command,
+                "params": {}
+            }
+        sendJson(json.dumps(data))
+        print("Sent voice command:", command)
+    elif command in commandParamsList:
+        params = {}
+        commandClean = ""
+        match command:
+            case "setSpeedSlower":
+                commandClean = "setSpeed"
+                params = {"speed": 0.2}
+            case "setSpeedFaster":
+                commandClean = "setSpeed"
+                params = {"speed": 0.8}
+        data = {
+                "type": commandClean,
+                "params": params
+            }
+        sendJson(json.dumps(data))
+        print("Sent voice command:", command, "with params:", params)
+    else :
+        print("Unknown voice command:", command)
     
 
 def sendJson(json):
