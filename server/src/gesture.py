@@ -43,7 +43,8 @@ def capture_loop():
 
     while cap is None or not cap.isOpened():
         print("Versuche Verbindung zum Stream...")
-        cap = cv2.VideoCapture("http://192.168.0.145:8090/?action=stream")
+        cap = cv2.VideoCapture(0)
+        #cap = cv2.VideoCapture("http://192.168.0.145:8090/?action=stream")
         if not cap.isOpened():
             time.sleep(2)
         else:
@@ -81,6 +82,7 @@ def capture_loop():
             time.sleep(1)
 
 def draw_hand_landmarks(image, detection_result):
+    global last_gesture
     try:
         for idx, hand_landmarks in enumerate(detection_result.hand_landmarks):
             handedness = detection_result.handedness[idx]
@@ -153,9 +155,9 @@ def detect_rotation(lm):
     if abs(dx) < threshold:
         return "normal"
     elif dx > 0:
-        return "rotated_right"
-    else:
         return "rotated_left"
+    else:
+        return "rotated_right"
 
 def classify_gesture(lm, handedness_label):
     if detect_fist(lm):
