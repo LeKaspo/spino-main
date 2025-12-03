@@ -6,6 +6,8 @@ import atexit
 import pickle
 import struct
 
+IP_ADRESS = '192.168.0.78'
+
 class RoboLidar:
 
     def __init__(self, port='/dev/rplidar', max_distance=300, min_distance=100, field_of_view:int=20):
@@ -100,7 +102,7 @@ class RoboLidar:
             
             self.latest_obstacle = [left, center, right]
 
-    def _send_lidar_data(self, ip='192.168.0.229', port=50003):
+    def _send_lidar_data(self, ip="192.168.0.78", port=50003):
         """
         Continuously sends latest scan data over a TCP connection.
         Parameters:
@@ -166,7 +168,7 @@ def main():
         robolidar.start_working_thread()
         print("Started working thread")
 
-        robolidar.start_tcp_tread("192.168.0.229", 50002)
+        robolidar.start_tcp_tread(IP_ADRESS, 50002)
         print("Started tcp thread")
         
         '''

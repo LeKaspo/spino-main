@@ -6,6 +6,9 @@ class MotionData:
 
     def __init__(self):
         self.g_bot = Rosmaster()
+        self.stop_print_motion = False
+        self.stop_print_encoder = False
+
 
     def start_print_motion_thread(self):
         self._print_motor_thread = threading.Thread(target= self._printMotion, args = ())
@@ -16,24 +19,19 @@ class MotionData:
         self._print_motor_thread.start()
 
     def _printMotion(self):
-        while True:
+        while not self.stop_print_motion:
             x, y, z = self.g_bot.get_motion_data()
-            print(x + y +z)
+            print(f"{x} + {y} + {z}")
 
     def _printEncoder(self):
-        while True:
+        while self.stop_print_encoder:
             m1, m2, m3, m4 = self.g_bot.get_motor_encoder()
-            print(m1 + m2 + m3 + m4)
+            print(f"{m1} + {m2} + {m3} + {m4}")
 
 
 
 
 if __name__ == "__main__":
-    m = MotionData()
-
-    try:
-        m.start_print_motion_thread()
-        #m.start_print_encoder_thread()
-    finally:
-        del m
+    while True:
+        pass
         

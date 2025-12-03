@@ -20,13 +20,17 @@ along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 from connection import connectionHändler
+from obstacle_detection import Object_Detector
 
 def main():
     BreezySlam()
 
 
 def BreezySlam():
+    
     conn = connectionHändler.getInstance()
+    detector = Object_Detector
+
     MAP_SIZE_PIXELS         = 500
     MAP_SIZE_METERS         = 10
 
@@ -58,18 +62,11 @@ def BreezySlam():
     previous_distances = None
     previous_angles    = None
 
-    ''' 
-    # Create an iterator to collect scan data from the RPLidar
-    iterator = lidar.iter_scans()
-
-    # First scan is crap, so ignore it
-    next(iterator)
-    '''
-    #Receive next scan from Queue
-
     while True:
         # Extract (quality, angle, distance) triples from current scan
-        items = [item for item in conn.getLidar()]
+        scan = conn.getLidar()
+        detector.get_scan()
+        items = [item for item in scan]
 
         # Extract distances and angles from triples
         distances = [item[2] for item in items]
