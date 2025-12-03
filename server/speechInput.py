@@ -664,7 +664,7 @@ def main():
     )
     parser.add_argument(
         "--model",
-        default="small",
+        default="tiny",
         help="Whisper model name (tiny, base, small, medium, large)",
     )
     parser.add_argument(
