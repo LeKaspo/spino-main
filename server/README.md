@@ -23,24 +23,25 @@ Then start the Robbi and its scripts (as described in the README)
 Then go onto the website where the flask server is run and you can see the camerastream and control the movement of the spino.
 
 
+# Using Windows Laptop as a Server
 
-# Windows Laptop als Server verwenden (Socket Connection)
+## Prerequisites:
+- The Windows laptop and Spino must be on the same network/router network.
+- Currently, the laptop's IP address must be manually entered in getCommands, sendAudio, sendLidar, and in connection
 
-- **Voraussetzungen:**
-    - Der Windows-Laptop und Spino müssen im selben Netzwerk/Routernetzwerk sein.
-    - Derzeit muss die IP Adresse des Laptops manuell in getCommands, sendAudio, sendLidar und in connection eingetragen werden
+## Set up network:
+- Set Windows network type to **"Private"** (Network and Internet settings).
 
-- **Netzwerk einrichten:**
-    - Windows-Netzwerktyp auf **"Privat"** stellen (Netzwerk- und Interneteinstellungen).
+## Configure firewall:
+- Open **Windows Defender Firewall with Advanced Security** as administrator.
+- Navigate to **"Inbound Rules"** and **create new rule**:
+    - Type: **Port**
+    - Protocol: **TCP**
+    - Enter desired ports
+    - Currently we are using ports 50001, 50002, 50003
+    - Select **Allow the connection**
+    - Provide a meaningful description
 
-- **Firewall freigeben:**
-    - **Windows Defender Firewall mit erweiterter Sicherheit** als Administrator öffnen.
-    - Zu **"Eingehende Regeln"** navigieren und **neue Regel erstellen**:
-        - Typ: **Port**
-        - Protokoll: **TCP**
-        - Gewünschten Port eingeben (z.B. 50050)
-        - **Verbindung zulassen** auswählen
-        - Aussagekräftige Beschreibung vergeben
+## Finally:
+- Restart the PC so that all settings are applied.
 
-- **Abschließend:**
-    - Den PC neustarten, damit alle Einstellungen angewendet werden.
