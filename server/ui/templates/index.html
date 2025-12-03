@@ -7,7 +7,13 @@
     </head>
     <body>
         <div class="container">
-            <img src="http://192.168.0.145:8090/?action=stream">
+            
+            <div class="video-container">
+                <img id="stream" src="http://192.168.0.145:8090/?action=stream">    
+                <button class="arrow left">&larr;</button>
+                <button class="arrow right">&rarr;</button>
+            </div>
+
             <div class="buttons">
                 <button id="turn180" class="actionButton">Um 180 grad drehen</button>
                 <button id="fullstop" class="actionButton">Stop!</button>

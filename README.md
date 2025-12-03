@@ -7,5 +7,5 @@ This is a Spionaustier repo
 Camera stream starten:
 Auf roboter robo/start_camera.sh ausführen
 Auf Laptop: server/ui/ui.py ausführen mit python -m server.ui.ui
-  Dann im Browser öffnen
+Dann im Browser öffnen (http://localhost:5000/)
 

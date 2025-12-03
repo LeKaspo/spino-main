@@ -1,7 +1,24 @@
 document.addEventListener('DOMContentLoaded', function() {
-    
-// Speicherkonstante für gedrückthalten
-const pressedKeys = new Set();
+
+// durch videos switchen
+const urls = [
+    "http://192.168.0.145:8090/?action=stream",
+    "http://192.168.0.145/?action=stream"
+];
+let currentIndex = 0;
+const img = document.getElementById('stream');
+function updateStream() {
+    img.src = urls[currentIndex] + "&t=" + new Date().getTime(); 
+}
+document.querySelector('.arrow.left').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + urls.length) % urls.length;
+    updateStream();
+});
+document.querySelector('.arrow.right').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % urls.length;
+    updateStream();
+});
+
 
 // Auswertung Button zum anclicken
 const actionButtons = document.getElementsByClassName('actionButton');
@@ -26,7 +43,6 @@ for (const button of insideButtons) {
   });
 }
 
-
 // Auswertung Button zum gedrückthalten
 const holdButtons = document.getElementsByClassName('holdButton');
     for (const button of holdButtons) {
@@ -48,6 +64,7 @@ const holdButtons = document.getElementsByClassName('holdButton');
 
 
 //Auswertung Tastatureingaben
+const pressedKeys = new Set();
 document.addEventListener('keydown', function(event) {
     if (!pressedKeys.has(event.key)) {
         pressedKeys.add(event.key);
