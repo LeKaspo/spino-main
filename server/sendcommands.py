@@ -52,7 +52,7 @@ def ButtonRelease(releasedButton):
         sendJson(json.dumps(data))
 
 def voicecommand(command):
-    commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180"}
+    commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180", "test"}
     commandParamsList = {"setSpeedSlower",}
     if command in commandList:
         data = {
