@@ -1,4 +1,3 @@
-
 import socket
 import threading
 import io
@@ -13,20 +12,20 @@ def mjpeg_stream(conn):
     conn.send(b"HTTP/1.1 200 OK\r\n")
     conn.send(b"Content-Type: multipart/x-mixed-replace; boundary=frame\r\n\r\n")
 
-    # Erzeuge X-Werte als einfache Liste
+    # daten für mein beispiel
     x_values = [i * 0.1 for i in range(100)]
     frame_count = 0
 
     while True:
-        # Sinuskurve berechnen ohne NumPy
+        #mehr sachen für mein beispiel, also hier slam einfügen
         y_values = [math.sin(x + frame_count * 0.1) for x in x_values]
         frame_count += 1
-
-        # Matplotlib-Plot in BytesIO
         fig, ax = plt.subplots()
         ax.plot(x_values, y_values)
         ax.set_ylim(-1.5, 1.5)
         ax.set_title(f"Frame {frame_count}")
+
+    
         buf = io.BytesIO()
         plt.savefig(buf, format='jpeg')
         plt.close(fig)
