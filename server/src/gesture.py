@@ -11,6 +11,7 @@ import sendcommands
 
 latest_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 lock = threading.Lock()
+last_gesture = None
 
 hand_options = vision.HandLandmarkerOptions(
     base_options=python.BaseOptions(model_asset_path=Path(__file__).resolve().parent.parent / "hand_landmarker.task"),
@@ -24,7 +25,7 @@ def gen_frames():
     while True:
         with lock:
             if latest_frame is None:
-                continue  # Warten bis erstes Frame verfügbar ist
+                continue
             frame = latest_frame.copy()
 
         ret, buffer = cv2.imencode('.jpg', frame)
@@ -112,7 +113,9 @@ def draw_hand_landmarks(image, detection_result):
             hand_label = handedness[0].category_name
 
             gesture = classify_gesture(hand_proto.landmark, hand_label)
-            sendcommands.gesture_command(gesture)
+            if gesture != last_gesture:
+                last_gesture = gesture
+                sendcommands.gesture_command(gesture)
 
             cv2.putText(image, f"{hand_label} - {gesture}", (text_x, text_y),
                         cv2.FONT_HERSHEY_DUPLEX, 1,
