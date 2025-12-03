@@ -14,6 +14,11 @@ def button_click():
     data = request.get_json()
     server.sendcommands.ButtonClicked(f"{data['id']}")
     return '', 204
+@app.route('/button-click-inside', methods=['POST'])
+def button_click_inside():
+    data = request.get_json()
+    server.sendcommands.ButtonClickedInside(f"{data['id']}")
+    return '', 204
 @app.route('/button-press', methods=['POST'])
 def button_press():
     data = request.get_json()
