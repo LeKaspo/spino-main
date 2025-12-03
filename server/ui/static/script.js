@@ -14,6 +14,17 @@ for (const button of actionButtons) {
     });
   });
 }
+// Auswertung Button die nicht an den roboter senden
+const insideButtons = document.getElementsByClassName('insideButton');
+for (const button of insideButtons) {
+  button.addEventListener('click', function() {
+    fetch('/button-click-inside', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: this.id })
+    });
+  });
+}
 
 
 // Auswertung Button zum gedrückthalten
