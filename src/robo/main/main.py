@@ -23,7 +23,7 @@ processes.append(p1)
 # p_lidar = subprocess.Popen(["python", str(sendLidar)])
 # processes.append(p_lidar)
 
-p_commands = subprocess.Popen(["python", str(camera_script)])
+p_commands = subprocess.Popen(["python", str(get_commands)])
 processes.append(p_commands)
 
 for p in processes:
