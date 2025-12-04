@@ -1,10 +1,12 @@
 #starte den Flaskserver übern den das web UI läuft
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify, Response
 import server.sendcommands
 import server.core.config as config
-
+from server.logger import Logger
 
 app = Flask(__name__)
+logger = Logger.getInstance()
+
 @app.route('/')
 def index():
     return render_template("index.html")
@@ -41,7 +43,7 @@ def key_up():
     server.sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
-# zugriff auf
+# zugriff auf config
 @app.get("/api/config")
 def get_config():
     return  config.system_status
@@ -50,6 +52,15 @@ def update_config():
     data = request.get_json()
     config.system_status = data
     return '', 204
+
+# text logs
+@app.get("/api/logs/<int:box>")
+def get_logs_box(box: int):
+    try:
+        text = logger.read(box)
+        return jsonify({"box": box, "text": text})
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == '__main__':

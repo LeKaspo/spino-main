@@ -114,11 +114,28 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modebtn').addEventListener("click", () => {
         deactiveButtons(modesArray[0]);
     });
+
+    //loger boxen
+    refresh();
+    setInterval(refresh, 2000);
 });
+
+//hilfsmethoden für logger
+async function fetchBox(box) {
+      const res = await fetch(`/api/logs/${box}`);
+      if (!res.ok) return "";
+      const data = await res.json();
+      return data.text || "";
+}
+async function refresh() {
+    document.getElementById("box1").innerHTML = await fetchBox(1);
+    document.getElementById("box2").innerHTML = await fetchBox(2);
+}
 
 //Hilfsfunktion für Button deaktivierung
 function deactiveButtons(btnsActive) {
     const controlbtns = [
+        document.getElementById('turn180'),
         document.getElementById('start'),
         document.getElementById('undoMovement'),
         document.getElementById('q'),
@@ -163,3 +180,7 @@ async function saveStatus(modesArray) {
     });
     if (!res.ok) throw new Error('POST /api/config failed');
 }
+
+
+
+

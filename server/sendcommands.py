@@ -2,17 +2,21 @@ import json
 from server.connection import connectionHändler
 from .undoMovement import  UndoMovement
 from .core import config
+from .logger import Logger
 
 conn = connectionHändler.getInstance()
 undo = UndoMovement.getInstance()
+log = Logger.getInstance()
 
 def ButtonClicked(clickedButton):
-    data = {
-            "type": clickedButton,
-            "params": {}
-        }
-    sendJson(json.dumps(data))
-    undo.put(clickedButton)
+    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
+        data = {
+                "type": clickedButton,
+                "params": {}
+            }
+        sendJson(json.dumps(data))
+        undo.put(clickedButton)
+        log.write(clickedButton,1)
 
 def ButtonClickedInside(clickedButton):
     match clickedButton:
@@ -34,42 +38,44 @@ def ButtonClickedInside(clickedButton):
             print(f"labels: {config.system_status["label_mode_active"]}")
             
 def ButtonPress(pressedButton):
-    commands = {
-        "w": "forwards",
-        "a": "left",
-        "s": "backwards",
-        "d": "right",
-        "q": "turnLeft",
-        "e": "turnRight"
-    }
-    command = commands.get(pressedButton, "unknownCommand")
+    if (config.system_status["button_mode_active"] == True):
+        commands = {
+            "w": "forwards",
+            "a": "left",
+            "s": "backwards",
+            "d": "right",
+            "q": "turnLeft",
+            "e": "turnRight"
+        }
+        command = commands.get(pressedButton, "unknownCommand")
 
-    if command != "unkownCommand":        
-        data = {
-                "type": command,
-                "params": {}
-            }
-        sendJson(json.dumps(data))
-        undo.put(command)
+        if command != "unkownCommand":        
+            data = {
+                    "type": command,
+                    "params": {}
+                }
+            sendJson(json.dumps(data))
+            undo.put(command)
 
 def ButtonRelease(releasedButton):
-    commands = {
-        "w": "stopForwardsBackwards",
-        "s": "stopForwardsBackwards",
-        "a": "stopLeftRight",
-        "d": "stopLeftRight",
-        "q": "stopRotate",
-        "e": "stopRotate"
-    }
-    command = commands.get(releasedButton, "unknownCommand")
+    if (config.system_status["button_mode_active"] == True):
+        commands = {
+            "w": "stopForwardsBackwards",
+            "s": "stopForwardsBackwards",
+            "a": "stopLeftRight",
+            "d": "stopLeftRight",
+            "q": "stopRotate",
+            "e": "stopRotate"
+        }
+        command = commands.get(releasedButton, "unknownCommand")
 
-    if command != "unkownCommand":        
-        data = {
-                "type": command,
-                "params": {}
-            }
-        sendJson(json.dumps(data))
-        undo.put(command)
+        if command != "unkownCommand":        
+            data = {
+                    "type": command,
+                    "params": {}
+                }
+            sendJson(json.dumps(data))
+            undo.put(command)
 
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
