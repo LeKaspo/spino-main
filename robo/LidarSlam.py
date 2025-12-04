@@ -132,6 +132,7 @@ class RoboLidar:
                             self.last_scan = self.latest_scan
                             print(self.latest_scan)
                             data = pickle.dumps(self.latest_scan)
+                            print(len(data))
                             print(type(data))
                             length = struct.pack('!I', len(data))
                             print(length)

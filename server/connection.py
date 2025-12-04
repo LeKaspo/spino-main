@@ -80,7 +80,7 @@ class connectionHändler:
                 length_data = conn.recv(4)
                 length = struct.unpack('!I', length_data)[0]
                 data = conn.recv(length)
-
+                print("Before pickle")
                 realdata = pickle.loads(data)
 
                 self.lidarQ.put(realdata)
