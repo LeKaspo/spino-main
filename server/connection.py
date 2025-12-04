@@ -67,19 +67,9 @@ class connectionHändler:
         conn.close()
         s.close()
 
-    def recv_all(self, sock, n):
-        """Helper function to receive exactly n bytes"""
-        data = bytearray()
-        while len(data) < n:
-            packet = sock.recv(n - len(data))
-            if not packet:
-                return None
-            data.extend(packet)
-        return data
-
     def _getLidar(self):
         s, conn = self._openConnection(IP, PORT_LIDAR)
-
+        
         while True:
             
             # Empfangen
