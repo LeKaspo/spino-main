@@ -5,13 +5,13 @@ import queue
 import json
 import threading
 import struct
-from src.robo.movement_control.executor import CommandExecutor
+from robo.movement_control.executor import CommandExecutor
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 PORT = 50003
-IP = '192.168.0.229'
+IP = '192.168.0.4'
 
 def getCommands():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
