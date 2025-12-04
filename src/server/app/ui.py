@@ -1,11 +1,11 @@
-#starte den Flaskserver übern den das web UI läuft
 import sys
 from pathlib import Path
 from flask import Flask, render_template, request
-import src.server.send_commands.sendcommands
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
+
+import src.server.send_commands.sendcommands
 
 index = ROOT / "server" / "templates" / "index.html"
 
@@ -47,5 +47,5 @@ def key_up():
     src.server.send_commands.sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
-if __name__ == '__main__':
+def start_ui():
     app.run(host='0.0.0.0', port=5000, debug=False)
