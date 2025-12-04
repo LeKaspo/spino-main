@@ -1,0 +1,82 @@
+
+body {
+    background-color: #222;
+    color: #fff;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 3px solid #444;
+    border-radius: 8px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+  }
+
+.buttons {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+  }
+
+.undo {
+    display: flex;
+    flex-direction: row; 
+    gap: 10px;
+    width: calc(3 * 80px + 2 * 10px);
+  }
+  
+.undo button {
+    flex: 1;
+}
+  
+.controller {
+    display: grid;
+    grid-template-columns: repeat(3, 80px);
+    grid-template-rows: repeat(2, 80px);
+    gap: 10px;
+}
+.controller button {
+    width: 80px;
+    height: 80px;
+}
+
+button {
+  max-width: calc(3 * 80px + 2 * 10px);
+  min-height: 45px;
+  font-family: sans-serif;      
+  font-size: 1rem;   
+  border-radius: 8px;
+}
+
+button:hover {
+    background-color: #444;
+    color: #fff;
+}
+
+
+  
+#q { grid-column: 1; grid-row: 1; }
+#w { grid-column: 2; grid-row: 1; }
+#e { grid-column: 3; grid-row: 1; }
+#a { grid-column: 1; grid-row: 2; }
+#s { grid-column: 2; grid-row: 2; }
+#d { grid-column: 3; grid-row: 2; }
+
+
+@media (min-width: 800px) {
+    .container {
+      flex-direction: row; 
+    }
+
+    img {
+    max-width: 70%;
+    
+    }
+}
