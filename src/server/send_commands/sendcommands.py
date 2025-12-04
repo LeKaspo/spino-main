@@ -1,6 +1,11 @@
 import json
-from server.connection import connectionHändler
-from .undoMovement import  UndoMovement
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+
+from server.app.connection import connectionHändler
+from server.send_commands.undoMovement import  UndoMovement
 
 conn = connectionHändler.getInstance()
 

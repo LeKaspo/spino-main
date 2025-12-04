@@ -7,12 +7,12 @@ import src.server.send_commands.sendcommands
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
-camera_script = ROOT / "server" / "templates" / "index.html"
+index = ROOT / "server" / "templates" / "index.html"
 
 app = Flask(__name__)
 @app.route('/')
 def index():
-    return render_template("index.html")
+    return render_template(str(index))
 
 #verarbeite Button und Tasteneingaben
 @app.route('/button-click', methods=['POST'])
