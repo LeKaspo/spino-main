@@ -1,6 +1,6 @@
 import subprocess
 import time
-import sys
+import threading
 
 
 class RobotSSHController:
@@ -9,15 +9,15 @@ class RobotSSHController:
         self.ssh_proc = None
         self.ssh_target = f"{user}@{host}"
         self.password = password
+        self.thread = None
+        self.running = False
 
     def start_robot(self):
-        # SSH-Kommandokette vorbereiten
         remote_cmd = (
             "source /home/spino-main/spino-venv/bin/activate && "
             "python3 /home/spino-main/src/robo/main/main.py"
         )
 
-        # SSH starten
         self.ssh_proc = subprocess.Popen(
             [   
                 "sshpass", "-p", self.password,
@@ -31,6 +31,7 @@ class RobotSSHController:
         )
 
     def stop_robot(self):
+        self.running = False
         if self.ssh_proc:
             print("Stopping robot...")
             self.ssh_proc.terminate()
@@ -40,19 +41,24 @@ class RobotSSHController:
                 self.ssh_proc.kill()
             print("SSH connection closed.")
 
+    def _worker(self):
+        self.start_robot()
+        print("Robot started via SSH.")
+
+        while self.running and self.ssh_proc:
+            line = self.ssh_proc.stdout.readline()
+            if line:
+                print("[ROBOT]", line, end="")
+            time.sleep(0.05)
+
+        self.stop_robot()
+
     def run(self):
-        try:
-            self.start_robot()
-            print("Robot started via SSH.")
+        if self.thread and self.thread.is_alive():
+            print("Robot thread already running!")
+            return
 
-            while True:
-                line = self.ssh_proc.stdout.readline()
-                if line:
-                    print("[ROBOT]", line, end="")
-                time.sleep(0.1)
-
-        except KeyboardInterrupt:
-            pass
-
-        finally:
-            self.stop_robot()
+        self.running = True
+        self.thread = threading.Thread(target=self._worker, daemon=True)
+        self.thread.start()
+        print("SSH thread started.")
