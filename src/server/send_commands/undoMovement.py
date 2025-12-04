@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
-from server.send_commands.undoMovement import sendcommands
+import server.send_commands.sendcommands as sendcommands
 class UndoMovement:
     
     # Singleton
