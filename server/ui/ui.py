@@ -1,6 +1,7 @@
 #starte den Flaskserver übern den das web UI läuft
 from flask import Flask, render_template, request
 import server.sendcommands
+import server.core.config as config
 
 
 app = Flask(__name__)
@@ -29,7 +30,6 @@ def button_release():
     data = request.get_json()
     server.sendcommands.ButtonRelease(f"{data['id']}")
     return '', 204
-
 @app.route('/key-down', methods=['POST'])
 def key_down():
     data = request.get_json()
@@ -40,6 +40,17 @@ def key_up():
     data = request.get_json()
     server.sendcommands.ButtonRelease(f"{data['key']}")
     return '', 204
+
+# zugriff auf
+@app.get("/api/config")
+def get_config():
+    return  config.system_status
+@app.post("/api/config")
+def update_config():
+    data = request.get_json()
+    config.system_status = data
+    return '', 204
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=False)

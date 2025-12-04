@@ -1,8 +1,10 @@
 import json
 from server.connection import connectionHändler
 from .undoMovement import  UndoMovement
+from .core import config
 
 conn = connectionHändler.getInstance()
+undo = UndoMovement.getInstance()
 
 def ButtonClicked(clickedButton):
     data = {
@@ -10,17 +12,27 @@ def ButtonClicked(clickedButton):
             "params": {}
         }
     sendJson(json.dumps(data))
-    undo = UndoMovement.getInstance()
     undo.put(clickedButton)
 
 def ButtonClickedInside(clickedButton):
-    undo = UndoMovement.getInstance()
     match clickedButton:
         case "start":
             undo.start()
         case "undoMovement":
             undo.undoMovement()
-
+        case "modebtn":
+            config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
+            print(f"tasten: {config.system_status["button_mode_active"]}")
+        case "modevoice":
+            config.system_status["voice_mode_active"] = not config.system_status["voice_mode_active"]
+            print(f"voice: {config.system_status["voice_mode_active"]}")
+        case "modegesture":
+            config.system_status["gesture_mode_active"] = not config.system_status["gesture_mode_active"]
+            print(f"gesture: {config.system_status["button_mode_active"]}")
+        case "modelabel":
+            config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
+            print(f"labels: {config.system_status["label_mode_active"]}")
+            
 def ButtonPress(pressedButton):
     commands = {
         "w": "forwards",
@@ -38,8 +50,6 @@ def ButtonPress(pressedButton):
                 "params": {}
             }
         sendJson(json.dumps(data))
-    
-        undo = UndoMovement.getInstance()
         undo.put(command)
 
 def ButtonRelease(releasedButton):
@@ -59,17 +69,16 @@ def ButtonRelease(releasedButton):
                 "params": {}
             }
         sendJson(json.dumps(data))
-
-        undo = UndoMovement.getInstance()
         undo.put(command)
 
 def voicecommand(command):
-    data = {
+    if (config.system_status["voice_mode_active"] == True):
+        data = {
             "type": command,
             "params": {}
         }
-    sendJson(json.dumps(data))
-    
+        sendJson(json.dumps(data))
+
 def sendJson(json):
     conn.commandQ.put(json)
     print(json)

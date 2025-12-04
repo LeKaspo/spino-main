@@ -28,14 +28,13 @@ body {
     gap: 10px;
   }
 
-.undo {
+.row {
     display: flex;
     flex-direction: row; 
     gap: 10px;
     width: calc(3 * 80px + 2 * 10px);
-  }
-  
-.undo button {
+}  
+.row button {
     flex: 1;
 }
   
@@ -90,4 +89,11 @@ button:hover {
       flex-direction: row; 
     }
 
+}
+
+.active {
+    border: 5px solid rgb(100, 149, 255);
+}
+.deactivated {
+    background: rgba(255, 255, 255, 0.3);
 }
