@@ -1,10 +1,11 @@
 import sys
 from pathlib import Path
-from robo.ext_libs.Rosmaster_Lib import Rosmaster # type: ignore
 import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
+
+from robo.ext_libs.Rosmaster_Lib import Rosmaster
 
 class MovementControl:
     def __init__(self):

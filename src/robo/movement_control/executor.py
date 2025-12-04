@@ -1,10 +1,11 @@
 import sys
 from pathlib import Path
-from robo.movement_control.movementControl import MovementControl
 import json
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
+
+from robo.movement_control.movementControl import MovementControl
 
 class CommandExecutor:
     
