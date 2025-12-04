@@ -5,10 +5,11 @@ import queue
 import json
 import threading
 import struct
-from robo.movement_control.executor import CommandExecutor
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
+
+from robo.movement_control.executor import CommandExecutor
 
 PORT = 50003
 IP = '192.168.0.4'
