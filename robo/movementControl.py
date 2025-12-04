@@ -14,6 +14,7 @@ class MovementControl:
         self.speedy = 0
         self.speedz = 0 
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
+        self.beeep()
 
     def stopRotate(self):
         self.speedz = 0 
