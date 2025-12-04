@@ -1,9 +1,14 @@
+import sys
+from pathlib import Path
 import socket
 import queue
 import json
 import threading
 import struct
-from executor import CommandExecutor
+from robo.movement_control.executor import CommandExecutor
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
 
 PORT = 50003
 IP = '192.168.0.229'
