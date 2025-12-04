@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Live transcript</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        :root { color-scheme: dark; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0f1117;
+            color: #f5f7ff;
+            padding: 1.5rem;
+        }
+        main {
+            width: min(640px, 100%);
+            background: #151a24;
+            border: 1px solid #232838;
+            border-radius: 16px;
+            padding: 1.25rem;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.35);
+        }
+        h1 { margin-top: 0; font-size: 1.25rem; }
+        textarea {
+            width: 100%;
+            height: 360px;
+            background: #0b0d12;
+            color: inherit;
+            border: 1px solid #232838;
+            border-radius: 10px;
+            padding: 0.75rem;
+            resize: none;
+            font-family: "JetBrains Mono", "Fira Code", Consolas, "SFMono-Regular", monospace;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            box-sizing: border-box;
+        }
+        textarea:focus { outline: 2px solid #4f8bff; outline-offset: 2px; }
+        .status { margin: 0.75rem 0 0; font-size: 0.9rem; color: #9aa6c8; }
+        code { font-family: inherit; background: rgba(255,255,255,0.08); padding: 0.1rem 0.25rem; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Live transcript</h1>
+        <textarea id="transcriptBox" readonly spellcheck="false" aria-live="polite"></textarea>
+        <p class="status" id="connectionStatus">Connecting to <code>/stream/transcripts</code> …</p>
+    </main>
+
+    <script>
+    (function () {
+        const ENDPOINT = '/stream/transcripts';
+        const box = document.getElementById('transcriptBox');
+        const status = document.getElementById('connectionStatus');
+        const maxLines = 400;
+
+        if (!window.EventSource) {
+            status.textContent = 'This browser does not support Server-Sent Events.';
+            return;
+        }
+
+        const source = new EventSource(ENDPOINT);
+
+        source.addEventListener('open', () => {
+            status.textContent = 'Live – receiving transcripts';
+        });
+
+        source.addEventListener('error', () => {
+            status.textContent = 'Connection lost – attempting to reconnect …';
+        });
+
+        const handlePayload = (event) => {
+            const payload = tryParse(event.data);
+            if (!payload || !payload.text) {
+                return;
+            }
+            appendLine(formatLine(payload));
+        };
+
+        source.addEventListener('transcript', handlePayload);
+        source.addEventListener('message', handlePayload);
+
+        function appendLine(line) {
+            if (!line) return;
+            box.value = box.value ? box.value + '\n' + line : line;
+            const lines = box.value.split('\n');
+            if (lines.length > maxLines) {
+                box.value = lines.slice(lines.length - maxLines).join('\n');
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function formatLine(item) {
+            const when = formatTimestamp(item.timestamp);
+            return `[${when}] ${item.text.trim()}`;
+        }
+
+        function formatTimestamp(ts) {
+            if (!ts) {
+                return new Date().toLocaleTimeString();
+            }
+            const date = new Date(ts);
+            if (Number.isNaN(date.getTime())) {
+                return ts;
+            }
+            return date.toLocaleTimeString();
+        }
+
+        function tryParse(raw) {
+            try {
+                return JSON.parse(raw);
+            } catch (error) {
+                console.warn('Failed to parse transcript payload', error);
+                return null;
+            }
+        }
+    })();
+    </script>
+</body>
+</html>

@@ -14,6 +14,7 @@ Example command:
 """
 
 import argparse
+import json
 import logging
 import os
 import queue
@@ -24,6 +25,8 @@ from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
+from urllib import error as urllib_error
+from urllib import request as urllib_request
 
 import numpy as np
 import sounddevice as sd
@@ -47,8 +50,29 @@ except ImportError:
         from server.sendcommands import voicecommand
     except ImportError as imp:
         print(f"Import hat nicht funktioniert: {imp}")
+
         def voicecommand(cmd):
             print(f"DEBUG: Mock execution of command '{cmd}'")
+
+try:
+    from transcript_stream import publish_transcript as _publish_transcript
+except ImportError:
+    try:
+        from server.transcript_stream import publish_transcript as _publish_transcript
+    except ImportError:
+        _publish_transcript = None
+
+_DEFAULT_TRANSCRIPT_ENDPOINT = "http://127.0.0.1:5000/transcripts"
+_TRANSCRIPT_ENDPOINT = os.environ.get("TRANSCRIPT_ENDPOINT", _DEFAULT_TRANSCRIPT_ENDPOINT)
+_TRANSCRIPT_PUSH_WARNED = False
+
+
+def configure_transcript_endpoint(url: str | None) -> None:
+    global _TRANSCRIPT_ENDPOINT
+    if url == "":
+        _TRANSCRIPT_ENDPOINT = None
+    elif url is not None:
+        _TRANSCRIPT_ENDPOINT = url
 
 logger = logging.getLogger("speechInput")
 
@@ -206,6 +230,13 @@ def configure_logging(debug: bool):
         datefmt="%H:%M:%S",
     )
     logger.setLevel(level)
+
+
+def _log_transcript_destination() -> None:
+    if _TRANSCRIPT_ENDPOINT:
+        logger.info("Transcripts will be POSTed to %s", _TRANSCRIPT_ENDPOINT)
+    else:
+        logger.info("Transcript HTTP push disabled; UI will rely on stdout logs only")
 
 
 def samples_duration_ms(samples_bytes: bytes) -> float:
@@ -397,15 +428,73 @@ def _normalize_command_text(text: str) -> str:
     return " ".join("".join(cleaned).split())
 
 
-def check_commands(transcript: str):
+def check_commands(transcript: str) -> str | None:
     """Case-insensitive substring match of command phrases in the transcript."""
+
     text = _normalize_command_text(transcript)
     for cmd in COMMANDS:
         for phrase in cmd["phrases"]:
             if _normalize_command_text(phrase) in text:
                 logger.info("Command triggered: %s via phrase '%s'", cmd["name"], phrase)
                 voicecommand(cmd["name"])
-                return
+                return cmd["name"]
+    return None
+
+
+def _emit_transcript_to_stream(text: str, meta: UtteranceMeta, language: str, command: str | None) -> None:
+    meta_payload = {
+        "utterance_idx": meta.idx,
+        "duration_ms": meta.duration_ms,
+        "avg_amplitude": meta.avg_amplitude,
+        "frame_count": meta.frame_count,
+        "started_at": meta.started_at,
+        "ended_at": meta.ended_at,
+    }
+
+    if _publish_transcript is not None:
+        try:
+            _publish_transcript(text=text, language=language, command=command, meta=meta_payload)
+        except Exception:  # pragma: no cover - defensive: keep speech loop alive
+            logger.exception("Failed to publish transcript to local transcript stream")
+
+    _push_transcript_http(
+        {
+            "text": text,
+            "language": language,
+            "command": command,
+            "meta": meta_payload,
+        }
+    )
+
+
+def _push_transcript_http(payload: dict) -> None:
+    global _TRANSCRIPT_PUSH_WARNED
+
+    if not _TRANSCRIPT_ENDPOINT:
+        if not _TRANSCRIPT_PUSH_WARNED:
+            logger.info(
+                "Transcript endpoint disabled; UI clients will not display live text."
+            )
+            _TRANSCRIPT_PUSH_WARNED = True
+        return
+
+    body = json.dumps(payload).encode("utf-8")
+    req = urllib_request.Request(
+        _TRANSCRIPT_ENDPOINT,
+        data=body,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        urllib_request.urlopen(req, timeout=2)
+    except urllib_error.URLError as err:
+        if not _TRANSCRIPT_PUSH_WARNED:
+            logger.warning(
+                "Failed to push transcripts to %s (%s). Set --transcript-endpoint '' to disable.",
+                _TRANSCRIPT_ENDPOINT,
+                err,
+            )
+            _TRANSCRIPT_PUSH_WARNED = True
 
 
 
@@ -463,7 +552,8 @@ def handle_utterance(wmodel, samples, language, dump_dir, meta):
         return
 
     print(f"Transcript [{meta.idx}]: {text}")
-    check_commands(text)
+    command_triggered = check_commands(text)
+    _emit_transcript_to_stream(text, meta, language, command_triggered)
 
 
 def _cleanup_done_futures(pending: deque):
@@ -799,6 +889,14 @@ def main():
         help="Optional WAV file for testing instead of mic input.",
     )
     parser.add_argument(
+        "--transcript-endpoint",
+        default=_TRANSCRIPT_ENDPOINT,
+        help=(
+            "HTTP endpoint to POST transcripts to."
+            " Pass '' to disable (default: http://127.0.0.1:5000/transcripts)."
+        ),
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="Enable verbose debug logging.",
@@ -806,7 +904,10 @@ def main():
 
     args = parser.parse_args()
 
+    configure_transcript_endpoint(args.transcript_endpoint)
+
     configure_logging(args.debug)
+    _log_transcript_destination()
 
     if args.file:
         run_file(args)

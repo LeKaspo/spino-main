@@ -65,6 +65,8 @@ python3 server\speechInput.py --model tiny --language de --model-path "pathToMod
 # Für weitere Hilfe und Ausführliche Doku:
 python3 server\speechInput.py --help
 ```
+
+> **Hinweis:** Lass den Flask-Server (`python server\ui\ui.py`) parallel laufen, damit `/stream/transcripts` Daten empfängt. Standardmäßig versucht `speechInput.py` die Transkripte an `http://127.0.0.1:5000/transcripts` zu senden. Mit `--transcript-endpoint ''` kannst du das Pushen deaktivieren oder per `--transcript-endpoint http://<host>:5000/transcripts` auf einen anderen Host zeigen.
 - **Befehle hinzufügen:**
     - in speechInput.py in COMMANDS:
         - name = an den Spino gesendeter Command mittels sendcommands.voicecommand
