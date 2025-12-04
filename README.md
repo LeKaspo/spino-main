@@ -8,3 +8,4 @@ Camera stream starten:
 Auf roboter robo/start_camera.sh ausführen
 Auf Laptop: server/ui/ui.py ausführen mit python -m server.ui.ui
   Dann im Browser öffnen
+

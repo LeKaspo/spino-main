@@ -1,5 +1,6 @@
 import json
 from server.connection import connectionHändler
+from .undoMovement import  UndoMovement
 
 conn = connectionHändler.getInstance()
 
@@ -9,7 +10,16 @@ def ButtonClicked(clickedButton):
             "params": {}
         }
     sendJson(json.dumps(data))
+    undo = UndoMovement.getInstance()
+    undo.put(clickedButton)
 
+def ButtonClickedInside(clickedButton):
+    undo = UndoMovement.getInstance()
+    match clickedButton:
+        case "start":
+            undo.start()
+        case "undoMovement":
+            undo.undoMovement()
 
 def ButtonPress(pressedButton):
     commands = {
@@ -28,6 +38,9 @@ def ButtonPress(pressedButton):
                 "params": {}
             }
         sendJson(json.dumps(data))
+    
+        undo = UndoMovement.getInstance()
+        undo.put(command)
 
 def ButtonRelease(releasedButton):
     commands = {
@@ -47,6 +60,9 @@ def ButtonRelease(releasedButton):
             }
         sendJson(json.dumps(data))
 
+        undo = UndoMovement.getInstance()
+        undo.put(command)
+
 def voicecommand(command):
     data = {
             "type": command,
@@ -54,7 +70,6 @@ def voicecommand(command):
         }
     sendJson(json.dumps(data))
     
-
 def sendJson(json):
     conn.commandQ.put(json)
-    #print(json)
+    print(json)
