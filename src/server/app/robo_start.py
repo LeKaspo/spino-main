@@ -4,8 +4,8 @@ import threading
 
 
 class RobotSSHController:
-
     def __init__(self, host="192.168.0.145", user="jetson", password="12345678"):
+        self.IP = host
         self.ssh_proc = None
         self.ssh_target = f"{user}@{host}"
         self.password = password
@@ -15,7 +15,7 @@ class RobotSSHController:
     def start_robot(self):
         remote_cmd = (
             "source /home/spino-main/spino-venv/bin/activate && "
-            "python3 /home/spino-main/src/robo/main/main.py"
+            f"python3 /home/spino-main/src/robo/main/main.py {self.IP}"
         )
 
         self.ssh_proc = subprocess.Popen(
