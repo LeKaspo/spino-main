@@ -6,10 +6,10 @@ import time
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
-camera_script = ROOT / ".robo" / "main" / "start_camera.sh"
-sendLidar = ROOT / ".robo" / "sockets" / "sendLidar.py"
-sendAudio = ROOT / ".robo" / "sockets" / "sendAudio.py"
-get_commands = ROOT / ".robo" / "sockets" / "getCommands.py"
+camera_script = ROOT / "robo" / "main" / "start_camera.sh"
+sendLidar = ROOT / "robo" / "sockets" / "sendLidar.py"
+sendAudio = ROOT / "robo" / "sockets" / "sendAudio.py"
+get_commands = ROOT / "robo" / "sockets" / "getCommands.py"
 
 
 processes = []
