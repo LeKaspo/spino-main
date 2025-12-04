@@ -12,7 +12,7 @@ sys.path.append(str(ROOT))
 from robo.movement_control.executor import CommandExecutor
 
 PORT = 50003
-IP = '192.168.0.4'
+IP = '192.168.0.229'
 
 def getCommands():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
