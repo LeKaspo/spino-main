@@ -5,7 +5,7 @@ import queue
 import json
 import threading
 import struct
-from robo.movement_control.executor import CommandExecutor
+from src.robo.movement_control.executor import CommandExecutor
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
