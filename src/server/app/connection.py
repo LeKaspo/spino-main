@@ -49,8 +49,11 @@ class connectionHändler:
 
     @staticmethod
     def _openConnection(IP, PORT):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((IP, PORT))
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind((IP, PORT))
+        except Exception as e:
+            print(f"Error while opening Socket: {e}")
         s.listen(1)
         print(f"Listening on Port {PORT}")
         conn, _ = s.accept()
