@@ -40,15 +40,17 @@ except ImportError:
     print("Install it with: pip install faster-whisper", file=sys.stderr)
     sys.exit(1)
 
+
 try:
-    from sendcommands import voicecommand
-except ImportError:
-    try:
-        from server.sendcommands import voicecommand
-    except ImportError as imp:
-        print(f"Import hat nicht funktioniert: {imp}")
-        def voicecommand(cmd):
-            print(f"DEBUG: Mock execution of command '{cmd}'")
+    ROOT = Path(__file__).resolve().parents[2]
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+
+    from server.send_commands.processcommands import voicecommand
+except ImportError as imp:
+    print(f"Import hat nicht funktioniert: {imp}")
+    def voicecommand(cmd):
+        print(f"DEBUG: Mock execution of command '{cmd}'")
 
 logger = logging.getLogger("speechInput")
 
