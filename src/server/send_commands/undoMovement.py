@@ -59,21 +59,21 @@ class UndoMovement:
 
         match command:
             case "forwards":
-                self.last_x = -1
-            case "backwards":
                 self.last_x = 1
+            case "backwards":
+                self.last_x = -1
             case "stopForwardsBackwards":
                 self.last_x = 0
             case "left" :
-                self.last_y = -1
-            case "right":
                 self.last_y = 1
+            case "right":
+                self.last_y = -1
             case "stopLeftRight":
                 self.last_y = 0
             case "turnLeft":
-                self.last_z = -1
-            case  "turnRight":
                 self.last_z = 1
+            case  "turnRight":
+                self.last_z = -1
             case "stopRotate":
                 self.last_z = 0
             case "fullStop":
@@ -92,6 +92,8 @@ class UndoMovement:
 
     # stack abarbeiten
     def undoMovement(self):
+        sendcommands.sendJson(json.dumps({"type": "turn180", "params": {}}))
+        time.sleep(3.59)
         curx = 0
         cury = 0 
         curz = 0

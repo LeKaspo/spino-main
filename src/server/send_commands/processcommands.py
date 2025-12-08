@@ -20,17 +20,16 @@ def ButtonClicked(clickedButton, param = None):
                     "params": param
                 }
             log.write(f"{clickedButton}: {param}", 1)
+            undo.put(clickedButton, param)
         else:
             data = {
                     "type": clickedButton,
                     "params": {}
                 }
             log.write(clickedButton,1)
+            undo.put(clickedButton)
         sendcommands.sendJson(json.dumps(data))
-        undo.put(clickedButton)
         
-
-
 def ButtonClickedInside(clickedButton):
     msg = ""
     match clickedButton:
@@ -95,7 +94,6 @@ def ButtonRelease(releasedButton):
             sendcommands.sendJson(json.dumps(data))
             undo.put(command)
             log.write(command,1)
-
 
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
