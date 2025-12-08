@@ -83,10 +83,10 @@ def voicecommand(command):
         match command:
             case "setSpeedSlower":
                 commandClean = "setSpeed"
-                params = {0.2}
+                params = {"0.2"}
             case "setSpeedFaster":
                 commandClean = "setSpeed"
-                params = {0.8}
+                params = {"0.8"}
         data = {
                 "type": commandClean,
                 "params": params
