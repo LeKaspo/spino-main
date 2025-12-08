@@ -24,7 +24,6 @@ class MovementControl:
     def stopRotate(self):
         self.speedz = 0 
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
-        
 
     def stopLeftRight(self):
         self.speedy = 0 
@@ -45,10 +44,12 @@ class MovementControl:
     def right(self):
         self.speedy = -self.speed 
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
+        self.g_bot.set_colorful_effect(6)
 
     def left(self):
         self.speedy = self.speed 
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
+        self.g_bot.set_colorful_effect(6)
 
     def turnRight(self):
         self.speedz = -1 #drehen immer auf voller geschwindigkeit weil das ist langsam
