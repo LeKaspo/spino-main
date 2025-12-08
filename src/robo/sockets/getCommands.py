@@ -16,8 +16,12 @@ IP = sys.argv[1]
 PORT = 50003
 
 def getCommands():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((IP, PORT))
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((IP, PORT))
+    except Exception as e:
+        print(f"Unable to connect: {e}")
+        
     try:
         while True:
             pre = client.recv(4)
