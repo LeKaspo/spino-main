@@ -12,15 +12,23 @@ from .logger import Logger
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
 
-def ButtonClicked(clickedButton):
+def ButtonClicked(clickedButton, param = None):
     if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
-        data = {
-                "type": clickedButton,
-                "params": {}
-            }
+        if param is not None:
+            data = {
+                    "type": clickedButton,
+                    "params": param
+                }
+            log.write(f"{clickedButton}: {param}", 1)
+        else:
+            data = {
+                    "type": clickedButton,
+                    "params": {}
+                }
+            log.write(clickedButton,1)
         sendcommands.sendJson(json.dumps(data))
         undo.put(clickedButton)
-        log.write(clickedButton,1)
+        
 
 
 def ButtonClickedInside(clickedButton):

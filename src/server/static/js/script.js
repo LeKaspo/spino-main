@@ -24,11 +24,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     const actionButtons = document.getElementsByClassName('actionButton');
     for (const button of actionButtons) {
     button.addEventListener('click', function() {
+        let payload = { id: this.id };
+        if (this.classList.contains('hasParam')) {
+            const targetId = this.dataset.paramTarget;
+            const input = document.getElementById(targetId)
+            if (!verify(this.id, input)) {
+                return;
+            }
+            payload.param = input.value;
+        }
         fetch('/button-click', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: this.id })
+        body: JSON.stringify(payload)
         });
+        console.log(payload)
+        
     });
     }
     // Auswertung Button die nicht an den roboter senden
@@ -186,6 +197,25 @@ async function saveStatus(modesArray) {
     if (!res.ok) throw new Error('POST /api/config failed');
 }
 
+
+function verify(id, input) {
+  if (!input) return false;
+    const raw = input.value.trim();
+    if (raw === '') return false;
+
+  if (id == "setSpeed")
+  {
+    const val = Number(raw);
+    if (Number.isNaN(val)) return false;
+
+    const min = input.min ? Number(input.min) : 0.01;
+    const max = input.max ? Number(input.max) : 1;
+    if (val < min || val > max) {
+        return false;
+    }
+  }
+  return true;
+}
 
 
 

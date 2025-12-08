@@ -24,7 +24,10 @@ def index():
 @app.route('/button-click', methods=['POST'])
 def button_click():
     data = request.get_json()
-    processcommads.ButtonClicked(f"{data['id']}")
+    param = None
+    if 'param' in data:
+            param= f"{data['param']}"
+    processcommads.ButtonClicked(f"{data['id']}", param)
     return '', 204
 @app.route('/button-click-inside', methods=['POST'])
 def button_click_inside():

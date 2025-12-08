@@ -7,7 +7,6 @@
     </head>
     <body>
         <div class="container">
-            
             <div class="video-container">
                 <img id="stream" src="http://192.168.0.145:8090/?action=stream">    
                 <button class="arrow left">&larr;</button>
@@ -28,7 +27,11 @@
                     <button id="a" class="holdButton">&larr;</button>
                     <button id="s" class="holdButton">&darr;</button>
                     <button id="d" class="holdButton">&rarr;</button>
-                </div>
+                </div> 
+                <div class="row"> 
+                <button id="setSpeed" class="actionButton hasParam" data-param-target="setSpeedP"> Speed festlegen </button>
+                <input type="number" id="setSpeedP" min="0.01" max="1" step="0.01" placeholder="0.01 - 1" >
+                </div> 
                 <div class="row"> 
                     <button id="modebtn" class="modiButton insideButton">Tasten</button>
                     <button id="modevoice" class="modiButton insideButton">Stimme</button>   
