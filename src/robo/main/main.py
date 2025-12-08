@@ -14,6 +14,8 @@ get_commands = ROOT / "robo" / "sockets" / "getCommands.py"
 
 processes = []
 
+IP = sys.argv[1]
+
 p1 = subprocess.Popen(["bash", str(camera_script)])
 processes.append(p1)
 
@@ -23,7 +25,7 @@ processes.append(p1)
 # p_lidar = subprocess.Popen(["python", str(sendLidar)])
 # processes.append(p_lidar)
 
-p_commands = subprocess.Popen(["python", str(get_commands)])
+p_commands = subprocess.Popen(["python", str(get_commands), IP])
 processes.append(p_commands)
 
 for p in processes:

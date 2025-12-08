@@ -5,55 +5,59 @@ import queue
 import json
 import threading
 import struct
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 from robo.movement_control.executor import CommandExecutor
 
+IP = sys.argv[1]
 PORT = 50003
-IP = '192.168.0.229'
 
 def getCommands():
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect((IP, PORT))
+    try:
+        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.connect((IP, PORT))
+    except Exception as e:
+        print(f"Unable to connect: {e}")       
+
     try:
         while True:
             pre = client.recv(4)
             data_len = struct.unpack("!I", pre)[0]
-            print(f"receiving data of length {data_len}")
             data = client.recv(data_len)
             if not data: break
-            print("Bytes")
-            print(type(data))
-            print(data)
             command_string = data.decode('utf-8')
-            print("String")
-            print(type(command_string))
-            print(command_string)
             command_json = json.loads(command_string)
-            print("JSON")
-            print(type(command_json))
-            print(command_json)
+            print(f"Command Received: {command_json}")
             commandQ.put(command_json)
     except Exception as e:
-        print(f"Error: {e}")
-    except KeyboardInterrupt:
-        print("Programm closed")
+        print(f"Error in getCommands: {e}")
     finally:
         client.close()
+        with commandQ.mutex:
+            commandQ.queue.clear()
         fullstop = {
                 "type": "fullstop",
                 "params": {}
             }
-        commandQ.put(fullstop)
+        commandExc.executeCommand(fullstop)
+        print("Closed getCommands Thread and made Fullstop")
+        commandQ.put("STOP")
 
 def execCommands():
-    while True:
-        print("Waiting for Commands")
-        command = commandQ.get()
-        commandExc.executeCommand(command)
-        
+    print("Waiting for Commands to execute")
+    try:
+        while True:
+            command = commandQ.get()
+            if command == "STOP":
+                break
+            commandExc.executeCommand(command)
+            print("Command Executed")
+    
+    except Exception as e:
+        print(f"Error in execCommands: {e}")
 
 
 if __name__ == "__main__":
@@ -67,6 +71,9 @@ if __name__ == "__main__":
     t1.start()
     t2.start()
 
-    while True:
-        pass
+    try:
+        t1.join()
+        t2.join()
+    except KeyboardInterrupt:
+        sys.exit(0)
    
