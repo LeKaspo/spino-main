@@ -20,8 +20,8 @@ def getCommands():
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect((IP, PORT))
     except Exception as e:
-        print(f"Unable to connect: {e}")
-        
+        print(f"Unable to connect: {e}")       
+
     try:
         while True:
             pre = client.recv(4)
