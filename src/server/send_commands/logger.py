@@ -27,7 +27,7 @@ class Logger:
             raise ValueError("box muss 1 oder 2 sein")
         with self._lock:
             self._textboxes[box] += text
-            self._textboxes[box] += "<br>"    
+            self._textboxes[box] += "&#013;"    
     def read(self, box):
         if box not in (1, 2):
             raise ValueError("box muss 1 oder 2 sein")

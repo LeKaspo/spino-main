@@ -1,11 +1,14 @@
 import json
-<<<<<<< HEAD:server/sendcommands.py
-from server.connection import connectionHändler
-from .undoMovement import  UndoMovement
-from .core import config
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+
+import server.send_commands.sendcommands as sendcommands
+from server.send_commands.undoMovement import  UndoMovement
+import server.config.config as config
 from .logger import Logger
 
-conn = connectionHändler.getInstance()
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
 
@@ -15,47 +18,33 @@ def ButtonClicked(clickedButton):
                 "type": clickedButton,
                 "params": {}
             }
-        sendJson(json.dumps(data))
+        sendcommands.sendJson(json.dumps(data))
         undo.put(clickedButton)
         log.write(clickedButton,1)
-=======
-import sys
-from pathlib import Path
-ROOT = Path(__file__).resolve().parents[2]
-sys.path.append(str(ROOT))
 
-import server.send_commands.sendcommands as sendcommands
-from server.send_commands.undoMovement import  UndoMovement
-
-
-def ButtonClicked(clickedButton):
-    data = {
-            "type": clickedButton,
-            "params": {}
-        }
-    sendcommands.sendJson(json.dumps(data))
-    undo = UndoMovement.getInstance()
-    undo.put(clickedButton)
->>>>>>> origin/main:src/server/send_commands/processcommands.py
 
 def ButtonClickedInside(clickedButton):
+    msg = ""
     match clickedButton:
         case "start":
             undo.start()
+            msg = "starte Routen Aufnahme"
         case "undoMovement":
             undo.undoMovement()
+            msg = "Spino kommt zurück"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
-            print(f"tasten: {config.system_status["button_mode_active"]}")
+            msg = "Tastensteuerung (de)aktiviert"
         case "modevoice":
             config.system_status["voice_mode_active"] = not config.system_status["voice_mode_active"]
-            print(f"voice: {config.system_status["voice_mode_active"]}")
+            msg = "Sprachsteuerung (de)aktiviert"
         case "modegesture":
             config.system_status["gesture_mode_active"] = not config.system_status["gesture_mode_active"]
-            print(f"gesture: {config.system_status["button_mode_active"]}")
+            msg = "Gestensteuerung (de)aktiviert"
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
-            print(f"labels: {config.system_status["label_mode_active"]}")
+            msg = "LabelerkennungsModus (de)aktiviert"
+    log.write(msg,1)
             
 def ButtonPress(pressedButton):
     if (config.system_status["button_mode_active"] == True):
@@ -76,6 +65,7 @@ def ButtonPress(pressedButton):
                 }
             sendcommands.sendJson(json.dumps(data))
             undo.put(command)
+            log.write(command,1)
 
 def ButtonRelease(releasedButton):
     if (config.system_status["button_mode_active"] == True):
@@ -96,6 +86,7 @@ def ButtonRelease(releasedButton):
                 }
             sendcommands.sendJson(json.dumps(data))
             undo.put(command)
+            log.write(command,1)
 
 
 def voicecommand(command):
@@ -105,5 +96,6 @@ def voicecommand(command):
             "params": {}
         }
         sendcommands.sendJson(json.dumps(data))
+        log.write(command,1)
 
     

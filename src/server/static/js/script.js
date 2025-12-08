@@ -130,6 +130,11 @@ async function fetchBox(box) {
 async function refresh() {
     document.getElementById("box1").innerHTML = await fetchBox(1);
     document.getElementById("box2").innerHTML = await fetchBox(2);
+    scroll();
+}
+function scroll() {
+    document.getElementById("box1").scrollTop = document.getElementById("box1").scrollHeight;
+    document.getElementById("box2").scrollTop =  document.getElementById("box2").scrollHeight;
 }
 
 //Hilfsfunktion für Button deaktivierung
