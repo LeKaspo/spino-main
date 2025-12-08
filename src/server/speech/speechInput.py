@@ -381,12 +381,6 @@ COMMANDS = [
             #"move faster",
             #"increase speed",
         ]
-    },
-    {
-        "name": "test",
-        "phrases": [
-            "test",
-        ]
     }
 ]
 
