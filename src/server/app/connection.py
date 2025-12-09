@@ -4,6 +4,7 @@ import queue
 import json
 import struct
 import time
+import pickle
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
@@ -73,13 +74,30 @@ class connectionHändler:
             conn.close()
             s.close()
 
+    def recv_all(self, sock, n):
+        """Helper function to receive exactly n bytes"""
+        data = bytearray()
+        while len(data) < n:
+            packet = sock.recv(n - len(data))
+            if not packet:
+                return None
+            data.extend(packet)
+        return data
+
     def _getLidar(self):
         s, conn = self._openConnection(IP, PORT_LIDAR)
         try:
             while True:
-                data = conn.recv(BUFFER_SIZE)
-                if not data: break
-                self.lidarQ.put(data)
+                # Empfangen
+                length_data = conn.recv(4)
+                length = struct.unpack('!I', length_data)[0]
+                data = self.recv_all(conn, length)
+
+                realdata = pickle.loads(data)
+
+                self.lidarQ.put(realdata)
+        except KeyboardInterrupt:
+            print("Closed getLidarThread")
         except Exception as e:
             print(f"Error while getting Lidar: {e}")
         finally:
