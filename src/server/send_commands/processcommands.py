@@ -6,11 +6,13 @@ sys.path.append(str(ROOT))
 
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
+from server.send_commands.roaming import  Roaming
 import server.config.config as config
 from .logger import Logger
 
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
+roam = Roaming.getInstance
 
 def ButtonClicked(clickedButton, param = None):
     if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
@@ -21,6 +23,8 @@ def ButtonClicked(clickedButton, param = None):
                 }
             log.write(f"{clickedButton}: {param}", 1)
             undo.put(clickedButton, param)
+            if clickedButton == "setSpeed":
+                config.system_status["cur_speed"] = float(param)
         else:
             data = {
                     "type": clickedButton,
@@ -51,6 +55,15 @@ def ButtonClickedInside(clickedButton):
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
             msg = "LabelerkennungsModus (de)aktiviert"
+        case "moderoaming":
+            if config.system_status.get("roaming_mode_active") is False:
+                ok, msg = roam.start()
+                if ok:
+                    config.system_status["roaming_mode_active"] = True
+            else:
+                ok, msg = roam.stop()
+                if ok:
+                    config.system_status["roaming_mode_active"] = False
     log.write(msg,1)
             
 def ButtonPress(pressedButton):

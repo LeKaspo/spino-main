@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     let currentIndex = 0;
     const img = document.getElementById('stream');
     function updateStream() {
-        img.src = urls[currentIndex] + "&t=" + new Date().getTime(); 
+        img.src = urls[currentIndex]; 
     }
     document.querySelector('.arrow.left').addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + urls.length) % urls.length;
