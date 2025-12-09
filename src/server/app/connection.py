@@ -52,13 +52,13 @@ class connectionHändler:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((IP, PORT))
+            s.listen(1)
+            print(f"Listening on Port {PORT}")
+            conn, _ = s.accept()
+            print(f"Connection on Port {PORT}")
+            return s, conn
         except Exception as e:
             print(f"Error while opening Socket: {e}")
-        s.listen(1)
-        print(f"Listening on Port {PORT}")
-        conn, _ = s.accept()
-        print(f"Connection on Port {PORT}")
-        return s, conn
 
     def _getAudio(self):
         s, conn = self._openConnection(IP, PORT_AUDIO)

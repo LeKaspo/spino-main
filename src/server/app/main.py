@@ -6,14 +6,14 @@ sys.path.append(str(ROOT))
 
 from server.app.connection import connectionHändler
 import server.app.ui as ui
-from server.app.robo_start import RobotSSHController
+#from server.app.robo_start import RobotSSHController
 
 connectionHändler.getInstance()
 
-controller = RobotSSHController(
-    host="192.168.10.42",
-    user="robot"
-)
+# controller = RobotSSHController(
+#     host="192.168.10.42",
+#     user="robot"
+# )
 # controller.run()
 
 ui.start_ui()
