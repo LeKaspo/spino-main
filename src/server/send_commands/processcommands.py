@@ -68,8 +68,8 @@ def ButtonRelease(releasedButton):
         undo.put(command)
 
 def voicecommand(command):
-    commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180"}
-    commandParamsList = {"setSpeedSlower",}
+    commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
+    commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
     if command in commandList:
         data = {
                 "type": command,
@@ -83,13 +83,13 @@ def voicecommand(command):
         match command:
             case "setSpeedSlower":
                 commandClean = "setSpeed"
-                params = {"0.2"}
+                params = {"val1" : 0.2}
             case "setSpeedFaster":
                 commandClean = "setSpeed"
-                params = {"0.8"}
+                params = {"val1" : 0.8}
             case "resetSpeed":
                 commandClean = "setSpeed"
-                params = {"0.5"}
+                params = {"val1" : 0.5}
         data = {
                 "type": commandClean,
                 "params": params
