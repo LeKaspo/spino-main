@@ -15,8 +15,11 @@ get_commands = ROOT / "robo" / "sockets" / "getCommands.py"
 
 
 processes = []
-
-IP = sys.argv[1]
+try:
+    IP = sys.argv[1]
+except Exception as e:
+    print(f"You have to give an IP as argument to the main script")
+    sys.exit(0)
 
 def cleanup():
     """Automatically Executed when programm stops"""
