@@ -11,9 +11,16 @@ import server.app.ui as ui
 import server.config.config as config
 
 
+#from server.app.robo_start import RobotSSHController
 
 connectionHändler.getInstance()
-#start robo
+
+# controller = RobotSSHController(
+#     host="192.168.10.42",
+#     user="robot"
+# )
+# controller.run()
+
 ui.start_ui()
 
 # start threads

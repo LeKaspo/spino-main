@@ -3,6 +3,7 @@ import socket
 import queue
 import json
 import struct
+import time
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
@@ -16,7 +17,7 @@ class connectionHändler:
     _initialized = False
 
     def __new__(cls):
-        print("New Object")
+        print("New Connection Object")
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
@@ -28,11 +29,11 @@ class connectionHändler:
             return
         self._initialized = True
 
-        print("Starting Sockets")
         self.commandQ = queue.Queue()
         self.audioQ = queue.Queue()
         self.lidarQ = queue.Queue()
 
+        print("Starting Connection Threads")
         t1 = threading.Thread(target=self._getAudio, daemon=True)
         t2 = threading.Thread(target=self._getLidar, daemon=True)
         t3 = threading.Thread(target=self._sendCommand, daemon=True)
@@ -48,13 +49,16 @@ class connectionHändler:
 
     @staticmethod
     def _openConnection(IP, PORT):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind((IP, PORT))
-        s.listen(1)
-        print(f"Listening on Port {PORT}")
-        conn, _ = s.accept()
-        print(f"Connection on Port {PORT}")
-        return s, conn
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind((IP, PORT))
+            s.listen(1)
+            print(f"Listening on Port {PORT}")
+            conn, _ = s.accept()
+            print(f"Connection on Port {PORT}")
+            return s, conn
+        except Exception as e:
+            print(f"Error while opening Socket: {e}")
 
     def _getAudio(self):
         s, conn = self._openConnection(IP, PORT_AUDIO)
@@ -65,8 +69,6 @@ class connectionHändler:
                 self.audioQ.put(data)     
         except Exception as e:
             print(f"Error while getting Audio: {e}")
-        except KeyboardInterrupt:
-            print("Closed getAudio Thread")
         finally:
             conn.close()
             s.close()
@@ -80,8 +82,6 @@ class connectionHändler:
                 self.lidarQ.put(data)
         except Exception as e:
             print(f"Error while getting Lidar: {e}")
-        except KeyboardInterrupt:
-            print("Closed getLidarThread")
         finally:
             conn.close()
             s.close()
@@ -98,8 +98,6 @@ class connectionHändler:
                 conn.sendall(pre_len + cmd_json)
         except Exception as e:
             print(f"Error while sending Command: {e}")
-        except KeyboardInterrupt:
-            print("Closed sendCommand Thread")
         finally:
             conn.close()
             s.close()
@@ -112,16 +110,3 @@ class connectionHändler:
     
     def getAudio(self):
         return self.audioQ.get()
-
-
-print("Initializing conn Object")
-conn = connectionHändler.getInstance()
-print("object initailized")
-conn2 = connectionHändler.getInstance()
-
-print(conn == conn2)
-
-if __name__ == "__main__":
-    while True:
-        pass
-

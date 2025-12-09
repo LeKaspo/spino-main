@@ -19,7 +19,7 @@ def ButtonClicked(clickedButton, param = None):
         if param is not None:
             data = {
                     "type": clickedButton,
-                    "params": param
+                    "params": {"val1" : param}
                 }
             log.write(f"{clickedButton}: {param}", 1)
             undo.put(clickedButton, param)
@@ -78,7 +78,7 @@ def ButtonPress(pressedButton):
         }
         command = commands.get(pressedButton, "unknownCommand")
 
-        if command != "unkownCommand":        
+        if command != "unknownCommand":        
             data = {
                     "type": command,
                     "params": {}
@@ -99,7 +99,7 @@ def ButtonRelease(releasedButton):
         }
         command = commands.get(releasedButton, "unknownCommand")
 
-        if command != "unkownCommand":        
+        if command != "unknownCommand":        
             data = {
                     "type": command,
                     "params": {}

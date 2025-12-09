@@ -8,3 +8,10 @@ numpy>=1.26.0
 
 # Visualisierung
 matplotlib>=3.9.0
+
+# Audio Processing
+sounddevice
+soundfile
+scipy
+huggingface_hub
+faster-whisper
