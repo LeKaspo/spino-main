@@ -15,6 +15,7 @@ from robo.movement_control.executor import CommandExecutor
 IP = sys.argv[1]
 PORT = 50003
 
+
 def connect():
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -24,6 +25,7 @@ def connect():
     except Exception as e:
         print(f"Unable to connect: {e}")
 
+
 def getCommands(client):
     try:
         while True:
@@ -31,9 +33,14 @@ def getCommands(client):
             data_len = struct.unpack("!I", pre)[0]
             data = client.recv(data_len)
             if not data: break
+
             command_string = data.decode('utf-8')
             command_json = json.loads(command_string)
+
             print(f"Command Received: {command_json}")
+            if isinstance(command_json, str):
+                command_json = json.loads(command_json)
+                
             if command_json["type"] == "fullstop":
                 emergencyStop()
             else:
@@ -45,6 +52,7 @@ def getCommands(client):
         client.close()
         commandQ.put("STOP")
         print("getCommands Thread was stopped")
+
 
 def execCommands():
     print("Waiting for Commands to execute")
@@ -59,12 +67,14 @@ def execCommands():
     except Exception as e:
         print(f"Error in execCommands: {e}")
 
+
 def emergencyStop():
     with commandQ.mutex:
         commandQ.queue.clear()
     fullstop = {"type": "fullstop", "params": {}}
     commandExc.executeCommand(fullstop)
     print("Emergency Stop")
+
 
 if __name__ == "__main__":
     commandQ = queue.Queue()
