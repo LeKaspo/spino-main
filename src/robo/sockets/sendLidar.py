@@ -4,6 +4,7 @@ import queue
 import pickle
 import struct
 import threading
+import sys
 
 PORT = 50002
 IP = '192.168.0.78'
@@ -26,8 +27,12 @@ class lidarSänder:
         self._initialized = True
 
         self.scanQueue = queue.Queue()
+        
+        socket = self.connectSocket()
+        if socket == None:
+            sys.exit(0)
 
-        sendThread = threading.Thread(target=self._sendLidarData, daemon=True)
+        sendThread = threading.Thread(target=self._sendLidarData, args=(socket,), daemon=True)
         sendThread.start()
 
     @staticmethod
@@ -36,22 +41,27 @@ class lidarSänder:
             lidarSänder._instance = lidarSänder()
         return lidarSänder._instance
 
-    def _sendLidarData(self):
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((IP, PORT))
+    def connectSocket():
+        try:
+            socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            socket.connect((IP, PORT))
+            return socket
+        except Exception as e:
+            print(f"Unable to connect: {e}")
+            return None
+
+    def _sendLidarData(self, socket):  
         try:
             while True:
                 data = pickle.dumps(self.scanQueue.get())
                 print(len(data))
                 length = struct.pack('!I', len(data))
-                client.sendall(length + data)
+                socket.sendall(length + data)
                 time.sleep(0.5)  # Send data every 500ms
         except Exception as e:
             print(f"Error: {e}")
-        except KeyboardInterrupt:
-            print("Programm closed")
         finally:
-            client.close()
+            socket.close()
 
     def putLidarData(self, data):
         self.scanQueue.put(data)
