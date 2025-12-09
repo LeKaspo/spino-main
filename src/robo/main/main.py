@@ -16,19 +16,23 @@ processes = []
 
 IP = sys.argv[1]
 
-p1 = subprocess.Popen(["bash", str(camera_script)])
-processes.append(p1)
 
-# p_audio = subprocess.Popen(["python", str(sendAudio)])
-# processes.append(p_audio)
+try:
+    p1 = subprocess.Popen(["bash", str(camera_script)])
+    processes.append(p1)
 
-# p_lidar = subprocess.Popen(["python", str(sendLidar)])
-# processes.append(p_lidar)
+    # p_audio = subprocess.Popen(["python", str(sendAudio)])
+    # processes.append(p_audio)
 
-p_commands = subprocess.Popen(["python", str(get_commands), IP])
-processes.append(p_commands)
+    # p_lidar = subprocess.Popen(["python", str(sendLidar)])
+    # processes.append(p_lidar)
 
-for p in processes:
-    p.wait()
+    p_commands = subprocess.Popen(["python", str(get_commands), IP])
+    processes.append(p_commands)
+
+    for p in processes:
+        p.wait()
+except Exception as e:
+    print(f"Error in main.py: {e}")
 
 print("Disconnected and Shutdown")

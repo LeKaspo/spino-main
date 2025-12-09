@@ -26,13 +26,12 @@ class CommandExecutor:
             "turn180" : mc.turn180
         }
         
-    def executeCommand(self, commandString):
-        
+    def executeCommand(self, commandString):      
         try:
             if isinstance(commandString, str):
-                print("Loading Command to JSON")
+                #print("Loading Command to JSON")
                 command = json.loads(commandString)
-            print(f"Typ vom Command {type(command)}")
+            #print(f"Typ vom Command {type(command)}")
             command_type = command["type"]
             command_params = list(command["params"].values())
             
