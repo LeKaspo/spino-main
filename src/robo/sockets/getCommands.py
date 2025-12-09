@@ -24,6 +24,7 @@ def connect():
         return client
     except Exception as e:
         print(f"Unable to connect: {e}")
+        return None
 
 
 def getCommands(client):
@@ -40,7 +41,7 @@ def getCommands(client):
             print(f"Command Received: {command_json}")
             if isinstance(command_json, str):
                 command_json = json.loads(command_json)
-                
+
             if command_json["type"] == "fullstop":
                 emergencyStop()
             else:
@@ -81,6 +82,9 @@ if __name__ == "__main__":
     commandExc = CommandExecutor()
 
     client = connect()
+    if client == None:
+        sys.exit(0)
+
 
     print("Starting Command Threads")
     t1 = threading.Thread(target=getCommands, args=(client,), daemon=True)
