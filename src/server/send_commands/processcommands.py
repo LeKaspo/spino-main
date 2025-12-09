@@ -66,7 +66,7 @@ def ButtonPress(pressedButton):
         }
         command = commands.get(pressedButton, "unknownCommand")
 
-        if command != "unkownCommand":        
+        if command != "unknownCommand":        
             data = {
                     "type": command,
                     "params": {}
@@ -87,7 +87,7 @@ def ButtonRelease(releasedButton):
         }
         command = commands.get(releasedButton, "unknownCommand")
 
-        if command != "unkownCommand":        
+        if command != "unknownCommand":        
             data = {
                     "type": command,
                     "params": {}
