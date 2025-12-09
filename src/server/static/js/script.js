@@ -127,26 +127,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     //loger boxen
-    refresh();
-    setInterval(refresh, 2000);
+    const box1 = document.getElementById("box1");
+    const box2 = document.getElementById("box2");
+    const es = new EventSource("/api/logs/stream");
+    es.addEventListener("box1", (evt) => {
+        const payload = JSON.parse(evt.data);
+        box1.value = payload.text || "";
+        box1.scrollTop = box1.scrollHeight;
+    });
+    es.addEventListener("box2", (evt) => {
+        const payload = JSON.parse(evt.data);
+        box2.value = payload.text || "";
+        box2.scrollTop = box2.scrollHeight;
+    });
 });
-
-//hilfsmethoden für logger
-async function fetchBox(box) {
-      const res = await fetch(`/api/logs/${box}`);
-      if (!res.ok) return "";
-      const data = await res.json();
-      return data.text || "";
-}
-async function refresh() {
-    document.getElementById("box1").innerHTML = await fetchBox(1);
-    document.getElementById("box2").innerHTML = await fetchBox(2);
-    scroll();
-}
-function scroll() {
-    document.getElementById("box1").scrollTop = document.getElementById("box1").scrollHeight;
-    document.getElementById("box2").scrollTop =  document.getElementById("box2").scrollHeight;
-}
 
 //Hilfsfunktion für Button deaktivierung
 function deactiveButtons(btnsActive) {
