@@ -20,6 +20,7 @@ along with this code.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import sys
 from pathlib import Path
+import threading
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
@@ -27,7 +28,8 @@ from server.app.connection import connectionHändler
 from server.lidar_slam.obstacle_detection import Object_Detector
 
 def main():
-    BreezySlam()
+    t = threading.Thread(target=BreezySlam,daemon=True)
+    t.start()
 
 
 def BreezySlam():
@@ -104,9 +106,3 @@ def BreezySlam():
         # Display map and robot pose, exiting gracefully if user closes it
         if not viz.display(x/1000., y/1000., theta, mapbytes):
             exit(0)
- 
-
-
-
-if __name__ == "__main__":
-    main()

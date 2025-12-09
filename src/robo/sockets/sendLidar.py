@@ -7,11 +7,12 @@ import threading
 import sys
 
 PORT = 50002
-IP = '192.168.0.78'
+
 class lidarSänder:
 
     _instance = None
     _initialized = False
+    IP = None
 
     def __new__(cls):
         print("New Object")
@@ -40,12 +41,16 @@ class lidarSänder:
         if lidarSänder._instance is None:
             lidarSänder._instance = lidarSänder()
         return lidarSänder._instance
+    
+    @staticmethod
+    def setIP(IP):
+        lidarSänder.IP = IP
 
-    def connectSocket():
+    def connectSocket(self):
         try:
-            socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            socket.connect((IP, PORT))
-            return socket
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((lidarSänder.IP, PORT))
+            return s
         except Exception as e:
             print(f"Unable to connect: {e}")
             return None

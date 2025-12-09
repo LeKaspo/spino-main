@@ -6,6 +6,8 @@ import atexit
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
+from robo.sockets.sendLidar import lidarSänder
+
 camera_script = ROOT / "robo" / "main" / "start_camera.sh"
 sendLidar = ROOT / "robo" / "sockets" / "sendLidar.py"
 sendAudio = ROOT / "robo" / "sockets" / "sendAudio.py"
@@ -37,8 +39,10 @@ try:
     # p_audio = subprocess.Popen(["python", str(sendAudio)])
     # processes.append(p_audio)
 
-    # p_lidar = subprocess.Popen(["python", str(sendLidar)])
-    # processes.append(p_lidar)
+    lidarSänder.getInstance()
+    lidarSänder.setIP(IP)
+    #p_lidar = subprocess.Popen(["python", str(sendLidar)])
+    #processes.append(p_lidar)
 
     p_commands = subprocess.Popen(["python", str(get_commands), IP])
     processes.append(p_commands)

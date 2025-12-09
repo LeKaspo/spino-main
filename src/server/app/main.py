@@ -9,6 +9,7 @@ print(str(ROOT))
 from server.app.connection import connectionHändler
 import server.app.ui as ui
 import server.config.config as config
+import server.lidar_slam.rpslam as lidar
 
 
 #from server.app.robo_start import RobotSSHController
@@ -20,7 +21,10 @@ connectionHändler.getInstance()
 #     user="robot"
 # )
 # controller.run()
-
-ui.start_ui()
+try:
+    lidar.main()
+    ui.start_ui()
+except Exception as e:
+    print(f"ERROR: {e}")
 
 # start threads
