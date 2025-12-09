@@ -52,6 +52,7 @@ def execCommands():
         while True:
             command = commandQ.get()
             if command == "STOP":
+                print("Executor was stopped")
                 break
             commandExc.executeCommand(command)
             print("Command Executed")
