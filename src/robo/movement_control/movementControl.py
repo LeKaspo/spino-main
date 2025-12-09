@@ -51,11 +51,11 @@ class MovementControl:
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnRight(self):
-        self.speedz = -1 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedz = -2 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnLeft(self):
-        self.speedz = 1 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedz = 2 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
     
     def setSpeed(self, speed):
