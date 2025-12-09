@@ -1,8 +1,14 @@
 import threading
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
 import random
 import time
+import server.config.config as config
 
 class Roaming:
     
@@ -15,8 +21,7 @@ class Roaming:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
         return cls._instance
- 
-
+    
     def __init__(self):
         if getattr(self, "initialized", False):
             return
@@ -28,7 +33,6 @@ class Roaming:
         self._lock = threading.Lock()
         self.undo = UndoMovement.getInstance()
 
-    
     @classmethod
     def getInstance(cls):
         return cls()
@@ -52,8 +56,6 @@ class Roaming:
                 self.started = False
                 return False, "Roaming konnte nicht gestartet werden."
 
-
-
     def stop(self):
         with self._lock:
             if not self.started:
@@ -67,27 +69,28 @@ class Roaming:
             self.started = False
         return True, "Spino ist jetzt nicht mehr in Freilandhaltung."
 
-
     def loop(self):
-        sendcommands.sendJson({"type": "setSpeed", "params": {0.2} })
+        sendcommands.sendJson({"type": "setSpeed", "params": {"val1" : 0.2} })
+        config.system_status["cur_speed"] = 0.2
         while not self._stop_event.is_set():
             self.undo.start()
+            print("freilauf")
             for _ in range(3):
-                sendcommands.sendJson({"type": "forwards", "params": {0} })
+                sendcommands.sendJson({"type": "forwards", "params": {} })
                 self.undo.put("forwards")
                 time.sleep(self.getRandTime())
                 dir = self.getRandDir()
-                sendcommands.sendJson({"type": dir, "params": {0} })
+                sendcommands.sendJson({"type": dir, "params": {} })
                 self.undo.put(dir)
                 time.sleep(self.getRandTime())
-                sendcommands.sendJson({"type": "stopForwardsBackwards", "params": {0} })
+                sendcommands.sendJson({"type": "stopForwardsBackwards", "params": {} })
                 self.undo.put("stopForwardsBackwards")
             self.undo.undoMovement()
             
-    def getRandTime():
+    def getRandTime(self):
         return random.uniform(0.1, 1)
     
-    def getRandDir():
+    def getRandDir(self):
         return random.choice(["turnLeft", "turnRight"])
 
         

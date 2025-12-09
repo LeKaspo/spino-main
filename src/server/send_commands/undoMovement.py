@@ -24,7 +24,7 @@ class UndoMovement:
             self.last_x = 0
             self.last_y = 0
             self.last_z = 0
-            self.last_speed = 0
+            self.last_speed = 0.0
             self.started = False
             self.initialized = True 
     
