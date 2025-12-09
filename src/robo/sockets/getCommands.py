@@ -15,13 +15,16 @@ from robo.movement_control.executor import CommandExecutor
 IP = sys.argv[1]
 PORT = 50003
 
-def getCommands():
+def connect():
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client.connect((IP, PORT))
+        print(f"Connection with {IP} on Port {PORT}")
+        return client
     except Exception as e:
-        print(f"Unable to connect: {e}")       
+        print(f"Unable to connect: {e}")
 
+def getCommands(client):
     try:
         while True:
             pre = client.recv(4)
@@ -31,17 +34,17 @@ def getCommands():
             command_string = data.decode('utf-8')
             command_json = json.loads(command_string)
             print(f"Command Received: {command_json}")
-            commandQ.put(command_json)
+            if command_json["type"] == "fullstop":
+                emergencyStop()
+            else:
+                commandQ.put(command_json)
     except Exception as e:
         print(f"Error in getCommands: {e}")
     finally:
+        emergencyStop()
         client.close()
-        with commandQ.mutex:
-            commandQ.queue.clear()
-        fullstop = {"type": "fullstop", "params": {}}
-        commandExc.executeCommand(fullstop)
-        print("Closed getCommands Thread and made Fullstop")
         commandQ.put("STOP")
+        print("getCommands Thread was stopped")
 
 def execCommands():
     print("Waiting for Commands to execute")
@@ -49,21 +52,28 @@ def execCommands():
         while True:
             command = commandQ.get()
             if command == "STOP":
-                print("Executor was stopped")
+                print("execCommands Thread was stopped")
                 break
             commandExc.executeCommand(command)
-            print("Command Executed")
     
     except Exception as e:
         print(f"Error in execCommands: {e}")
 
+def emergencyStop():
+    with commandQ.mutex:
+        commandQ.queue.clear()
+    fullstop = {"type": "fullstop", "params": {}}
+    commandExc.executeCommand(fullstop)
+    print("Emergency Stop")
 
 if __name__ == "__main__":
     commandQ = queue.Queue()
     commandExc = CommandExecutor()
+
+    client = connect()
     
     print("Starting Command Threads")
-    t1 = threading.Thread(target=getCommands, daemon=True)
+    t1 = threading.Thread(target=getCommands, args=(client), daemon=True)
     t2 = threading.Thread(target=execCommands, daemon=True)
 
     t1.start()
@@ -73,5 +83,6 @@ if __name__ == "__main__":
         t1.join()
         t2.join()
     except KeyboardInterrupt:
+        emergencyStop()
         sys.exit(0)
    
