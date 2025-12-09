@@ -4,7 +4,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 from robo.ext_libs.rplidar import RPLidar, RPLidarException
-from robo.lidar.sendLidar import lidarSänder
+from robo.sockets.sendLidar import lidarSänder
 import time
 import threading
 import atexit
