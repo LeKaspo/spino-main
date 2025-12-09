@@ -13,6 +13,19 @@ python -m venv spino_venv
 pip install -r requirements_server.txt
 ```
 
+## Install BreezySLAM and Visualize
+
+You need Python3.11 or lower 
+
+On the Laptop you have to start your venv and then install BreezySLAM and PyRoboViz-master in the models folder 
+
+```bash
+python .\BreezySLAM\python\setup.py install
+
+python .\PyRoboViz-master\PyRoboViz-master\setup.py install
+```
+
+
 ## Drive Spino and see Cameraview
 
 On Linux Laptop, check if you have entered the right IP-Adresses in the sript. Activate the venv (spino_venv) on the laptop, start the connection.py.
