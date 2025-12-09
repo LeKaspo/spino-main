@@ -34,5 +34,8 @@ try:
         p.wait()
 except Exception as e:
     print(f"Error in main.py: {e}")
+    for p in processes:
+        p.terminate()
+        p.wait()
 
 print("Disconnected and Shutdown")
