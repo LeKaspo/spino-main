@@ -74,7 +74,6 @@ def get_logs_box(box: int):
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
-
 @app.get("/api/logs/stream")
 def sse_stream():
     def sse_event(name, payload):
@@ -85,35 +84,25 @@ def sse_stream():
         t2, v2 = logger.read_with_version(2)
         yield sse_event("box1", {"text": t1, "version": v1})
         yield sse_event("box2", {"text": t2, "version": v2})
-
         last_v1, last_v2 = v1, v2
-
         while True:
             with logger._cv:
                 changed = logger._cv.wait(timeout=30)
-
                 t1, v1 = logger.read_with_version(1)
                 t2, v2 = logger.read_with_version(2)
-
                 if v1 != last_v1:
                     last_v1 = v1
                     yield sse_event("box1", {"text": t1, "version": v1})
                 if v2 != last_v2:
                     last_v2 = v2
                     yield sse_event("box2", {"text": t2, "version": v2})
-
                 if not changed:
-                    # Kommentar als Keep-Alive
                     yield ': keep-alive\n\n'
-
     headers = {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        # "Connection": "keep-alive",  # optional
     }
     return Response(stream_with_context(event_stream()), headers=headers)
-
-
 
 def start_ui():
     app.run(host='0.0.0.0', port=5000, debug=False)
