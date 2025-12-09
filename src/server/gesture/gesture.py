@@ -19,6 +19,7 @@ latest_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 lock = threading.Lock()
 last_gesture = None
 last_detection_time = time.time()
+was_stopped = False
 
 hand_options = vision.HandLandmarkerOptions(
     base_options=python.BaseOptions(model_asset_path="src/server/gesture/hand_landmarker.task"),
@@ -47,6 +48,7 @@ def gen_frames():
 def capture_loop():
     global last_detection_time
     global latest_frame
+    global was_stopped
     cap = None
 
     while cap is None or not cap.isOpened():
@@ -71,6 +73,7 @@ def capture_loop():
 
             annotated = rgb.copy()
             if config.system_status["gesture_mode_active"]:
+                was_stopped = False
                 try:
                     hand_result = hand_detector.detect_for_video(mp_image, timestamp_ms)
                 except Exception as e:
@@ -84,7 +87,8 @@ def capture_loop():
                     draw_hand_landmarks(annotated, hand_result)
             
             dt = time.time() - last_detection_time
-            if dt > 3:
+            if dt > 3 and not was_stopped:
+                was_stopped = True
                 processcommands.gesture_command("fist_normal")
                 last_detection_time = time.time()
 
@@ -132,6 +136,7 @@ def draw_hand_landmarks(image, detection_result):
             gesture = classify_gesture(hand_proto.landmark, hand_label)
             if gesture != last_gesture:
                 last_gesture = gesture
+                processcommands.gesture_command("fist_normal")
                 processcommands.gesture_command(gesture)
 
             cv2.putText(image, f"{hand_label} - {gesture}", (text_x, text_y),
