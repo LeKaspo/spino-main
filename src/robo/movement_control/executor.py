@@ -26,16 +26,16 @@ class CommandExecutor:
             "turn180" : mc.turn180
         }
         
-    def executeCommand(self, commandString):
-        
-        if isinstance(commandString, str):
-            print("Loading Command to JSON")
-            command = json.loads(commandString)
-        print(f"Typ vom Command {type(command)}")
-        command_type = command["type"]
-        command_params = list(command["params"].values())
-        
-        if (command_params == []):
-            self.command_dict[command_type]()
-        else:
-            self.command_dict[command_type](*command_params)
+    def executeCommand(self, command):      
+        try:
+            if isinstance(command, str):             
+                command = json.loads(command)
+            command_type = command["type"]
+            command_params = list(command["params"].values())
+            
+            if (command_params == []):
+                self.command_dict[command_type]()
+            else:
+                self.command_dict[command_type](*command_params)
+        except Exception as e:
+            print(f"Error while executing Command: {e}")
