@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 import subprocess
-import time
+import atexit
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
@@ -16,6 +16,19 @@ processes = []
 
 IP = sys.argv[1]
 
+def cleanup():
+    """Automatically Executed when programm stops"""
+    print("\nStopping Processes...")
+    for p in processes:
+        p.terminate()
+    for p in processes:
+        try:
+            p.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            p.kill()
+    print("All Processes stopped")
+
+atexit.register(cleanup)
 
 try:
     p1 = subprocess.Popen(["bash", str(camera_script)])
@@ -32,10 +45,9 @@ try:
 
     for p in processes:
         p.wait()
+except KeyboardInterrupt:
+    print("Programm stopped by Keyboard Interrupt")
 except Exception as e:
     print(f"Error in main.py: {e}")
-    for p in processes:
-        p.terminate()
-        p.wait()
 
 print("Disconnected and Shutdown")

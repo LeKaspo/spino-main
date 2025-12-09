@@ -38,10 +38,7 @@ def getCommands():
         client.close()
         with commandQ.mutex:
             commandQ.queue.clear()
-        fullstop = {
-                "type": "fullstop",
-                "params": {}
-            }
+        fullstop = {"type": "fullstop", "params": {}}
         commandExc.executeCommand(fullstop)
         print("Closed getCommands Thread and made Fullstop")
         commandQ.put("STOP")
