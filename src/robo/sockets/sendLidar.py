@@ -52,7 +52,7 @@ class lidarSänder:
             s.connect((lidarSänder.IP, PORT))
             return s
         except Exception as e:
-            print(f"Unable to connect: {e}")
+            print(f"Unable to connect Lidar Socket: {e}")
             return None
 
     def _sendLidarData(self, socket):  
