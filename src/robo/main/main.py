@@ -39,8 +39,9 @@ try:
     # p_audio = subprocess.Popen(["python", str(sendAudio)])
     # processes.append(p_audio)
 
-    lidarSänder.getInstance()
     lidarSänder.setIP(IP)
+    lidarSänder.getInstance()
+    
     #p_lidar = subprocess.Popen(["python", str(sendLidar)])
     #processes.append(p_lidar)
 
