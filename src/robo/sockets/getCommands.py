@@ -71,9 +71,9 @@ if __name__ == "__main__":
     commandExc = CommandExecutor()
 
     client = connect()
-    
+
     print("Starting Command Threads")
-    t1 = threading.Thread(target=getCommands, args=(client), daemon=True)
+    t1 = threading.Thread(target=getCommands, args=(client,), daemon=True)
     t2 = threading.Thread(target=execCommands, daemon=True)
 
     t1.start()
