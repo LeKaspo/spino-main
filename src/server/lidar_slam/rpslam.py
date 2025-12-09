@@ -51,6 +51,7 @@ def BreezySlam():
         from roboviz import MapVisualizer
     except Exception as e:
         print(f"Breezy Import failed: {e}")
+        sys.exit(0)
 
 
     # Create an RMHC SLAM object with a laser model and optional robot model
