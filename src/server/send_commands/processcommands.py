@@ -6,72 +6,104 @@ sys.path.append(str(ROOT))
 
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
+import server.config.config as config
+from .logger import Logger
 
+undo = UndoMovement.getInstance()
+log = Logger.getInstance()
 
-def ButtonClicked(clickedButton):
-    data = {
-            "type": clickedButton,
-            "params": {}
-        }
-    sendcommands.sendJson(json.dumps(data))
-    undo = UndoMovement.getInstance()
-    undo.put(clickedButton)
+def ButtonClicked(clickedButton, param = None):
+    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
+        if param is not None:
+            data = {
+                    "type": clickedButton,
+                    "params": {"val1" : param}
+                }
+            log.write(f"{clickedButton}: {param}", 1)
+        else:
+            data = {
+                    "type": clickedButton,
+                    "params": {}
+                }
+            log.write(clickedButton,1)
+        sendcommands.sendJson(json.dumps(data))
+        undo.put(clickedButton)
+        
+
 
 def ButtonClickedInside(clickedButton):
-    undo = UndoMovement.getInstance()
+    msg = ""
     match clickedButton:
         case "start":
             undo.start()
+            msg = "starte Routen Aufnahme"
         case "undoMovement":
             undo.undoMovement()
-
+            msg = "Spino kommt zurück"
+        case "modebtn":
+            config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
+            msg = "Tastensteuerung (de)aktiviert"
+        case "modevoice":
+            config.system_status["voice_mode_active"] = not config.system_status["voice_mode_active"]
+            msg = "Sprachsteuerung (de)aktiviert"
+        case "modegesture":
+            config.system_status["gesture_mode_active"] = not config.system_status["gesture_mode_active"]
+            msg = "Gestensteuerung (de)aktiviert"
+        case "modelabel":
+            config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
+            msg = "LabelerkennungsModus (de)aktiviert"
+    log.write(msg,1)
+            
 def ButtonPress(pressedButton):
-    commands = {
-        "w": "forwards",
-        "a": "left",
-        "s": "backwards",
-        "d": "right",
-        "q": "turnLeft",
-        "e": "turnRight"
-    }
-    command = commands.get(pressedButton, "unknownCommand")
+    if (config.system_status["button_mode_active"] == True):
+        commands = {
+            "w": "forwards",
+            "a": "left",
+            "s": "backwards",
+            "d": "right",
+            "q": "turnLeft",
+            "e": "turnRight"
+        }
+        command = commands.get(pressedButton, "unknownCommand")
 
-    if command != "unkownCommand":        
-        data = {
-                "type": command,
-                "params": {}
-            }
-        sendcommands.sendJson(json.dumps(data))
-    
-        undo = UndoMovement.getInstance()
-        undo.put(command)
+        if command != "unknownCommand":        
+            data = {
+                    "type": command,
+                    "params": {}
+                }
+            sendcommands.sendJson(json.dumps(data))
+            undo.put(command)
+            log.write(command,1)
 
 def ButtonRelease(releasedButton):
-    commands = {
-        "w": "stopForwardsBackwards",
-        "s": "stopForwardsBackwards",
-        "a": "stopLeftRight",
-        "d": "stopLeftRight",
-        "q": "stopRotate",
-        "e": "stopRotate"
-    }
-    command = commands.get(releasedButton, "unknownCommand")
+    if (config.system_status["button_mode_active"] == True):
+        commands = {
+            "w": "stopForwardsBackwards",
+            "s": "stopForwardsBackwards",
+            "a": "stopLeftRight",
+            "d": "stopLeftRight",
+            "q": "stopRotate",
+            "e": "stopRotate"
+        }
+        command = commands.get(releasedButton, "unknownCommand")
 
-    if command != "unkownCommand":        
-        data = {
-                "type": command,
-                "params": {}
-            }
-        sendcommands.sendJson(json.dumps(data))
+        if command != "unknownCommand":        
+            data = {
+                    "type": command,
+                    "params": {}
+                }
+            sendcommands.sendJson(json.dumps(data))
+            undo.put(command)
+            log.write(command,1)
 
-        undo = UndoMovement.getInstance()
-        undo.put(command)
 
 def voicecommand(command):
-    data = {
+    if (config.system_status["voice_mode_active"] == True):
+        data = {
             "type": command,
             "params": {}
         }
-    sendcommands.sendJson(json.dumps(data))
-    
+        sendcommands.sendJson(json.dumps(data))
+        log.write(command,1)
 
+    
