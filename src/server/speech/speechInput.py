@@ -362,6 +362,7 @@ COMMANDS = [
     {
         "name": "setSpeedSlower",
         "phrases": [
+            "langsam",
             "langsamer",
             "weniger schnell",
             "reduziere die geschwindigkeit",
@@ -374,12 +375,25 @@ COMMANDS = [
     {
         "name": "setSpeedFaster",
         "phrases": [
+            "schnell",
             "schneller",
             "erhöhe die geschwindigkeit",
             "steigere die geschwindigkeit",
             #"go faster",
             #"move faster",
             #"increase speed",
+        ]
+    },
+    {
+        "name": "resetSpeed",
+        "phrases": [
+            "normale geschwindigkeit",
+            "standard geschwindigkeit",
+            "setze geschwindigkeit zurück",
+            "setze die geschwindigkeit zurück",
+            "normal speed",
+            "default speed",
+            "reset speed",
         ]
     }
 ]

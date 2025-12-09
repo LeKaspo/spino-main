@@ -87,6 +87,9 @@ def voicecommand(command):
             case "setSpeedFaster":
                 commandClean = "setSpeed"
                 params = {"0.8"}
+            case "resetSpeed":
+                commandClean = "setSpeed"
+                params = {"0.5"}
         data = {
                 "type": commandClean,
                 "params": params
