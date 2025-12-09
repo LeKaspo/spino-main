@@ -19,7 +19,7 @@ lock = threading.Lock()
 last_gesture = None
 
 hand_options = vision.HandLandmarkerOptions(
-    base_options=python.BaseOptions("hand_landmarker.task"),
+    base_options=python.BaseOptions(model_asset_path="hand_landmarker.task"),
     num_hands=4,
     running_mode=vision.RunningMode.VIDEO
 )
