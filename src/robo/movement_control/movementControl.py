@@ -72,8 +72,8 @@ class MovementControl:
         
 
     def turn180(self):
-        self.g_bot.set_car_motion(0,0,-1)
-        time.sleep(3.59)
+        self.g_bot.set_car_motion(0,0,-2)
+        time.sleep(1.795)
         self.fullstop()
 
     def test(self):
