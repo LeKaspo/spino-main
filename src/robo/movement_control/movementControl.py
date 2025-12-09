@@ -59,6 +59,7 @@ class MovementControl:
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
     
     def setSpeed(self, speed):
+        speed = float(speed)
         self.speed = speed
         if self.speed > 0 and self.speedx > 0:
             self.speedx = self.speed
