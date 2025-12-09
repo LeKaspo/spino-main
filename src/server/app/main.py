@@ -21,10 +21,10 @@ connectionHändler.getInstance()
 #     user="robot"
 # )
 # controller.run()
+thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
+thread_gesture.start()
 
 ui.start_ui()
 
 # start threads
 
-t = threading.Thread(target=gesture.capture_loop, daemon=True)
-t.start()

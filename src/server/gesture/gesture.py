@@ -13,14 +13,16 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 import server.send_commands.processcommands as processcommands
+import server.config.config as config
 
 latest_frame = np.zeros((480, 640, 3), dtype=np.uint8)
 lock = threading.Lock()
 last_gesture = None
+last_detection_time = time.time()
 
 hand_options = vision.HandLandmarkerOptions(
-    base_options=python.BaseOptions(model_asset_path="hand_landmarker.task"),
-    num_hands=4,
+    base_options=python.BaseOptions(model_asset_path="src/server/gesture/hand_landmarker.task"),
+    num_hands=1,
     running_mode=vision.RunningMode.VIDEO
 )
 hand_detector = vision.HandLandmarker.create_from_options(hand_options)
@@ -43,6 +45,7 @@ def gen_frames():
                b'\r\n')
 
 def capture_loop():
+    global last_detection_time
     global latest_frame
     cap = None
 
@@ -66,15 +69,24 @@ def capture_loop():
             mp_image = Image(image_format=ImageFormat.SRGB, data=rgb)
             timestamp_ms = int(time.time() * 1000)
 
-            try:
-                hand_result = hand_detector.detect_for_video(mp_image, timestamp_ms)
-            except Exception as e:
-                print("HandLandmarker Error:", e)
-                hand_result = None
-
             annotated = rgb.copy()
-            if hand_result:
-                draw_hand_landmarks(annotated, hand_result)
+            if config.system_status["gesture_mode_active"]:
+                try:
+                    hand_result = hand_detector.detect_for_video(mp_image, timestamp_ms)
+                except Exception as e:
+                    print("HandLandmarker Error:", e)
+                    hand_result = None
+
+                if hand_result and len(hand_result.hand_landmarks) > 0:
+                    last_detection_time = time.time()
+
+                if hand_result:
+                    draw_hand_landmarks(annotated, hand_result)
+            
+            dt = time.time() - last_detection_time
+            if dt > 3:
+                processcommands.gesture_command("fist_normal")
+                last_detection_time = time.time()
 
             output = cv2.cvtColor(annotated, cv2.COLOR_RGB2BGR)
 
