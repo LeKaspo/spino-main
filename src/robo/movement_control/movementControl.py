@@ -52,11 +52,11 @@ class MovementControl:
         self.g_bot.set_colorful_effect(6)
 
     def turnRight(self):
-        self.speedz = -1 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedz = -2 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turnLeft(self):
-        self.speedz = 1 #drehen immer auf voller geschwindigkeit weil das ist langsam
+        self.speedz = 2 #drehen immer auf voller geschwindigkeit weil das ist langsam
         self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
     
     def setSpeed(self, speed):
@@ -73,8 +73,8 @@ class MovementControl:
         
 
     def turn180(self):
-        self.g_bot.set_car_motion(0,0,-1)
-        time.sleep(3.59)
+        self.g_bot.set_car_motion(0,0,-2)
+        time.sleep(1.8675)
         self.fullstop()
 
         
