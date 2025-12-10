@@ -4,7 +4,25 @@ body {
     font-family: sans-serif;      
     font-size: 1rem;
 }
+.container {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    width: 100%;
+  }
 
+/* if the display is wide show things next to eachother */
+@media (min-width: 800px) {
+    .container {
+      flex-direction: row; 
+      align-items: stretch;
+    }
+    .video-container { width: 70%; }
+}
+
+/* css for the video stream */
 .video-container {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -15,25 +33,57 @@ body {
   width: 100%;
   height: auto;
   border-radius: 8px;
+  position: absolute;       
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;    
+  border-radius: 8px;
+}
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0);
+    font-size: 2rem;
+    padding: 10px;
+    background-color: #ffffff53;
+}
+.arrow.left {
+    left: 10px;
+}
+.arrow.right {
+    right: 10px; 
+}
+.arrow:hover {
+    background-color: #ffffff53;
+}
+#video-description {
+  position: absolute;
+  padding: 3px;
+  margin: 2px;
+  color: black;
+  background-color: #ffffff53;
+  border-radius: 5px;
 }
 
-.container {
-    display: flex;
-    flex-direction: column; 
-    gap: 10px;
-    padding: 0.5rem;
-    box-sizing: border-box;
-    width: 100%;
-
-  }
-@media (min-width: 800px) {
-    .container {
-      flex-direction: row; 
-      align-items: stretch;
-    }
-    .video-container { width: 70%; }
+/* ccs for the buttons */
+button {
+  max-width: calc(3 * 80px + 2 * 10px);
+  min-height: 45px;
+  border: none;
+  border-radius: 8px;
 }
-
+button:hover {
+    background-color: #b5c5d5;
+}
+input {
+  border: none;
+  border-radius: 8px;
+}
+input:hover {
+    background-color: #b5c5d5;
+}
 .buttons {
     display: flex;
     flex-direction: column; 
@@ -49,7 +99,6 @@ body {
 .row button {
     flex: 1;
 }
-
 .controller {
     display: grid;
     grid-template-columns: repeat(3, 80px);
@@ -67,52 +116,17 @@ body {
 #s { grid-column: 2; grid-row: 2; }
 #d { grid-column: 3; grid-row: 2; }
 
-button {
-  max-width: calc(3 * 80px + 2 * 10px);
-  min-height: 45px;
-  border: none;
-  border-radius: 8px;
-}
-button:hover {
-    background-color: #b5c5d5;
-}
-
-.arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0);
-    font-size: 2rem;
-    padding: 10px;
-}
-.arrow.left {
-    left: 10px;
-}
-.arrow.right {
-    right: 10px; 
-}
-.arrow:hover {
-    background-color: #ffffff53;
-}
-
-#video-description {
-  position: absolute;
-  padding: 3px;
-  margin: 2px;
-  color: black;
-}
-#video-description:hover {
-    background-color: #ffffff53;
-    border-radius: 5px;
-}
-
 .active {
-    border: 5px solid rgb(100, 149, 255);
+    background:  #b8d5b5;
 }
 .deactivated {
     background: rgba(255, 255, 255, 0.5);
 }
+.deactivated:hover {
+    background-color:rgba(255, 255, 255, 0.5);
+}
 
+/* css for the log boxes */
 .logBox {
   width: 100%;
   min-height: 200px;       
@@ -128,20 +142,24 @@ button:hover {
   box-sizing: border-box;
   resize: none;
 }
-
 .labelbox {
+  position: relative;
   flex: 1;          
   min-width: 0;    
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
-
-#stream {
-  position: absolute;       
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;    
-  border-radius: 8px;
+.clearbtn {
+  position: absolute;
+  top: -11px;               
+  right: 0;            
+  background: transparent;
+  color: white;
+  border: none;
 }
-
+.clearbtn:hover {
+    background-color: rgba(0, 0, 0, 0);
+    color: #b5c5d5;
+}
 

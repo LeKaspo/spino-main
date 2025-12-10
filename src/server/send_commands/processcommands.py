@@ -9,12 +9,14 @@ from server.send_commands.undoMovement import  UndoMovement
 import server.config.config as config
 from .logger import Logger
 
+#get instances from utility singeltons
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
 
+#handle diffrent kinds of buttons
 def ButtonClicked(clickedButton, param = None):
-    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
-        if param is not None:
+    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop" or clickedButton == "setSpeed":
+        if param is not None: # if relevant sent param and update system_status
             data = {
                     "type": clickedButton,
                     "params": {"val1" : param}
@@ -37,22 +39,25 @@ def ButtonClickedInside(clickedButton):
     match clickedButton:
         case "start":
             undo.start()
-            msg = "starte Routen Aufnahme"
+            msg = "start record route"
         case "undoMovement":
             undo.undoMovement()
-            msg = "Spino kommt zurück"
+            msg = "Spino is comming back"
+        case "safevideo":
+            # TODO: methoden aufruf wür das video speichern
+            msg = "video safed"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
-            msg = "Tastensteuerung (de)aktiviert"
+            msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"
         case "modevoice":
             config.system_status["voice_mode_active"] = not config.system_status["voice_mode_active"]
-            msg = "Sprachsteuerung (de)aktiviert"
+            msg = "voice control active" if config.system_status["voice_mode_active"] else "voice control deactivated"
         case "modegesture":
             config.system_status["gesture_mode_active"] = not config.system_status["gesture_mode_active"]
-            msg = "Gestensteuerung (de)aktiviert"
+            msg = "gesture control active" if config.system_status["gesture_mode_active"] else "gesture control deactivated"
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
-            msg = "LabelerkennungsModus (de)aktiviert"
+            msg = "label recognition active" if config.system_status["label_mode_active"] else "label recognition deactivated"
     log.write(msg,1)
             
 def ButtonPress(pressedButton):
@@ -66,7 +71,6 @@ def ButtonPress(pressedButton):
             "e": "turnRight"
         }
         command = commands.get(pressedButton, "unknownCommand")
-
         if command != "unknownCommand":        
             data = {
                     "type": command,
@@ -75,7 +79,6 @@ def ButtonPress(pressedButton):
             sendcommands.sendJson(json.dumps(data))
             undo.put(command)
             log.write(command,1)
-
 def ButtonRelease(releasedButton):
     if (config.system_status["button_mode_active"] == True):
         commands = {
@@ -87,7 +90,6 @@ def ButtonRelease(releasedButton):
             "e": "stopRotate"
         }
         command = commands.get(releasedButton, "unknownCommand")
-
         if command != "unknownCommand":        
             data = {
                     "type": command,
@@ -97,6 +99,7 @@ def ButtonRelease(releasedButton):
             undo.put(command)
             log.write(command,1)
 
+# handle commands from other inputs
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
         data = {
@@ -104,8 +107,7 @@ def voicecommand(command):
             "params": {}
         }
         sendcommands.sendJson(json.dumps(data))
-        log.write(command,1)
-    sendcommands.sendJson(json.dumps(data))
+        log.write(f"from voice input: {command}",1)
 
 def gesture_command(gesture):
     gesture_commands = {
@@ -127,3 +129,4 @@ def gesture_command(gesture):
                 "params": {}
             }
         sendcommands.sendJson(json.dumps(data))
+        log.write(f"from gesture input: {command}",1)

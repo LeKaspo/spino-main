@@ -21,7 +21,7 @@ logger = Logger.getInstance()
 def index():
     return render_template("index.html")
 
-#verarbeite Button und Tasteneingaben
+#endpoints that route the button and key presses from javascript to prossescommands.py to be executed
 @app.route('/button-click', methods=['POST'])
 def button_click():
     data = request.get_json()
@@ -56,7 +56,7 @@ def key_up():
     processcommands.ButtonRelease(f"{data['key']}")
     return '', 204
 
-# zugriff auf config
+# endpoint for getting the config information to and from the javascript
 @app.get("/api/config")
 def get_config():
     return  config.system_status
@@ -66,15 +66,7 @@ def update_config():
     config.system_status = data
     return '', 204
 
-# text logs
-@app.get("/api/logs/<int:box>")
-def get_logs_box(box: int):
-    try:
-        text = logger.read(box)
-        return jsonify({"box": box, "text": text})
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
-
+# get the log box text if updated
 @app.get("/api/logs/stream")
 def sse_stream():
     def sse_event(name, payload):
@@ -104,10 +96,19 @@ def sse_stream():
         "Cache-Control": "no-cache",
     }
     return Response(stream_with_context(event_stream()), headers=headers)
+# clear log box
+@app.post("/api/clear")
+def clearLogger():
+    data = request.get_json()
+    logger.clear(int(data['id']))
+    logger.write("console cleared",int(data['id'])) # log box os cleared but only updtatet on the next write
+    return '', 204
 
+# source for the gsture control video
 @app.route('/video_gesture', endpoint='video_gesture')
 def video_feed():
     return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
+# starting method
 def start_ui():
     app.run(host='0.0.0.0', port=5000, debug=False)
