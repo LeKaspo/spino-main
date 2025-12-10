@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 from robo.sockets.sendLidar import lidarSänder
+import robo.lidar.LidarSlam as LidarSlam
 
 camera_script = ROOT / "robo" / "main" / "start_camera.sh"
 sendLidar = ROOT / "robo" / "sockets" / "sendLidar.py"
@@ -44,6 +45,8 @@ try:
 
     lidarSänder.setIP(IP)
     lidarSänder.getInstance()
+
+    LidarSlam.main()
     
     #p_lidar = subprocess.Popen(["python", str(sendLidar)])
     #processes.append(p_lidar)

@@ -61,14 +61,15 @@ class RoboLidar:
         self._update_thread = threading.Thread(target=self._update, args=(self.max_distance, self.min_distance))
         self._update_thread.start()
 
-    def start_tcp_tread(self):
+    def start_tcp_thread(self):
         '''
         Call this method once, to start sending the self.latest_scan() to a remote socket continuously.
         Parameters:
         - ip: IP address of the target machine
         - port: Port on the target machine
         '''
-        self._tcp_thread = threading.Thread(target=self._send_lidar_data())
+        print("Hello im in the start_tcp_thread")
+        self._tcp_thread = threading.Thread(target=self._send_lidar_data)
         self._tcp_thread.start()
 
     def start_object_detection_thread(self):
@@ -156,7 +157,7 @@ def main():
         robolidar.start_working_thread()
         print("Started working thread")
 
-        robolidar.start_tcp_tread()
+        robolidar.start_tcp_thread()
         print("Started tcp thread")
         
         '''
