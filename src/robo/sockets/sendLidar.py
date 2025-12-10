@@ -59,7 +59,6 @@ class lidarSänder:
         try:
             while True:
                 data = pickle.dumps(self.scanQueue.get())
-                print(len(data))
                 length = struct.pack('!I', len(data))
                 socket.sendall(length + data)
                 time.sleep(0.5)  # Send data every 500ms
