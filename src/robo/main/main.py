@@ -38,7 +38,7 @@ atexit.register(cleanup)
 
 try:
     
-    print("\n"*3)
+    print("\n")
     print("Starting Camera Stream")
     print("="*50)
     p1 = subprocess.Popen(["bash", str(camera_script)])
