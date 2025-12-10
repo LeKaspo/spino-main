@@ -9,7 +9,7 @@ import pickle
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = '192.168.0.4'
+IP = '192.168.0.78'
 BUFFER_SIZE = 128
 
 class connectionHändler:

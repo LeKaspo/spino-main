@@ -14,17 +14,11 @@ health = lidar.get_health()
 print(health)
 
 
-while True:
-            try:
-                print("Try enumerate")
-                for i, scan in enumerate(lidar.iter_scans()):
-            
-                    # Update latest_scan
-                    if i % 5 == 0:
-                        print(scan)
-            except RPLidarException:
-                print("Rplidar Exception")
-                lidar.clean_input()
+for i, scan in enumerate(lidar.iter_scans()):
+    print(type(scan))
+    print(scan)
+    if i > 10:
+        break
 
 lidar.stop()
 lidar.stop_motor()
