@@ -59,6 +59,7 @@ class lidarSänder:
     def _sendLidarData(self, socket):  
         try:
             while True:
+                print("sending Lidar Data")
                 data = pickle.dumps(self.scanQueue.get())
                 print(len(data))
                 length = struct.pack('!I', len(data))
