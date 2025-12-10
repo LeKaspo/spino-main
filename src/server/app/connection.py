@@ -94,7 +94,6 @@ class connectionHändler:
                 data = self.recv_all(conn, length)
 
                 realdata = pickle.loads(data)
-                print("received Lidar Data")
                 self.lidarQ.put(realdata)
         except KeyboardInterrupt:
             print("Closed getLidarThread")
