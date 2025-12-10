@@ -653,7 +653,9 @@ def run_file(args):
         handle_utterance(wmodel, samples, args.language, args.dump_utterances, meta)
 
 def start():
-    speech_thread = threading.Thread(target=main, name="SpeechThread", daemon=False)
+    speech_thread = threading.Thread(target=main, name="SpeechThread", daemon=True)
+    speech_thread.start()
+
 
 def main():
     parser = argparse.ArgumentParser(
