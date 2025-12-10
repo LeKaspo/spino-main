@@ -70,7 +70,7 @@ class MovementControl:
             self.speedy = self.speed
         if self.speed > 0 and self.speedy < 0:
             self.speedy = -self.speed
-        
+        self.g_bot.set_car_motion(self.speedx,self.speedy,self.speedz)
 
     def turn180(self):
         self.g_bot.set_car_motion(0,0,-2)
