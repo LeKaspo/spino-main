@@ -62,7 +62,15 @@ def get_config():
 @app.post("/api/config")
 def update_config():
     data = request.get_json()
-    config.system_status = data
+    allowed_keys = {
+            "button_mode_active",
+            "voice_mode_active",
+            "gesture_mode_active",
+            "label_mode_active",
+        }
+    for key in allowed_keys:
+        if key in data:
+            config.system_status[key] = bool(data[key])
     return '', 204
 
 # text logs
