@@ -49,25 +49,27 @@ try:
     #p_audio = subprocess.Popen(["python", str(sendAudio)])
     #processes.append(p_audio)
 
-    print("\n"*3)
+    print("\n")
     print("="*50)
     print("Starting Lidar Connection")
     lidarSänder.setIP(IP)
     lidarSänder.getInstance()
     time.sleep(1)
 
-    print("\n"*3)
+    print("\n")
     print("Starting SLAM")
     print("="*50)
     LidarSlam.main()
     time.sleep(1)
 
-    print("\n"*3)
+    print("\n")
     print("Starting Command Connection")
     print("="*50)
     p_commands = subprocess.Popen(["python", str(get_commands), IP])
     processes.append(p_commands)
     time.sleep(1)
+
+    print("\n")
 
     for p in processes:
         p.wait()
