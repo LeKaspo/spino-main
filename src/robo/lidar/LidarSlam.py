@@ -87,7 +87,7 @@ class RoboLidar:
         print("in update")
         while True:
             try:
-                for i, scan in enumerate(self.lidar.iter_scans(scan_type='express')):
+                for i, scan in enumerate(self.lidar.iter_scans()): #scan_type='express'
                     if self._stop_update_thread:
                         break
             
