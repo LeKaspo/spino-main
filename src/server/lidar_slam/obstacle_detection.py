@@ -20,6 +20,12 @@ class Object_Detector:
             
             self.latest_obstacle = [False, False, False]
 
+            self.start_object_detection_thread()
+
+
+
+
+            self.start_object_detection_thread()
         
         def start_object_detection_thread(self):
             self._object_detection_thread = threading.Thread(target=self._object_detection, args=())
@@ -52,20 +58,6 @@ class Object_Detector:
             while not self._stop_object_detection_thread:
                 if self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]:
                     print("Clear Queue and Fullstop")
-                time.sleep(0.5)
+                time.sleep(0.25)
 
             
-
-
-if __name__ == "__main__":
-    o = Object_Detector
-    
-    conn = connectionHändler.getInstance()
-
-
-    try:
-        o.start_object_detection_thread()
-        while True:
-             o.get_scan(conn.getLidar())
-    finally:
-        del o

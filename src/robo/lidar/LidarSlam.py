@@ -126,8 +126,8 @@ class RoboLidar:
 
                         self.last_scan = self.latest_scan
 
-                        #filtered_scan = [measure for measure in self.latest_scan if (measure[1] >= 270 or measure[1] <= 90)]
-                        self.sender.putLidarData(self.latest_scan)
+                        filtered_scan = [measure for measure in self.latest_scan if ((measure[1] >= 270 or measure[1] <= 90) and measure[2] <= 3000)]
+                        self.sender.putLidarData(filtered_scan)
 
             except Exception as e:
                 print(f"Error in sending data: {e}")
