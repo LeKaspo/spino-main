@@ -34,7 +34,6 @@ def main():
 
 
 def BreezySlam():
-    print("Starting Breezy Function")
     conn = connectionHändler.getInstance()
     detector = Object_Detector()
 
@@ -54,6 +53,7 @@ def BreezySlam():
         from roboviz import MapVisualizer # type: ignore
     except Exception as e:
         print(f"Breezy Import failed: {e}")
+        print("Install BreezySLAM and Visualize as stated in docs")
         sys.exit(0)
 
 
@@ -75,18 +75,14 @@ def BreezySlam():
 
 
     while True:
-        print("Entering SLAM loop")
         # Extract (quality, angle, distance) triples from current scan
         scan = conn.getLidar()
         detector.get_scan(scan)
         items = [item for item in scan]
-        print(items)
 
         # Extract distances and angles from triples
         distances = [item[2] for item in items]
         angles    = [item[1] for item in items]
-
-        print(len(distances))
 
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:
@@ -96,18 +92,14 @@ def BreezySlam():
 
         # If not adequate, use previous
         elif previous_distances is not None:
-            print("Use previous")
             slam.update(previous_distances, scan_angles_degrees=previous_angles)
 
         # Get current robot position
         x, y, theta = slam.getpos()
-        print(f"{x} + {y}")
 
         # Get current map bytes as grayscale
         slam.getmap(mapbytes)
 
-        print("Starting Display")
         # Display map and robot pose, exiting gracefully if user closes it
         if not viz.display(x/1000., y/1000., theta, mapbytes):
-            print("Exiting SLAM Thread")
             exit(0)

@@ -15,15 +15,14 @@ class lidarSänder:
     IP = None
 
     def __new__(cls):
-        print("New Object")
+        print("Initializing new LidarSänder Singleton")
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self):
-        print("Initialize Singleton")
         if hasattr(self, "_initialized") and self._initialized:
-            print("Singleton Already Initialized")
+            print("LidarSänder Singleton Already Initialized")
             return
         self._initialized = True
 
@@ -59,14 +58,13 @@ class lidarSänder:
     def _sendLidarData(self, socket):  
         try:
             while True:
-                print("sending Lidar Data")
                 data = pickle.dumps(self.scanQueue.get())
                 print(len(data))
                 length = struct.pack('!I', len(data))
                 socket.sendall(length + data)
                 time.sleep(0.5)  # Send data every 500ms
         except Exception as e:
-            print(f"Error: {e}")
+            print(f"Error while sending Lidar: {e}")
         finally:
             socket.close()
 

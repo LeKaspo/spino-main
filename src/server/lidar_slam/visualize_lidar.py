@@ -22,9 +22,9 @@ lidar_lock = threading.Lock()
 def lidar_data_collector(connector):
     global lidar_points
    
-    print("🔍 LIDAR SAMMLER GESTARTET")
-    print(f"   Min Distanz: {MIN_DISTANCE/10:.1f} cm")
-    print(f"   Max Distanz: {MAX_DISTANCE/10:.1f} cm")
+    print("🔍 LIDAR COLLECTOR STARTED")
+    print(f"   Min Distance: {MIN_DISTANCE/10:.1f} cm")
+    print(f"   Max Distance: {MAX_DISTANCE/10:.1f} cm")
    
     while True:
         try:
@@ -59,7 +59,7 @@ def lidar_data_collector(connector):
             time.sleep(0.05)
            
         except Exception as ex:
-            print(f"Fehler: {ex}")
+            print(f"Error in LidarDataCollector: {ex}")
             time.sleep(0.5)
  
 def visualize_loop():
@@ -238,10 +238,10 @@ def visualize_loop():
             plt.pause(0.1)
            
         except KeyboardInterrupt:
-            print("\n[Visualisierung] Beendet")
+            print("\n[Visualization] stopped")
             break
         except Exception as ex:
-            print(f"Visualisierung Fehler: {ex}")
+            print(f"Visualization Error: {ex}")
             import traceback
             traceback.print_exc()
             time.sleep(0.5)
