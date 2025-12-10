@@ -333,9 +333,9 @@ COMMANDS = [
     {
         "name": "garmin",
         "phrases": [
-            "okay garmin",
-            "ok garmin",
-            "hey garmin",
+            " garmin",
+            " gamin",
+            " garmen",
         ]
     },
     {
