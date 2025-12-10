@@ -1,7 +1,8 @@
-from server.app.connection import connectionHändler
+import server.send_commands.sendcommands as sendcommands
 import threading
 import time
 import sys
+import json
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
@@ -19,10 +20,13 @@ class Object_Detector:
             self.field_of_view = field_of_view
             
             self.latest_obstacle = [False, False, False]
+            self.previous_obstacle = []
 
             self._stop_object_detection_thread = False
 
             self.start_object_detection_thread()
+
+            
 
         
         def start_object_detection_thread(self):
@@ -54,8 +58,9 @@ class Object_Detector:
 
         def _object_detection(self):
             while not self._stop_object_detection_thread:
-                if self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]:
-                    print("Clear Queue and Fullstop")
+                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]) and self.latest_obstacle is not self.previous_obstacle):
+                    sendcommands.sendJson(json.dumps("fullstop"))
+                    self.previous_obstacle = self.latest_obstacle
                 time.sleep(0.25)
 
             
