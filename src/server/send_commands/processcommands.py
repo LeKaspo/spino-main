@@ -133,11 +133,16 @@ def voicecommand(command):
                 case "resetSpeed":
                     commandClean = "setSpeed"
                     params = {"val1" : 0.5}
+
+            if commandClean == "setSpeed":
+                config.system_status["cur_speed"] = float(params["val1"])
+
             data = {
                     "type": commandClean,
                     "params": params
                 }
             sendcommands.sendJson(json.dumps(data))
+
             log.write(f"from voice input: {command}",1)
             print("Sent voice command:", command, "with params:", params)
         else :
