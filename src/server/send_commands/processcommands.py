@@ -14,6 +14,7 @@ undo = UndoMovement.getInstance()
 log = Logger.getInstance()
 roam = Roaming.getInstance()
 
+
 def ButtonClicked(clickedButton, param = None):
     if config.system_status["button_mode_active"] == True or clickedButton == "fullstop":
         if param is not None:
@@ -33,7 +34,8 @@ def ButtonClicked(clickedButton, param = None):
             log.write(clickedButton,1)
             undo.put(clickedButton)
         sendcommands.sendJson(json.dumps(data))
-        
+        undo.put(clickedButton)
+
 def ButtonClickedInside(clickedButton):
     msg = ""
     match clickedButton:
@@ -115,11 +117,59 @@ def ButtonRelease(releasedButton):
 
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
-        data = {
-            "type": command,
-            "params": {}
-        }
-        sendcommands.sendJson(json.dumps(data))
-        log.write(command,1)
+        commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
+        commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
+        if command in commandList:
+            data = {
+                    "type": command,
+                    "params": {}
+                }
+            sendcommands.sendJson(json.dumps(data))
+            log.write(command,1)
+            print("Sent voice command:", command)
+        elif command in commandParamsList:
+            params = {}
+            commandClean = ""
+            match command:
+                case "setSpeedSlower":
+                    commandClean = "setSpeed"
+                    params = {"val1" : 0.2}
+                case "setSpeedFaster":
+                    commandClean = "setSpeed"
+                    params = {"val1" : 0.8}
+                case "resetSpeed":
+                    commandClean = "setSpeed"
+                    params = {"val1" : 0.5}
+            data = {
+                    "type": commandClean,
+                    "params": params
+                }
+            sendcommands.sendJson(json.dumps(data))
+            log.write(command,1)
+            print("Sent voice command:", command, "with params:", params)
+        else :
+            print("Unknown voice command:", command)
+    else:
+        print("Voice mode is not active. Ignoring voice command:", command)
 
     
+def gesture_command(gesture):
+    gesture_commands = {
+        "fist_normal": "fullstop",
+        "fist_rotated_left": "turnLeft",
+        "fist_rotated_right": "turnRight",
+        "palm_normal": "forwards",
+        "palm_rotated_left": "left",
+        "palm_rotated_right": "right",
+        "back_normal": "backwards",
+        "back_rotated_left": "left", 
+        "back_rotated_right": "right"
+    }
+    command = gesture_commands.get(gesture, "unknownCommand")
+
+    if command != "unkownCommand":        
+        data = {
+                "type": command,
+                "params": {}
+            }
+        sendcommands.sendJson(json.dumps(data))

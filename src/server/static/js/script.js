@@ -1,9 +1,10 @@
 document.addEventListener('DOMContentLoaded', async function() {
     // durch videos switchen
+    console.log("Script loaded");
     const urls = [
         "http://192.168.0.145:8090/?action=stream", //Camera dierekt
-        "{{ url_for('video_gesture') }}", //Camera mit gestenerkennung
-        "{{ url_for('video_label') }}", //Camera mit label erkennung, must noch getestet werden
+        "http://localhost:5000/video_gesture", //Camera mit gestenerkennung
+        "http://localhost:5000/video_label", //Camera mit label erkennung, must noch getestet werden
         "http://localhost/8080", //Lider ansicht, subject to change
     ];
     let currentIndex = 0;
