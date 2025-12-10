@@ -6,10 +6,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         "{{ url_for('video_label') }}", //Camera mit label erkennung, must noch getestet werden
         "http://localhost/8080", //Lider ansicht, subject to change
     ];
+    const descriptions = [
+        "Standart Ansicht", 
+        "Gesten Erkennung", 
+        "Label Erkennung", 
+        "Lidar Map", 
+    ];
     let currentIndex = 0;
-    const img = document.getElementById('stream');
     function updateStream() {
-        img.src = urls[currentIndex]; 
+        document.getElementById('stream').src = urls[currentIndex];
+        document.getElementById('video-description').innerText = descriptions[currentIndex]
     }
     document.querySelector('.arrow.left').addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + urls.length) % urls.length;
