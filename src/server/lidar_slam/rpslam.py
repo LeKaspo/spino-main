@@ -101,7 +101,6 @@ def BreezySlam():
         # Get current map bytes as grayscale
         slam.getmap(mapbytes)
 
-        print("Starting Display")
         # Display map and robot pose, exiting gracefully if user closes it
         if not viz.display(x/1000., y/1000., theta, mapbytes):
             print("Exiting SLAM Thread")

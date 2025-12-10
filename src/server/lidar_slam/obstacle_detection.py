@@ -20,12 +20,10 @@ class Object_Detector:
             
             self.latest_obstacle = [False, False, False]
 
-            self.start_object_detection_thread()
-
-
-
+            self._stop_object_detection_thread = False
 
             self.start_object_detection_thread()
+
         
         def start_object_detection_thread(self):
             self._object_detection_thread = threading.Thread(target=self._object_detection, args=())
