@@ -1,16 +1,22 @@
+// on load add event handler
 document.addEventListener('DOMContentLoaded', async function() {
-    // durch videos switchen
-    console.log("Script loaded");
+    // switch through video sources
     const urls = [
-        "http://192.168.0.145:8090/?action=stream", //Camera dierekt
-        "http://localhost:5000/video_gesture", //Camera mit gestenerkennung
-        "http://localhost:5000/video_label", //Camera mit label erkennung, must noch getestet werden
-        "http://localhost/8080", //Lider ansicht, subject to change
+        "http://192.168.0.145:8090/?action=stream", //dierekt camera image
+        "http://localhost:5000/video_gesture", //camera image with gesture recognition overlay
+        "http://localhost:5000/video_label", //camera image with label recognition overlay not yet implementet
+        "http://localhost/8080", //lidar map, not yet implementen, probaply diffrent url
+    ];
+    const descriptions = [
+        "regular view", 
+        "gesture recognition", 
+        "label recognition", 
+        "lidar map", 
     ];
     let currentIndex = 0;
-    const img = document.getElementById('stream');
     function updateStream() {
-        img.src = urls[currentIndex]
+        document.getElementById('stream').src = urls[currentIndex];
+        document.getElementById('video-description').innerText = descriptions[currentIndex]
     }
     document.querySelector('.arrow.left').addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + urls.length) % urls.length;
@@ -21,29 +27,27 @@ document.addEventListener('DOMContentLoaded', async function() {
         updateStream();
     });
 
-    // Auswertung Button zum anclicken
+    //send button id to the endpoint
     const actionButtons = document.getElementsByClassName('actionButton');
     for (const button of actionButtons) {
-    button.addEventListener('click', function() {
-        let payload = { id: this.id };
-        if (this.classList.contains('hasParam')) {
-            const targetId = this.dataset.paramTarget;
-            const input = document.getElementById(targetId)
-            if (!verify(this.id, input)) {
-                return;
+        button.addEventListener('click', function() {
+            let payload = { id: this.id };
+            if (this.classList.contains('hasParam')) {
+                const targetId = this.dataset.paramTarget;
+                const input = document.getElementById(targetId)
+                if (!verify(this.id, input)) {
+                    return;
+                }
+                payload.param = input.value;
             }
-            payload.param = input.value;
-        }
-        fetch('/button-click', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+            fetch('/button-click', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+            });
         });
-        console.log(payload)
-        
-    });
     }
-    // Auswertung Button die nicht an den roboter senden
+
     const insideButtons = document.getElementsByClassName('insideButton');
     for (const button of insideButtons) {
         button.addEventListener('click', function() {
@@ -54,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
     }
-    // Auswertung Button zum gedrückthalten
+
     const holdButtons = document.getElementsByClassName('holdButton');
     for (const button of holdButtons) {
         button.addEventListener('mousedown', function() {
@@ -72,7 +76,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
-    //Auswertung Tastatureingaben
+
     const pressedKeys = new Set();
     document.addEventListener('keydown', function(event) {
         if (!pressedKeys.has(event.key)) {
@@ -95,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     });
 
-    //anzeige welche modi aktiviert sind
+    //mode switching
     const conf = await fetchStatus();
     const modesArray = [
         conf.button_mode_active,
@@ -103,7 +107,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         conf.gesture_mode_active,
         conf.label_mode_active
     ]
-
     const modiButtons = document.querySelectorAll('.modiButton');
     modiButtons.forEach((button, i) => {
         if (modesArray[i] == true) {
@@ -115,41 +118,56 @@ document.addEventListener('DOMContentLoaded', async function() {
             modesArray[i] = !modesArray[i]
             if (modesArray[i] == true) {
                 button.classList.add('active');
+                if (button.classList.contains('textDe')){
+                    button.textContent = `de${button.textContent}`
+                    button.classList.add('text');
+                    button.classList.remove('textDe');
+                }
             } else {
                 button.classList.remove('active');
+                if (button.classList.contains('text')){
+                    button.textContent = button.textContent.slice(2)
+                    button.classList.add('textDe');
+                    button.classList.remove('text');
+                }
             }
             saveStatus(modesArray)
         });
     });
-    deactiveButtons(modesArray[0]);
-
-    document.getElementById('modebtn').addEventListener("click", () => {
+    // make buttons that can't be used gray
+    deactiveButtons(modesArray[0]); //on load
+    document.getElementById('modebtn').addEventListener("click", () => { //if button mode gets deactivated
         deactiveButtons(modesArray[0]);
     });
 
-    //loger boxen
-    refresh();
-    setInterval(refresh, 2000);
+    //loger boxen update if there is new content
+    const box1 = document.getElementById("box1");
+    const box2 = document.getElementById("box2");
+    const es = new EventSource("/api/logs/stream");
+    es.addEventListener("box1", (evt) => {
+        const payload = JSON.parse(evt.data);
+        box1.value = payload.text || "";
+        box1.scrollTop = box1.scrollHeight;
+    });
+    es.addEventListener("box2", (evt) => {
+        const payload = JSON.parse(evt.data);
+        box2.value = payload.text || "";
+        box2.scrollTop = box2.scrollHeight;
+    });
+    // clear button for logger box
+    const clearbtn = document.getElementsByClassName('clearbtn');
+    for (const button of clearbtn) {
+        button.addEventListener('click', function() {
+        fetch('/api/clear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: this.id })
+            });
+        });
+    }
 });
 
-//hilfsmethoden für logger
-async function fetchBox(box) {
-      const res = await fetch(`/api/logs/${box}`);
-      if (!res.ok) return "";
-      const data = await res.json();
-      return data.text || "";
-}
-async function refresh() {
-    document.getElementById("box1").innerHTML = await fetchBox(1);
-    document.getElementById("box2").innerHTML = await fetchBox(2);
-    scroll();
-}
-function scroll() {
-    document.getElementById("box1").scrollTop = document.getElementById("box1").scrollHeight;
-    document.getElementById("box2").scrollTop =  document.getElementById("box2").scrollHeight;
-}
-
-//Hilfsfunktion für Button deaktivierung
+// helper funktions
 function deactiveButtons(btnsActive) {
     const controlbtns = [
         document.getElementById('turn180'),
@@ -173,7 +191,7 @@ function deactiveButtons(btnsActive) {
     });
 }
 
-//Hilfsfunktionen für zugrif auf config
+// get and save system_status
 async function fetchStatus() {
   const res = await fetch('/api/config'); 
   if (!res.ok) throw new Error('GET /api/config failed');
@@ -198,7 +216,7 @@ async function saveStatus(modesArray) {
     if (!res.ok) throw new Error('POST /api/config failed');
 }
 
-
+// check if setSpeed input is valid
 function verify(id, input) {
   if (!input) return false;
     const raw = input.value.trim();

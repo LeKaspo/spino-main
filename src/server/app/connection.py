@@ -8,7 +8,7 @@ import time
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = '192.168.0.8'
+IP = '192.168.0.31'
 BUFFER_SIZE = 128
 
 class connectionHändler:
