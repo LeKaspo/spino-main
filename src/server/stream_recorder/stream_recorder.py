@@ -38,30 +38,28 @@ class StreamRecorder:
 
     def _record_loop(self):
         """Internal loop to capture frames."""
-        cap = cv2.VideoCapture(self.stream_url)
-        
-        # Wait a bit for connection
-        if not cap.isOpened():
-            print(f"Error: Could not open video stream at {self.stream_url}")
-            self.running = False
-            return
-
-        print("Stream connected successfully. Buffering frames...")
-
         while self.running:
-            ret, frame = cap.read()
-            if ret:
-                with self.lock:
-                    self.frame_buffer.append(frame)
-            else:
-                # If we lose connection, wait briefly and try to read again
-                # In a robust production app, you might need to re-initialize cap here
-                print("Warning: Failed to read frame. Retrying...")
-                time.sleep(0.5)
-                cap.release()
-                cap = cv2.VideoCapture(self.stream_url)
-                
-        cap.release()
+            cap = cv2.VideoCapture(self.stream_url)
+            
+            # Wait a bit for connection
+            if not cap.isOpened():
+                print(f"Warning: Could not open video stream at {self.stream_url}. Retrying in 5 seconds...")
+                time.sleep(5)
+                continue
+
+            print("Stream connected successfully. Buffering frames...")
+
+            while self.running:
+                ret, frame = cap.read()
+                if ret:
+                    with self.lock:
+                        self.frame_buffer.append(frame)
+                else:
+                    print("Warning: Lost connection to stream. Reconnecting...")
+                    break
+                    
+            cap.release()
+            
         print("Stream capture thread stopped.")
 
     def save_last_seconds(self, output_filename=None):
