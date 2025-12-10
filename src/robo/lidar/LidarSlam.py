@@ -69,7 +69,7 @@ class RoboLidar:
         - port: Port on the target machine
         '''
         print("Hello im in the start_tcp_thread")
-        self._tcp_thread = threading.Thread(target=self._send_lidar_data())
+        self._tcp_thread = threading.Thread(target=self._send_lidar_data)
         self._tcp_thread.start()
 
     def start_object_detection_thread(self):
