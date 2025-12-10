@@ -46,7 +46,8 @@ def ButtonClickedInside(clickedButton):
             undo.undoMovement()
             msg = "Spino is comming back"
         case "safevideo":
-            # TODO: methoden aufruf wür das video speichern
+            recorder = get_recorder()
+            recorder.save_last_seconds()
             msg = "video safed"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
