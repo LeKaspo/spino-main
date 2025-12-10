@@ -14,6 +14,7 @@ import server.lidar_slam.rpslam as lidar
 
 #from server.app.robo_start import RobotSSHController
 
+print("Starting Sockets")
 connectionHändler.getInstance()
 
 # controller = RobotSSHController(
@@ -22,7 +23,9 @@ connectionHändler.getInstance()
 # )
 # controller.run()
 try:
+    print("Starting Lidar")
     lidar.main()
+    print("Starting UI")
     ui.start_ui()
 except Exception as e:
     print(f"ERROR: {e}")

@@ -50,6 +50,7 @@ class lidarSänder:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((lidarSänder.IP, PORT))
+            print(f"Connection with {lidarSänder.IP} on Port {PORT}")
             return s
         except Exception as e:
             print(f"Unable to connect Lidar Socket: {e}")

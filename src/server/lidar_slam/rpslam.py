@@ -28,12 +28,13 @@ from server.app.connection import connectionHändler
 from server.lidar_slam.obstacle_detection import Object_Detector
 
 def main():
+    print("Starting Lidar Thread")
     t = threading.Thread(target=BreezySlam,daemon=True)
     t.start()
 
 
 def BreezySlam():
-    
+    print("Starting Breezy Function")
     conn = connectionHändler.getInstance()
     detector = Object_Detector()
 
@@ -72,7 +73,9 @@ def BreezySlam():
     previous_distances = None
     previous_angles    = None
 
+
     while True:
+        print("Entering SLAM loop")
         # Extract (quality, angle, distance) triples from current scan
         scan = conn.getLidar()
         detector.get_scan(scan)
@@ -103,6 +106,8 @@ def BreezySlam():
         # Get current map bytes as grayscale
         slam.getmap(mapbytes)
 
+        print("Starting Display")
         # Display map and robot pose, exiting gracefully if user closes it
         if not viz.display(x/1000., y/1000., theta, mapbytes):
+            print("Exiting SLAM Thread")
             exit(0)
