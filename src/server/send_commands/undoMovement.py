@@ -97,7 +97,7 @@ class UndoMovement:
                     "var": 0
                 })
                 self.last_time = None
-            case "turn180":
+            case "setSpeed":
                 self.stack.append({
                     "duration": 0,
                     "x": 0,
@@ -165,13 +165,4 @@ class UndoMovement:
             case 'y':
                 return mapy.get(command)
             case 'z':
-                return mapz.get(command)
-    
-
-
-
-
-
-
-        
-        
+                return mapz.get(command)  
