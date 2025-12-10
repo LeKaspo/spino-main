@@ -13,7 +13,9 @@ import server.app.ui as ui
 import server.speech.speechInput as si
 import server.config.config as config
 import server.gesture.gesture as gesture
+import server.stream_recorder.stream_recorder as stream_recorder
 
+recorder = stream_recorder.get_recorder()
 #from server.app.robo_start import RobotSSHController
 
 connectionHändler.getInstance()
@@ -28,6 +30,8 @@ connectionHändler.getInstance()
 thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
 thread_gesture.start()
 try:
+    print("Starting Stream Recorder")
+    recorder.start()
     print("Starting Speech Input")
     si.start()
     print("Starting UI")

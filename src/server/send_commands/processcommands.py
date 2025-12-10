@@ -8,6 +8,7 @@ import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
 import server.config.config as config
 from .logger import Logger
+from server.stream_recorder.stream_recorder import get_recorder
 
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
@@ -98,6 +99,12 @@ def ButtonRelease(releasedButton):
 
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
+        if "garmin" in command.lower():
+            log.write("Garmin command detected: Saving video...", 1)
+            recorder = get_recorder()
+            recorder.save_last_seconds()
+            return
+
         commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
         commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
         if command in commandList:
