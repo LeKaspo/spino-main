@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import subprocess
 import atexit
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
@@ -36,20 +37,32 @@ def cleanup():
 atexit.register(cleanup)
 
 try:
+    print("="*20)
+    print("Starting Camera Stream")
     p1 = subprocess.Popen(["bash", str(camera_script)])
     processes.append(p1)
+    time.sleep(1)
 
     #Audio sending was not implemented :(
     #p_audio = subprocess.Popen(["python", str(sendAudio)])
     #processes.append(p_audio)
 
+    print("="*20)
+    print("Starting Lidar Connection")
     lidarSänder.setIP(IP)
     lidarSänder.getInstance()
+    time.sleep(1)
 
+    print("="*20)
+    print("Starting SLAM")
     LidarSlam.main()
+    time.sleep(1)
 
+    print("="*20)
+    print("Starting Command Connection")
     p_commands = subprocess.Popen(["python", str(get_commands), IP])
     processes.append(p_commands)
+    time.sleep(1)
 
     for p in processes:
         p.wait()
