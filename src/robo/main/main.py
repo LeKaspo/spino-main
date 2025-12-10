@@ -37,8 +37,10 @@ def cleanup():
 atexit.register(cleanup)
 
 try:
-    print("="*20)
+    
+    print("\n"*3)
     print("Starting Camera Stream")
+    print("="*50)
     p1 = subprocess.Popen(["bash", str(camera_script)])
     processes.append(p1)
     time.sleep(1)
@@ -47,19 +49,22 @@ try:
     #p_audio = subprocess.Popen(["python", str(sendAudio)])
     #processes.append(p_audio)
 
-    print("="*20)
+    print("\n"*3)
+    print("="*50)
     print("Starting Lidar Connection")
     lidarSänder.setIP(IP)
     lidarSänder.getInstance()
     time.sleep(1)
 
-    print("="*20)
+    print("\n"*3)
     print("Starting SLAM")
+    print("="*50)
     LidarSlam.main()
     time.sleep(1)
 
-    print("="*20)
+    print("\n"*3)
     print("Starting Command Connection")
+    print("="*50)
     p_commands = subprocess.Popen(["python", str(get_commands), IP])
     processes.append(p_commands)
     time.sleep(1)

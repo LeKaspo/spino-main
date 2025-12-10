@@ -26,7 +26,7 @@ import logging
 import sys
 import time
 import codecs
-import serial
+import serial # type: ignore
 import struct
 
 from collections import namedtuple
