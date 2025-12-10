@@ -59,6 +59,7 @@ class Object_Detector:
         def _object_detection(self):
             while not self._stop_object_detection_thread:
                 if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]) and self.latest_obstacle is not self.previous_obstacle):
+                    print("FULLSTOP")
                     sendcommands.sendJson(json.dumps("fullstop"))
                     self.previous_obstacle = self.latest_obstacle
                 time.sleep(0.25)
