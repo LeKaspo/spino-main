@@ -105,5 +105,25 @@ def voicecommand(command):
         }
         sendcommands.sendJson(json.dumps(data))
         log.write(command,1)
+    sendcommands.sendJson(json.dumps(data))
 
-    
+def gesture_command(gesture):
+    gesture_commands = {
+        "fist_normal": "fullstop",
+        "fist_rotated_left": "turnLeft",
+        "fist_rotated_right": "turnRight",
+        "palm_normal": "forwards",
+        "palm_rotated_left": "left",
+        "palm_rotated_right": "right",
+        "back_normal": "backwards",
+        "back_rotated_left": "left", 
+        "back_rotated_right": "right"
+    }
+    command = gesture_commands.get(gesture, "unknownCommand")
+
+    if command != "unkownCommand":        
+        data = {
+                "type": command,
+                "params": {}
+            }
+        sendcommands.sendJson(json.dumps(data))
