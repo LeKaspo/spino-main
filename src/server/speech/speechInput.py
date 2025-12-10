@@ -14,12 +14,12 @@ Example command:
 """
 
 import argparse
-import logging
 import os
 import queue
 import sys
 import tempfile
 import time
+import threading
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -47,12 +47,14 @@ try:
         sys.path.insert(0, str(ROOT))
 
     from server.send_commands.processcommands import voicecommand
+    
+    from server.send_commands.logger import Logger
 except ImportError as imp:
     print(f"Import hat nicht funktioniert: {imp}")
     def voicecommand(cmd):
         print(f"DEBUG: Mock execution of command '{cmd}'")
 
-logger = logging.getLogger("speechInput")
+log = Logger.getInstance()
 
 SAMPLE_RATE = 16000
 FRAME_DURATION_MS = 20  # fixed 20 ms frames (legacy WebRTC-compatible size)
@@ -200,16 +202,6 @@ def save_temp_wav(samples_bytes: bytes) -> str:
     return path
 
 
-def configure_logging(debug: bool):
-    level = logging.DEBUG if debug else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s [%(levelname)s] %(message)s",
-        datefmt="%H:%M:%S",
-    )
-    logger.setLevel(level)
-
-
 def samples_duration_ms(samples_bytes: bytes) -> float:
     sample_count = len(samples_bytes) / 2  # int16
     return float(sample_count / SAMPLE_RATE * 1000.0)
@@ -234,20 +226,8 @@ class UtteranceMeta:
 
 def should_drop_utterance(meta: UtteranceMeta, min_ms: int, min_amp: float) -> bool:
     if meta.duration_ms < min_ms:
-        logger.debug(
-            "Dropping utterance %s: too short %.1f ms < %s ms",
-            meta.idx,
-            meta.duration_ms,
-            min_ms,
-        )
         return True
     if meta.avg_amplitude < min_amp:
-        logger.debug(
-            "Dropping utterance %s: avg amplitude %.1f < %.1f",
-            meta.idx,
-            meta.avg_amplitude,
-            min_amp,
-        )
         return True
     return False
 
@@ -259,7 +239,6 @@ def dump_utterance(samples_bytes: bytes, dump_dir: str, utterance_idx: int) -> s
     path = os.path.join(dump_dir, f"utterance_{utterance_idx:05d}.wav")
     arr = np.frombuffer(samples_bytes, dtype=np.int16)
     sf.write(path, arr, SAMPLE_RATE)
-    logger.debug("Saved utterance %s to %s", utterance_idx, path)
     return path
 
 
@@ -413,7 +392,6 @@ def check_commands(transcript: str):
     for cmd in COMMANDS:
         for phrase in cmd["phrases"]:
             if _normalize_command_text(phrase) in text:
-                logger.info("Command triggered: %s via phrase '%s'", cmd["name"], phrase)
                 voicecommand(cmd["name"])
                 return
 
@@ -435,23 +413,9 @@ def transcribe_utterance(
     started = time.perf_counter()
     try:
         wavpath = save_temp_wav(samples_bytes)
-        logger.info(
-            "Utterance %s -> Whisper start | dur=%.1f ms | amp=%.1f | frames=%s | dump=%s",
-            meta.idx,
-            meta.duration_ms,
-            meta.avg_amplitude,
-            meta.frame_count,
-            debug_path or "-",
-        )
         segments, _ = wmodel.transcribe(wavpath, language=language, beam_size=5)
         text = " ".join(segment.text for segment in segments).strip()
         latency = time.perf_counter() - started
-        logger.info(
-            "Utterance %s -> Whisper done in %.2f s | transcript=%s",
-            meta.idx,
-            latency,
-            text if text else "<empty>",
-        )
         return text
     finally:
         if wavpath and os.path.exists(wavpath):
@@ -465,14 +429,12 @@ def handle_utterance(wmodel, samples, language, dump_dir, meta):
     try:
         text = transcribe_utterance(wmodel, samples, language, meta, dump_dir)
     except Exception:
-        logger.exception("Utterance %s -> Whisper crashed", meta.idx)
         return
 
     if not text:
-        print(f"Transcript [{meta.idx}]: <empty>")
         return
 
-    print(f"Transcript [{meta.idx}]: {text}")
+    log.write(f"Transcript [{meta.idx}]: {text}", 2)
     check_commands(text)
 
 
@@ -508,7 +470,7 @@ def create_whisper_model(args, model_dir: Path | None = None):
             local_files_only=True,
         )
     except LocalEntryNotFoundError as err:
-        logger.error("Failed to load Faster-Whisper model from %s", model_dir)
+        print(f"Failed to load Faster-Whisper model from {model_dir}", file=sys.stderr)
         raise err
 
 
@@ -523,7 +485,7 @@ def run_live(args):
     )
 
     model_dir = resolve_model_dir(args)
-    logger.info("Loading Faster Whisper model from %s", model_dir)
+    print(f"Loading Faster Whisper model from {model_dir}")
     wmodel = create_whisper_model(args, model_dir)
 
     executor = ThreadPoolExecutor(max_workers=args.workers, thread_name_prefix="whisper")
@@ -550,11 +512,7 @@ def run_live(args):
             queue_depth = recorder.frames_queue.qsize()
             if queue_depth > args.queue_warn:
                 backlog_sec = queue_depth * FRAME_DURATION_MS / 1000.0
-                logger.warning(
-                    "Input queue backlog: %s frames (~%.1f s). Whisper still busy.",
-                    queue_depth,
-                    backlog_sec,
-                )
+                print(f"Input queue backlog: {queue_depth} frames (~{backlog_sec:.1f} s). Whisper still busy.")
 
             is_speech = vad.is_speech(frame, SAMPLE_RATE)
             if is_speech:
@@ -585,13 +543,6 @@ def run_live(args):
                             avg_amplitude=average_amplitude(samples),
                             frame_count=frame_count,
                         )
-                        logger.debug(
-                            "Utterance %s captured | dur=%.1f ms | amp=%.1f | frames=%s",
-                            meta.idx,
-                            meta.duration_ms,
-                            meta.avg_amplitude,
-                            meta.frame_count,
-                        )
                         if should_drop_utterance(
                             meta,
                             args.min_utterance_ms,
@@ -603,10 +554,7 @@ def run_live(args):
                         if len(pending) >= args.max_pending:
                             dropped_id, dropped_future = pending.popleft()
                             if not dropped_future.done():
-                                logger.warning(
-                                    "Cancelling utterance %s because pending queue is full.",
-                                    dropped_id,
-                                )
+                                print(f"Cancelling utterance {dropped_id} because pending queue is full.")
                                 dropped_future.cancel()
 
                         future = executor.submit(
@@ -635,7 +583,7 @@ def run_file(args):
         min_energy=args.vad_min_energy,
     )
     model_dir = resolve_model_dir(args)
-    logger.info("Loading Faster Whisper model from %s", model_dir)
+    print(f"Loading Faster Whisper model from {model_dir}")
     wmodel = create_whisper_model(args, model_dir)
     print("Processing file:", args.file)
 
@@ -704,6 +652,8 @@ def run_file(args):
         )
         handle_utterance(wmodel, samples, args.language, args.dump_utterances, meta)
 
+def start():
+    speech_thread = threading.Thread(target=main, name="SpeechThread", daemon=False)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -815,8 +765,6 @@ def main():
     )
 
     args = parser.parse_args()
-
-    configure_logging(args.debug)
 
     if args.file:
         run_file(args)

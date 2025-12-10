@@ -6,6 +6,11 @@ sys.path.append(str(ROOT))
 
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
+import server.config.config as config
+from .logger import Logger
+
+undo = UndoMovement.getInstance()
+log = Logger.getInstance()
 
 
 def ButtonClicked(clickedButton):
@@ -93,6 +98,7 @@ def voicecommand(command):
                     "params": {}
                 }
             sendcommands.sendJson(json.dumps(data))
+            log.write(command,1)
             print("Sent voice command:", command)
         elif command in commandParamsList:
             params = {}

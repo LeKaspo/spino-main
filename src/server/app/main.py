@@ -1,7 +1,7 @@
 import sys
 import threading
 from pathlib import Path  
-import threading
+
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
@@ -18,14 +18,7 @@ import server.gesture.gesture as gesture
 
 connectionHändler.getInstance()
 # start robo
-ui_thread = threading.Thread(target=ui.start_ui, name="UIThread", daemon=False)
-speech_thread = threading.Thread(target=si.main, name="SpeechThread", daemon=False)
 
-ui_thread.start()
-speech_thread.start()
-
-ui_thread.join()
-speech_thread.join()
 
 # controller = RobotSSHController(
 #     host="192.168.10.42",
@@ -34,8 +27,13 @@ speech_thread.join()
 # controller.run()
 thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
 thread_gesture.start()
-
-ui.start_ui()
+try:
+    print("Starting Speech Input")
+    si.start()
+    print("Starting UI")
+    ui.start_ui()
+except Exception as e:
+    print(f"ERROR: {e}")
 
 # start threads
 
