@@ -24,7 +24,7 @@ connectionHändler.getInstance()
 # controller.run()
 try:
     print("Starting Lidar")
-    lidar.main()
+    #lidar.main()
     print("Starting UI")
     ui.start_ui()
 except Exception as e:
