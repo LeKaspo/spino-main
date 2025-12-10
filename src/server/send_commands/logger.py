@@ -19,18 +19,21 @@ class Logger:
     def getInstance(cls):
         return cls()    
 
+    # clear a log box
     def clear(self, box):
         if box not in (1, 2):
             raise ValueError("box muss 1 oder 2 sein")
         with self._lock:
             self._textboxes[box] = ""
+    # write to the log box
     def write(self, text, box):
         if box not in (1, 2):
             raise ValueError("box muss 1 oder 2 sein")
         with self._lock:
             self._textboxes[box] += text + "\n"
-            self._version[box] += 1  
+            self._version[box] += 1  # increment version, important for reading
             self._cv.notify_all()  
+    # read from the log box
     def read_with_version(self, box):
         if box not in (1, 2):
             raise ValueError("box muss 1 oder 2 sein")
