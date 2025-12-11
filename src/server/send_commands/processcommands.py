@@ -23,7 +23,7 @@ def ButtonClicked(clickedButton, param = None):
                     "params": {"val1" : param}
                 }
             log.write(f"{clickedButton}: {param}", 1)
-            undo.put(clickedButton, param)
+            undo.put(clickedButton)
             if clickedButton == "setSpeed":
                 config.system_status["cur_speed"] = float(param)
         else:

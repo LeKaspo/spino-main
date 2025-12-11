@@ -15,3 +15,6 @@ soundfile
 scipy
 huggingface_hub
 faster-whisper
+
+#ssh
+paramiko>=2.11.0

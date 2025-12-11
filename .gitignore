@@ -2,3 +2,4 @@ spino_venv/
 __pycache__/
 models/
 .vs/
+BreezySLAM.egg-info/

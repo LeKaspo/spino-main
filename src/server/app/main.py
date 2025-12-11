@@ -1,18 +1,38 @@
-import sys
 import threading
+import getpass
+import sys
 from pathlib import Path  
-
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
-print(str(ROOT))
-
 from server.app.connection import connectionHändler
+from server.app.robo_start import RobotSSHController
 import server.app.ui as ui
 import server.speech.speechInput as si
 import server.config.config as config
 import server.gesture.gesture as gesture
+import server.lidar_slam.rpslam as lidar
+
+
+try:
+    # initialize connection handler singleton
+    connectionHändler.getInstance()
+
+    # start robo
+    password = getpass.getpass("SSH Passwort für jetson eingeben: ")
+    controller = RobotSSHController(
+        serverIP=config.setup_data["ip_address"],
+        password=password
+    )
+    controller.run()
+    controller.ready.wait()
+
+    # start inputs and ui in separate threads
+    print("Starting Lidar Input")
+    lidar.main()
+    print("Starting Gesture Input")
+    gesture.start()
 import server.stream_recorder.stream_recorder as stream_recorder
 
 recorder = stream_recorder.get_recorder()
@@ -34,10 +54,7 @@ try:
     recorder.start()
     print("Starting Speech Input")
     si.start()
-    print("Starting UI")
     ui.start_ui()
 except Exception as e:
     print(f"ERROR: {e}")
-
-# start threads
-
+    sys.exit(0)
