@@ -15,7 +15,7 @@ log = Logger.getInstance()
 
 
 def ButtonClicked(clickedButton, param = None):
-    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop" or clickedButton == "setSpeed":
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False) or clickedButton == "fullstop" or clickedButton == "setSpeed":
         if param is not None: # if relevant sent param and update system_status
             data = {
                     "type": clickedButton,
@@ -47,6 +47,9 @@ def ButtonClickedInside(clickedButton):
         case "safevideo":
             # TODO: methoden aufruf wür das video speichern
             msg = "video safed"
+        case "ackstop":
+            config.system_status["stop_flag"] = not config.system_status["stop_flag"]
+            msg = f"ermergency stop aknowledged, Spino can go on {config.system_status["stop_flag"]}"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
             msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"
@@ -62,7 +65,7 @@ def ButtonClickedInside(clickedButton):
     log.write(msg,1)
             
 def ButtonPress(pressedButton):
-    if (config.system_status["button_mode_active"] == True):
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False):
         commands = {
             "w": "forwards",
             "a": "left",
