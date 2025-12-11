@@ -13,7 +13,9 @@ import server.speech.speechInput as si
 import server.config.config as config
 import server.gesture.gesture as gesture
 import server.lidar_slam.rpslam as lidar
+import server.stream_recorder.stream_recorder as stream_recorder
 
+    
 
 try:
     # initialize connection handler singleton
@@ -28,28 +30,13 @@ try:
     controller.run()
     controller.ready.wait()
 
+    recorder = stream_recorder.get_recorder()
+
     # start inputs and ui in separate threads
     print("Starting Lidar Input")
     lidar.main()
     print("Starting Gesture Input")
     gesture.start()
-import server.stream_recorder.stream_recorder as stream_recorder
-
-recorder = stream_recorder.get_recorder()
-#from server.app.robo_start import RobotSSHController
-
-connectionHändler.getInstance()
-# start robo
-
-
-# controller = RobotSSHController(
-#     host="192.168.10.42",
-#     user="robot"
-# )
-# controller.run()
-thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
-thread_gesture.start()
-try:
     print("Starting Stream Recorder")
     recorder.start()
     print("Starting Speech Input")
