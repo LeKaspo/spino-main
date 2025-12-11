@@ -67,6 +67,6 @@ class Object_Detector:
                     }
                     sendcommands.sendJson(json.dumps(data))
                     self.previous_obstacle = self.latest_obstacle
-                time.sleep(0.25)
+                time.sleep(0.05)
 
             

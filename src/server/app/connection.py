@@ -102,8 +102,8 @@ class connectionHändler:
                 data = self.recv_all(conn, length)
 
                 realdata = pickle.loads(data)
-                #self.lidarQ.put(realdata)
-                self.lidarMutex.write(realdata)
+                self.lidarQ.put(realdata)
+                #self.lidarMutex.write(realdata)
         except KeyboardInterrupt:
             print("Closed getLidarThread")
         except Exception as e:
@@ -132,8 +132,8 @@ class connectionHändler:
         self.commandQ.put(cmd)
 
     def getLidar(self):
-        #return self.lidarQ.get()
-        return self.lidarMutex.read()
+        return self.lidarQ.get()
+        #return self.lidarMutex.read()
     
     def getAudio(self):
         return self.audioQ.get()
