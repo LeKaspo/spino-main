@@ -5,7 +5,7 @@ import json
 import struct
 import pickle
 
-from server.app.mutex import mutex
+from src.server.lidar_slam.mutex import Mutex
 
 import sys
 from pathlib import Path  
@@ -40,7 +40,7 @@ class connectionHändler:
         self.commandQ = queue.Queue()
         self.audioQ = queue.Queue()
         self.lidarQ = queue.Queue()
-        self.lidarMutex = mutex()
+        self.lidarMutex = Mutex()
 
         print("Starting Connection Threads")
         t1 = threading.Thread(target=self._getAudio, daemon=True)
@@ -102,8 +102,8 @@ class connectionHändler:
                 data = self.recv_all(conn, length)
 
                 realdata = pickle.loads(data)
-                self.lidarQ.put(realdata)
-                #self.lidarMutex.write(realdata)
+                #self.lidarQ.put(realdata)
+                self.lidarMutex.write(realdata)
         except KeyboardInterrupt:
             print("Closed getLidarThread")
         except Exception as e:
@@ -132,8 +132,8 @@ class connectionHändler:
         self.commandQ.put(cmd)
 
     def getLidar(self):
-        return self.lidarQ.get()
-        #return self.lidarMutex.read()
+        #return self.lidarQ.get()
+        return self.lidarMutex.read()
     
     def getAudio(self):
         return self.audioQ.get()

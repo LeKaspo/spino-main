@@ -73,35 +73,38 @@ def BreezySlam():
     previous_distances = None
     previous_angles    = None
 
+    prev_scan = None
 
     while True:
         # Extract (quality, angle, distance) triples from current scan
         scan = conn.getLidar()
-        detector.get_scan(scan)
-        items = [item for item in scan]
+        if scan != prev_scan:
+            prev_scan = scan
+            detector.get_scan(scan)
+            items = [item for item in scan]
 
-        # Extract distances and angles from triples
-        distances = [item[2] for item in items]
-        angles    = [item[1] for item in items]
+            # Extract distances and angles from triples
+            distances = [item[2] for item in items]
+            angles    = [item[1] for item in items]
 
 
-        # Update SLAM with current Lidar scan and scan angles if adequate
-        if len(distances) > MIN_SAMPLES:
-            slam.update(distances, scan_angles_degrees=angles)
-            previous_distances = distances.copy()
-            previous_angles    = angles.copy()
+            # Update SLAM with current Lidar scan and scan angles if adequate
+            if len(distances) > MIN_SAMPLES:
+                slam.update(distances, scan_angles_degrees=angles)
+                previous_distances = distances.copy()
+                previous_angles    = angles.copy()
 
-        # If not adequate, use previous
-        elif previous_distances is not None:
-            slam.update(previous_distances, scan_angles_degrees=previous_angles)
+            # If not adequate, use previous
+            elif previous_distances is not None:
+                slam.update(previous_distances, scan_angles_degrees=previous_angles)
 
-        # Get current robot position
-        x, y, theta = slam.getpos()
+            # Get current robot position
+            x, y, theta = slam.getpos()
 
-        # Get current map bytes as grayscale
-        slam.getmap(mapbytes)
+            # Get current map bytes as grayscale
+            slam.getmap(mapbytes)
 
-        # Display map and robot pose, exiting gracefully if user closes it
-        if not viz.display(x/1000., y/1000., theta, mapbytes):
-            print("Exiting SLAM Thread")
-            exit(0)
+            # Display map and robot pose, exiting gracefully if user closes it
+            if not viz.display(x/1000., y/1000., theta, mapbytes):
+                print("Exiting SLAM Thread")
+                exit(0)
