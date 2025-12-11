@@ -93,7 +93,8 @@ class RoboLidar:
             
                     # Update latest_scan
                     #if i % 2 == 0:
-                    self.latest_scan = scan
+                    print(scan)
+                    #self.latest_scan = scan
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -159,7 +160,7 @@ def main():
         robolidar.start_working_thread()
         print("Started working thread")
 
-        robolidar.start_tcp_thread()
+        #robolidar.start_tcp_thread()
         print("Started tcp thread")
         
         '''
