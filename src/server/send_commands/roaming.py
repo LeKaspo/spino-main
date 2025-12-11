@@ -77,17 +77,21 @@ class Roaming:
         while not self._stop_event.is_set():
             self.undo.start()
             for _ in range(3): # drive 3 times forwards and turn a bit randomly
-                sendcommands.sendJson({"type": "forwards", "params": {} })
+                if(config.system_status["stop_flag"] == False):
+                    sendcommands.sendJson({"type": "forwards", "params": {} })
                 self.undo.put("forwards")
                 time.sleep(self.getRandTime())
                 dir = self.getRandDir()
-                sendcommands.sendJson({"type": dir, "params": {} })
+                if(config.system_status["stop_flag"] == False):
+                    sendcommands.sendJson({"type": dir, "params": {} })
                 self.undo.put(dir)
                 time.sleep(self.getRandTime())
-                sendcommands.sendJson({"type": "stopRotate", "params": {} })
+                if(config.system_status["stop_flag"] == False):
+                    sendcommands.sendJson({"type": "stopRotate", "params": {} })
                 self.undo.put("stopRotate")
                 time.sleep(self.getRandTime())
-                sendcommands.sendJson({"type": "stopForwardsBackwards", "params": {} })
+                if(config.system_status["stop_flag"] == False):
+                    sendcommands.sendJson({"type": "stopForwardsBackwards", "params": {} })
                 self.undo.put("stopForwardsBackwards")
             self.undo.undoMovement() # come back to starting position
             
