@@ -23,7 +23,7 @@ class RoboLidar:
         - field_of_view: the field of view for object detection, in degrees
         '''
 
-        #self.sender = lidarSänder.getInstance()
+        self.sender = lidarSänder.getInstance()
         
 
         # Validate parameters
@@ -94,8 +94,7 @@ class RoboLidar:
                         break
             
                     # Update latest_scan
-                    if i % 3 == 0:
-                        print(scan)
+                    if i % 5 == 0:
                         self.latest_scan = scan
             except RPLidarException:
                 self.lidar.clean_input()
@@ -162,7 +161,7 @@ def main():
         robolidar.start_working_thread()
         print("Started working thread")
 
-        #robolidar.start_tcp_thread()
+        robolidar.start_tcp_thread()
         print("Started tcp thread")
         
         '''
