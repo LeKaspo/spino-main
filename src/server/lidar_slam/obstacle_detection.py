@@ -45,11 +45,11 @@ class Object_Detector:
                 # object detection right
                 if angle >= 90 - fow and angle <= 90 + fow:
                     right = distance <= self.max_distance and distance >= self.min_distance
-                    # object detection center
-                elif angle >= -fow and angle <= fow:
+                # object detection center
+                if angle >= -fow and angle <= fow:
                         center = distance <= self.max_distance and distance >= self.min_distance
-               # object detection left
-                elif angle >= 270 - fow and angle <= 270 + fow:
+                # object detection left
+                if angle >= 270 - fow and angle <= 270 + fow:
                     left = distance <= self.max_distance and distance >= self.min_distance
 
             self.latest_obstacle = [left, center, right]
