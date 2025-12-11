@@ -1,14 +1,17 @@
 import sys
+import threading
 from pathlib import Path  
+
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
 from server.app.connection import connectionHändler
 import server.app.ui as ui
+import server.speech.speechInput as si
 import server.config.config as config
+import server.gesture.gesture as gesture
 import server.lidar_slam.rpslam as lidar
-
 
 #from server.app.robo_start import RobotSSHController
 
@@ -18,12 +21,13 @@ import server.lidar_slam.rpslam as lidar
 # )
 # controller.run()
 
+thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
+thread_gesture.start()
 try:
     connectionHändler.getInstance()
     lidar.main()
+    si.start()
     ui.start_ui()
 except Exception as e:
     print(f"ERROR: {e}")
     sys.exit(0)
-
-# start threads
