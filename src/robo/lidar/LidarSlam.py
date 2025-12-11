@@ -83,13 +83,13 @@ class RoboLidar:
         """
         while True:
             try:
-                for i, scan in enumerate(self.lidar.iter_scans(scan_type='express')):
+                for i, scan in enumerate(self.lidar.iter_scans()): #scan_type='express'
                     if self._stop_update_thread:
                         break
             
                     # Update latest_scan
-                    #if i % 2 == 0:
-                    self.latest_scan = scan
+                    if i % 5 == 0:
+                        self.latest_scan = scan
             except RPLidarException:
                 self.lidar.clean_input()
 
