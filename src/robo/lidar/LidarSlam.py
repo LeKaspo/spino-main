@@ -22,7 +22,7 @@ class RoboLidar:
         - field_of_view: the field of view for object detection, in degrees
         '''
 
-        self.sender = lidarSänder.getInstance()
+        #self.sender = lidarSänder.getInstance()
         
 
         # Validate parameters
