@@ -23,7 +23,7 @@ def connect():
         print(f"Connection with {IP} on Port {PORT}")
         return client
     except Exception as e:
-        print(f"Unable to connect: {e}")
+        print(f"Unable to connect Command Socket: {e}")
         return None
 
 
