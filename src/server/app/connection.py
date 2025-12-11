@@ -123,7 +123,6 @@ class connectionHändler:
         self.commandQ.put(cmd)
 
     def getLidar(self):
-        print(self.lidarQ.qsize())
         return self.lidarQ.get()
     
     def getAudio(self):
