@@ -6,12 +6,14 @@ sys.path.append(str(ROOT))
 
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
+from server.send_commands.roaming import  Roaming
 import server.config.config as config
 from .logger import Logger
 
 #get instances from utility singeltons
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
+roam = Roaming.getInstance()
 
 
 def ButtonClicked(clickedButton, param = None):
@@ -62,6 +64,15 @@ def ButtonClickedInside(clickedButton):
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
             msg = "label recognition active" if config.system_status["label_mode_active"] else "label recognition deactivated"
+        case "moderoam":
+            if config.system_status["roaming_mode_active"]:
+                ok, msg = roam.stop()
+                if ok:
+                    config.system_status["roaming_mode_active"] = False
+            else:
+                ok, msg = roam.start()
+                if ok:
+                    config.system_status["roaming_mode_active"] = True
     log.write(msg,1)
             
 def ButtonPress(pressedButton):

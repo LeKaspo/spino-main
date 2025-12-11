@@ -24,9 +24,9 @@ import server.lidar_slam.rpslam as lidar
 thread_gesture = threading.Thread(target=gesture.capture_loop, daemon=True)
 thread_gesture.start()
 try:
-    connectionHändler.getInstance()
-    lidar.main()
+    print("Starting Speech Input")
     si.start()
+    print("Starting UI")
     ui.start_ui()
 except Exception as e:
     print(f"ERROR: {e}")
