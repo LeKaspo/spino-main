@@ -128,7 +128,7 @@ class RoboLidar:
                         print(self.scan_queue.qsize())
                         scan = self.scan_queue.get()
                         self.sender.putLidarData(scan)
-                    time.sleep(0.1)
+                    time.sleep(0.2)
 
             except Exception as e:
                 print(f"Error in sending LidarData: {e}")
