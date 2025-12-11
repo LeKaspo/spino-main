@@ -8,6 +8,7 @@ from robo.sockets.sendLidar import lidarSänder
 import time
 import threading
 import atexit
+import queue
 
 class RoboLidar:
 
@@ -43,8 +44,9 @@ class RoboLidar:
         print(f"Health: {health}")
         
         # Attributes
+        self.scan_queue = queue.Queue()
         self.latest_scan = []
-        self.last_scan = []
+        self.previous_scan = []
         self._stop_update_thread = False
         self._stop_tcp_thread = False
         self._stop_object_detection_thread = False
@@ -88,8 +90,9 @@ class RoboLidar:
                         break
             
                     # Update latest_scan
-                    if i % 2 == 0:
-                        self.latest_scan = scan
+                    if i % 5 == 0:
+                        self.scan_queue.put(scan)
+                        #self.latest_scan = scan
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -118,10 +121,12 @@ class RoboLidar:
             '''
             try:
                 while not self._stop_tcp_thread:
-                    if self.latest_scan != self.last_scan:
+                    # if self.latest_scan != self.previous_scan:
 
-                        self.last_scan = self.latest_scan
-                        self.sender.putLidarData(self.latest_scan)
+                    #     self.previous_scan = self.latest_scan
+                    #     self.sender.putLidarData(self.latest_scan)
+                    scan = self.scan_queue.get()
+                    self.sender.putLidarData(scan)
 
             except Exception as e:
                 print(f"Error in sending LidarData: {e}")
