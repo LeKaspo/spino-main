@@ -20,10 +20,8 @@ print(health)
 
 
 for i, scan in enumerate(lidar.iter_scans()):
-    print(type(scan))
     print(scan)
-    if i > 100:
-        break
+
 
 lidar.stop()
 lidar.stop_motor()
