@@ -114,7 +114,7 @@ def clearLogger():
     logger.write("console cleared",int(data['id'])) # log box os cleared but only updtatet on the next write
     return '', 204
 
-#source for the gsture control video
+#source for the gesture control video
 @app.route('/video_gesture', endpoint='video_gesture')
 def video_feed():
     return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
