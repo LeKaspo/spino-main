@@ -109,6 +109,7 @@ def voicecommand(command):
             log.write("Garmin command detected: Saving video...", 1)
             recorder = get_recorder()
             recorder.save_last_seconds()
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
             return
 
         commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
