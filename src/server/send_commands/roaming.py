@@ -37,10 +37,11 @@ class Roaming:
     def getInstance(cls):
         return cls()
     
+    # start thread
     def start(self):
         with self._lock:
             if self.started:
-                return False, "Roaming war bereits aktiv."
+                return False, "free roam allready activated"
             self._stop_event.clear()
             try:
                 self._thread = threading.Thread(
@@ -50,16 +51,17 @@ class Roaming:
                 )
                 self._thread.start()
                 self.started = True
-                return True, "Spino ist jetzt in Freilandhaltung."
+                return True, "Spino is now free"
             except Exception:
                 self._thread = None
                 self.started = False
-                return False, "Roaming konnte nicht gestartet werden."
+                return False, "free roam could not be started"
 
+    #stop thread, be aware spino will end its current loop before stopping
     def stop(self):
         with self._lock:
             if not self.started:
-                return False, "Roaming war bereits inaktiv."
+                return False, "free roam allready deactivated"
             self._stop_event.set()
             thread = self._thread
         if thread is not None:
@@ -67,15 +69,14 @@ class Roaming:
         with self._lock:
             self._thread = None
             self.started = False
-        return True, "Spino ist jetzt nicht mehr in Freilandhaltung."
+        return True, "Spino is not free anymore"
 
     def loop(self):
-        sendcommands.sendJson({"type": "setSpeed", "params": {"val1" : 0.2} })
+        sendcommands.sendJson({"type": "setSpeed", "params": {"val1" : 0.2} }) # drive slowly to minimize crash potential
         config.system_status["cur_speed"] = 0.2
         while not self._stop_event.is_set():
             self.undo.start()
-            print("freilauf")
-            for _ in range(3):
+            for _ in range(3): # drive 3 times forwards and turn a bit randomly
                 sendcommands.sendJson({"type": "forwards", "params": {} })
                 self.undo.put("forwards")
                 time.sleep(self.getRandTime())
@@ -83,9 +84,12 @@ class Roaming:
                 sendcommands.sendJson({"type": dir, "params": {} })
                 self.undo.put(dir)
                 time.sleep(self.getRandTime())
+                sendcommands.sendJson({"type": "stopRotate", "params": {} })
+                self.undo.put("stopRotate")
+                time.sleep(self.getRandTime())
                 sendcommands.sendJson({"type": "stopForwardsBackwards", "params": {} })
                 self.undo.put("stopForwardsBackwards")
-            self.undo.undoMovement()
+            self.undo.undoMovement() # come back to starting position
             
     def getRandTime(self):
         return random.uniform(0.1, 1)

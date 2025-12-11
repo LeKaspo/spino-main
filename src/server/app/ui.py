@@ -9,7 +9,7 @@ sys.path.append(str(ROOT))
 import server.send_commands.processcommands as processcommands
 import server.config.config as config
 from server.send_commands.logger import Logger
-#import server.gesture.gesture as gesture
+import server.gesture.gesture as gesture
 
 TEMPLATE_DIR = ROOT / "server" / "templates"
 STATIC_FOLDER = ROOT / "server" / "static"
@@ -68,6 +68,7 @@ def update_config():
             "voice_mode_active",
             "gesture_mode_active",
             "label_mode_active",
+            "roaming_mode_active"
         }
     for key in allowed_keys:
         if key in data:
@@ -113,10 +114,10 @@ def clearLogger():
     logger.write("console cleared",int(data['id'])) # log box os cleared but only updtatet on the next write
     return '', 204
 
-# source for the gsture control video
-#@app.route('/video_gesture', endpoint='video_gesture')
-#def video_feed():
-    #return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+#source for the gsture control video
+@app.route('/video_gesture', endpoint='video_gesture')
+def video_feed():
+    return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # starting method
 def start_ui():
