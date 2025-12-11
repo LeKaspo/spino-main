@@ -74,16 +74,9 @@ class RoboLidar:
         self._object_detection_thread.start()
 
     def _update(self, max_distance:int, min_distance:int): 
-        """
-        Yields true if lidar detects an object in fornt, to the left, and to the right of the robot. (10° window)
-        This action is calibrated with max- and min_distance. If the lidar detects an object closer than max_distance, but further away than min_distance, it yields true.
-        Parameters:
-        - max_distance: mm
-        - min_distance: mm
-        """
         while True:
             try:
-                for i, scan in enumerate(self.lidar.iter_scans()): #scan_type='express'
+                for i, scan in enumerate(self.lidar.iter_scans()):
                     if self._stop_update_thread:
                         break
             
@@ -101,44 +94,15 @@ class RoboLidar:
         - port: Port on the target machine
         """
         while True:
-            '''
-            while True:
-                try:
-                    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                    client.connect((ip, port))
-                    print(f"Lidar Connected to {ip}:{port}")
-                    break
-                except ConnectionRefusedError:
-                    print("Lidar Connection refused. Retrying in 2 seconds...")
-                    time.sleep(2)
-                except Exception as e:
-                    print(f"Error while trying to connect {e}")
-                    client.close()
-                    return
-            '''
             try:
                 while not self._stop_tcp_thread:
-                    # if self.latest_scan != self.previous_scan:
-
-                    #     self.previous_scan = self.latest_scan
-                    #     self.sender.putLidarData(self.latest_scan)
-                    if self.scan_queue.empty():
-                        print("Queue Empty")
-                    else:
-                        print(self.scan_queue.qsize())
+                    if not self.scan_queue.empty():
                         scan = self.scan_queue.get()
                         self.sender.putLidarData(scan)
                     time.sleep(0.2)
 
             except Exception as e:
                 print(f"Error in sending LidarData: {e}")
-
-    def _object_detection(self):
-        while not self._stop_object_detection_thread:
-            if self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]:
-                print("Clear Queue and Fullstop")
-            time.sleep(0.5)
-
 
     def cleanup(self):
         """Cleanup resources when the program exits."""
