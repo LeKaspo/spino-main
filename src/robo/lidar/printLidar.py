@@ -1,4 +1,4 @@
-from robo.ext_libs.rplidar import RPLidar, RPLidarException
+from rplidar import RPLidar, RPLidarException
 
 lidar2 = RPLidar('/dev/rplidar')
 lidar2.stop()
