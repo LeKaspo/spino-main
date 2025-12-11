@@ -10,7 +10,7 @@ sys.path.append(str(ROOT))
 
 class Object_Detector:
         
-        def __init__(self, max_distance=400, min_distance=100, field_of_view:int=20):
+        def __init__(self, max_distance=700, min_distance=100, field_of_view:int=20):
 
             # Validate parameters
             assert (field_of_view % 2 == 0), TypeError("field_of_view needs to be an even integer")
