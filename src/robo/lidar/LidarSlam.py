@@ -8,7 +8,6 @@ from robo.sockets.sendLidar import lidarSänder
 import time
 import threading
 import atexit
-import queue
 
 IP_ADRESS = '192.168.0.78'
 
@@ -46,7 +45,6 @@ class RoboLidar:
         print(f"Health: {health}")
         
         # Attributes
-        self.lidarQueue = queue.Queue()
         self.latest_scan = []
         self.last_scan = []
         self._stop_update_thread = False
@@ -89,7 +87,7 @@ class RoboLidar:
         print("in update")
         while True:
             try:
-                for i, scan in enumerate(self.lidar.iter_scans()): #scan_type='express'
+                for i, scan in enumerate(self.lidar.iter_scans()): 
                     if self._stop_update_thread:
                         break
             
