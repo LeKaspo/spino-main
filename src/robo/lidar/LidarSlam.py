@@ -96,7 +96,10 @@ class RoboLidar:
         while True:
             try:
                 while not self._stop_tcp_thread:
-                    if not self.scan_queue.empty():
+                    if  self.scan_queue.empty():
+                        print("Queue Empty")
+                    else:
+                        print(self.scan_queue.qsize())
                         scan = self.scan_queue.get()
                         self.sender.putLidarData(scan)
                     time.sleep(0.2)

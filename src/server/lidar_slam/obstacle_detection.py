@@ -10,7 +10,7 @@ sys.path.append(str(ROOT))
 
 class Object_Detector:
         
-        def __init__(self, max_distance=300, min_distance=100, field_of_view:int=20):
+        def __init__(self, max_distance=400, min_distance=100, field_of_view:int=20):
 
             # Validate parameters
             assert (field_of_view % 2 == 0), TypeError("field_of_view needs to be an even integer")
@@ -43,24 +43,31 @@ class Object_Detector:
             for measure in self.scan:
                 quality, angle, distance = measure
                 # object detection right
-                if angle >= 90 - fow and angle <= 90 + fow:
+                if angle >= 90 - fow and angle <= 90 + fow and not right:
                     right = distance <= self.max_distance and distance >= self.min_distance
                 # object detection center
-                if angle >= -fow and angle <= fow:
+                elif angle >= -fow and angle <= fow and not center:
                         center = distance <= self.max_distance and distance >= self.min_distance
                 # object detection left
-                if angle >= 270 - fow and angle <= 270 + fow:
+                elif angle >= 270 - fow and angle <= 270 + fow and not left:
                     left = distance <= self.max_distance and distance >= self.min_distance
 
             self.latest_obstacle = [left, center, right]
+
+            print("Get new Scan")
+            print(f"{self.latest_obstacle[0]} + {self.latest_obstacle[1]} + {self.latest_obstacle[2]}")
 
 
 
         def _object_detection(self):
             while not self._stop_object_detection_thread:
-                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]) and self.latest_obstacle is not self.previous_obstacle):
+                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])): # and self.latest_obstacle is not self.previous_obstacle
                     print("FULLSTOP")
-                    sendcommands.sendJson(json.dumps("fullstop"))
+                    data = {
+                    "type": "fullstop",
+                    "params": {}
+                    }
+                    sendcommands.sendJson(json.dumps(data))
                     self.previous_obstacle = self.latest_obstacle
                 time.sleep(0.25)
 

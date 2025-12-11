@@ -246,7 +246,7 @@ def visualize_loop():
             traceback.print_exc()
             time.sleep(0.5)
  
-if __name__ == "__main__":
+def main():
 
     conn = connectionHändler.getInstance()
    
@@ -272,6 +272,7 @@ if __name__ == "__main__":
     print("💡 Der rote gestrichelte Kreis zeigt die 10 cm Grenze")
    
     try:
+        #threading.Thread(target=visualize_loop, daemon=True)
         visualize_loop()
     except KeyboardInterrupt:
         print("\n[Main] Programm beendet")

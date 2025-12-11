@@ -10,6 +10,7 @@ from server.app.connection import connectionHändler
 import server.app.ui as ui
 import server.config.config as config
 import server.lidar_slam.rpslam as lidar
+import server.lidar_slam.visualize_lidar as visualize
 
 
 #from server.app.robo_start import RobotSSHController
@@ -24,7 +25,7 @@ connectionHändler.getInstance()
 # controller.run()
 try:
     print("Starting Lidar")
-    lidar.main()
+    visualize.main()
     print("Starting UI")
     ui.start_ui()
 except Exception as e:
