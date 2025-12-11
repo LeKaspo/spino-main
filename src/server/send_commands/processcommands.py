@@ -59,6 +59,9 @@ def ButtonClickedInside(clickedButton):
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
             msg = "label recognition active" if config.system_status["label_mode_active"] else "label recognition deactivated"
+        case "moderoam":
+            config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
+            msg = "free roam active" if config.system_status["label_mode_active"] else "free roam deactivated"
     log.write(msg,1)
             
 def ButtonPress(pressedButton):
