@@ -1,4 +1,9 @@
-from rplidar import RPLidar, RPLidarException
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+
+from robo.ext_libs.rplidar import RPLidar, RPLidarException
 
 lidar2 = RPLidar('/dev/rplidar')
 lidar2.stop()
