@@ -21,6 +21,7 @@ print(health)
 
 for i, scan in enumerate(lidar.iter_scans()):
     print(scan)
+    print(len(scan))
 
 
 lidar.stop()
