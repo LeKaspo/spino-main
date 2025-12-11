@@ -1,3 +1,7 @@
+setup_data = {
+    "ip_address": "192.168.0.8",
+}
+
 # Variables that can be accesed from every part of the Project
 system_status = {
     "button_mode_active": True,

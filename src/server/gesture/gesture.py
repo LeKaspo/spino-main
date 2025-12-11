@@ -186,3 +186,7 @@ def classify_gesture(lm, handedness_label):
     side = detect_palm_or_back(lm, handedness_label)
     rot = detect_rotation(lm)
     return f"{side}_{rot}"
+
+def start():
+    capture_thread = threading.Thread(target=capture_loop, daemon=True)
+    capture_thread.start()
