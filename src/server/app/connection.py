@@ -5,11 +5,16 @@ import json
 import struct
 import time
 import pickle
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+import server.config.config as config
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = '192.168.0.4'
+IP = config.setup_data["ip_address"]
 
 class connectionHändler:
     
