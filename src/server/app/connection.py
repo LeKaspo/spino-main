@@ -3,8 +3,15 @@ import socket
 import queue
 import json
 import struct
-import time
 import pickle
+
+from server.app.mutex import mutex
+
+import sys
+from pathlib import Path  
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
 
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
@@ -33,6 +40,7 @@ class connectionHändler:
         self.commandQ = queue.Queue()
         self.audioQ = queue.Queue()
         self.lidarQ = queue.Queue()
+        self.lidarMutex = mutex()
 
         print("Starting Connection Threads")
         t1 = threading.Thread(target=self._getAudio, daemon=True)
@@ -94,7 +102,8 @@ class connectionHändler:
                 data = self.recv_all(conn, length)
 
                 realdata = pickle.loads(data)
-                self.lidarQ.put(realdata)
+                #self.lidarQ.put(realdata)
+                self.lidarMutex.write(realdata)
         except KeyboardInterrupt:
             print("Closed getLidarThread")
         except Exception as e:
@@ -123,7 +132,8 @@ class connectionHändler:
         self.commandQ.put(cmd)
 
     def getLidar(self):
-        return self.lidarQ.get()
+        #return self.lidarQ.get()
+        return self.lidarMutex.read()
     
     def getAudio(self):
         return self.audioQ.get()

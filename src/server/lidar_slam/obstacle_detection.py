@@ -10,7 +10,7 @@ sys.path.append(str(ROOT))
 
 class Object_Detector:
         
-        def __init__(self, max_distance=700, min_distance=100, field_of_view:int=20):
+        def __init__(self, max_distance=1000, min_distance=100, field_of_view:int=20):
 
             # Validate parameters
             assert (field_of_view % 2 == 0), TypeError("field_of_view needs to be an even integer")
@@ -54,7 +54,6 @@ class Object_Detector:
 
             self.latest_obstacle = [left, center, right]
 
-            print("Get new Scan")
             print(f"{self.latest_obstacle[0]} + {self.latest_obstacle[1]} + {self.latest_obstacle[2]}")
 
 
@@ -62,7 +61,6 @@ class Object_Detector:
         def _object_detection(self):
             while not self._stop_object_detection_thread:
                 if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])): # and self.latest_obstacle is not self.previous_obstacle
-                    print("FULLSTOP")
                     data = {
                     "type": "fullstop",
                     "params": {}
