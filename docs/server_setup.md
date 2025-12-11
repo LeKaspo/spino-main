@@ -2,6 +2,8 @@
 
 ## Virtuelle Umgebung einrichten
 
+You need Python3.11 or lower 
+
 ```bash
 # Virtuelle Umgebung erstellen
 python -m venv spino_venv
@@ -12,6 +14,22 @@ python -m venv spino_venv
 # Abhängigkeiten installieren
 pip install -r requirements_server.txt
 ```
+
+## Install BreezySLAM and Visualize
+
+
+On the Laptop you have to start your venv and then install BreezySLAM and PyRoboViz-master in the models folder 
+
+Note that you have to go to the folders and install the Programs in there, "python .\PyRoboViz-master\PyRoboViz-master\setup.py install" does not work
+
+```bash
+cd .\BreezySLAM\python\
+python setup.py install
+
+.\PyRoboViz-master\PyRoboViz-master\
+python setup.py install
+```
+
 
 ## Drive Spino and see Cameraview
 
