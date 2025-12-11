@@ -88,8 +88,8 @@ class RoboLidar:
                         break
             
                     # Update latest_scan
-                    if i % 5 == 0:
-                        self.scan_queue.put(scan)
+                    #if i % 5 == 0:
+                    self.scan_queue.put(scan)
             except RPLidarException:
                 self.lidar.clean_input()
 
