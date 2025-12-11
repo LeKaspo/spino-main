@@ -9,8 +9,6 @@ import time
 import threading
 import atexit
 
-IP_ADRESS = '192.168.0.78'
-
 class RoboLidar:
 
     def __init__(self, port='/dev/rplidar', max_distance=300, min_distance=100, field_of_view:int=20):
@@ -68,7 +66,6 @@ class RoboLidar:
         - ip: IP address of the target machine
         - port: Port on the target machine
         '''
-        print("Hello im in the start_tcp_thread")
         self._tcp_thread = threading.Thread(target=self._send_lidar_data)
         self._tcp_thread.start()
 
@@ -84,16 +81,15 @@ class RoboLidar:
         - max_distance: mm
         - min_distance: mm
         """
-        print("in update")
         while True:
             try:
-                for i, scan in enumerate(self.lidar.iter_scans()): 
+                for i, scan in enumerate(self.lidar.iter_scans(scan_type='express')):
                     if self._stop_update_thread:
                         break
             
                     # Update latest_scan
-                    if i % 5 == 0:
-                        self.latest_scan = scan
+                    #if i % 2 == 0:
+                    self.latest_scan = scan
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -125,12 +121,10 @@ class RoboLidar:
                     if self.latest_scan != self.last_scan:
 
                         self.last_scan = self.latest_scan
-
-                        #filtered_scan = [measure for measure in self.latest_scan if ((measure[1] >= 270 or measure[1] <= 90) and measure[2] <= 3000)]
                         self.sender.putLidarData(self.latest_scan)
 
             except Exception as e:
-                print(f"Error in sending data: {e}")
+                print(f"Error in sending LidarData: {e}")
 
     def _object_detection(self):
         while not self._stop_object_detection_thread:
@@ -156,11 +150,10 @@ class RoboLidar:
 def main():
     robolidar = RoboLidar('/dev/rplidar', field_of_view=40)
     try:
+        
+        print("Starting Lidar Threads")
         robolidar.start_working_thread()
-        print("Started working thread")
-
         robolidar.start_tcp_thread()
-        print("Started tcp thread")
         
         '''
         robolidar.start_object_detection_thread()
@@ -169,6 +162,3 @@ def main():
         
     finally:
         del robolidar
-
-if __name__ == "__main__":
-    main()
