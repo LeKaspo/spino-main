@@ -105,7 +105,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         conf.button_mode_active,
         conf.voice_mode_active,
         conf.gesture_mode_active,
-        conf.label_mode_active
+        conf.label_mode_active,
+        conf.roaming_mode_active
     ]
     const modiButtons = document.querySelectorAll('.modiButton');
     modiButtons.forEach((button, i) => {
@@ -202,7 +203,8 @@ async function saveStatus(modesArray) {
         'button_mode_active',
         'voice_mode_active',
         'gesture_mode_active',
-        'label_mode_active'
+        'label_mode_active',
+        'roaming_mode_active'
     ];
     const status = {};
     keys.forEach((key, index) => {
