@@ -1,9 +1,10 @@
-import server.send_commands.sendcommands as sendcommands
 import threading
 import time
 import sys
 import json
 from pathlib import Path
+from server.send_commands.logger import Logger
+import server.send_commands.sendcommands as sendcommands
 import server.config.config as config
 from server.app.connection import connectionHändler
 ROOT = Path(__file__).resolve().parents[2]
@@ -29,6 +30,7 @@ class Object_Detector:
             self._stop_object_detection_thread = False
 
             self.conn = connectionHändler.getInstance()
+            self.log = Logger.getInstance() 
 
         def start_update_scan_thread(self):
             self._update_scan_thread = threading.Thread(target=self._get_scan, args=())
@@ -68,13 +70,7 @@ class Object_Detector:
         def _object_detection(self):
             while not self._stop_object_detection_thread:
                 if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])): # and self.latest_obstacle is not self.previous_obstacle
-                    data = {
-                    "type": "fullstop",
-                    "params": {}
-                    }
-                    sendcommands.sendJson(json.dumps(data))
-                    #config.system_status["stop_flag"] = True
-                    #self.previous_obstacle = self.latest_obstacle
+                    self.log.write("Obstacle detection emergency stop")
                 time.sleep(0.05)
 
 def main():
