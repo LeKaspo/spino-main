@@ -67,6 +67,7 @@ class MovementControl:
         self.g_bot.set_colorful_lamps(13, 255, 204, 0)
         self.g_bot.set_colorful_lamps(12, 255, 204, 0)
         self.g_bot.set_colorful_lamps(11, 255, 204, 0)
+        self.g_bot.set_colorful_lamps(10, 255, 204, 0)
 
     def left(self):
         self.speedy = self.speed 
@@ -92,6 +93,7 @@ class MovementControl:
         self.g_bot.set_colorful_lamps(13, 255, 204, 0)
         self.g_bot.set_colorful_lamps(12, 255, 204, 0)
         self.g_bot.set_colorful_lamps(11, 255, 204, 0)
+        self.g_bot.set_colorful_lamps(10, 255, 204, 0)
 
     def turnLeft(self):
         self.speedz = 2 #drehen immer auf voller geschwindigkeit weil das ist langsam
@@ -128,8 +130,9 @@ class MovementControl:
         self.g_bot.set_colorful_lamps(13, 255, 204, 0)
         self.g_bot.set_colorful_lamps(12, 255, 204, 0)
         self.g_bot.set_colorful_lamps(11, 255, 204, 0)
-        time.sleep(1.8675)
-        self.fullstop()
+        self.g_bot.set_colorful_lamps(10, 255, 204, 0)
+        time.sleep(1.87)
+        self.stopRotate()
 
     def beep(self):
         self.g_bot.set_beep(20)
