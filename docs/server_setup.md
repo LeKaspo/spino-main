@@ -76,7 +76,10 @@ Then go onto the website where the flask server is run and you can see the camer
 
 
 - **Add commands:**
-    - In `speechInput.py`, under `COMMANDS`:
+    - In `server\speech\speechInput.py`, under `COMMANDS`:
         - `name` = command sent to Spino via `sendcommands.voicecommand`
         - `phrases` = the phrases that trigger the command
+    - Add the command to `server\send_commands\processcommands.py` in `voicecommand`
+    - Add the command to `robo\movement_control\executor.py` in `init`
+    - Add the command to `robo\movement_control\movementControl.py`
 
