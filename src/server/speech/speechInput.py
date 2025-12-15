@@ -64,11 +64,11 @@ DEFAULT_MODELS_ROOT = (Path(__file__).resolve().parent.parent / "models").as_pos
 @dataclass
 class SpeechConfig:
     """Configuration for the speech input system."""
-    model: str = "tiny"
+    model: str = "large-v3"
     model_path: str | None = None
     models_root: str = DEFAULT_MODELS_ROOT
     language: str = "de"
-    device: str = "cpu"
+    device: str = "cuda"
     compute_type: str = "int8"
     vad_aggressiveness: int = 2
     vad_hangover_ms: int = 380
