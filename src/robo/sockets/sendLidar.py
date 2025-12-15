@@ -30,6 +30,7 @@ class lidarSänder:
 
         #self.scanQueue = queue.Queue()
         self.lidarMutex = Mutex()
+        self.lastScan = None
         
         socket = self.connectSocket()
         if socket == None:
@@ -62,10 +63,11 @@ class lidarSänder:
         try:
             while True:
                 data = pickle.dumps(self.lidarMutex.read())
-                print(f"In send lidar connect {data}")
-                length = struct.pack('!I', len(data))
-                socket.sendall(length + data)
-                time.sleep(0.1)  # Send data every 500ms
+                if data != self.lastScan:
+                    length = struct.pack('!I', len(data))
+                    socket.sendall(length + data)
+                    self.lastScan = data
+                time.sleep(0.05)  # Send data every 50ms
         except Exception as e:
             print(f"Error: {e}")
         finally:
