@@ -63,7 +63,16 @@ def get_config():
 @app.post("/api/config")
 def update_config():
     data = request.get_json()
-    config.system_status = data
+    allowed_keys = {
+            "button_mode_active",
+            "voice_mode_active",
+            "gesture_mode_active",
+            "label_mode_active",
+            "roaming_mode_active"
+        }
+    for key in allowed_keys:
+        if key in data:
+            config.system_status[key] = bool(data[key])
     return '', 204
 
 # get the log box text if updated
@@ -96,6 +105,7 @@ def sse_stream():
         "Cache-Control": "no-cache",
     }
     return Response(stream_with_context(event_stream()), headers=headers)
+
 # clear log box
 @app.post("/api/clear")
 def clearLogger():
@@ -104,7 +114,7 @@ def clearLogger():
     logger.write("console cleared",int(data['id'])) # log box os cleared but only updtatet on the next write
     return '', 204
 
-# source for the gsture control video
+#source for the gesture control video
 @app.route('/video_gesture', endpoint='video_gesture')
 def video_feed():
     return Response(gesture.gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
