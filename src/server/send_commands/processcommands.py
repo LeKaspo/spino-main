@@ -49,6 +49,7 @@ def ButtonClickedInside(clickedButton):
             recorder = get_recorder()
             recorder.save_last_seconds()
             msg = "video safed"
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
             msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"
