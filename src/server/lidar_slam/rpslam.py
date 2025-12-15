@@ -36,7 +36,6 @@ def main():
 def BreezySlam():
     print("Starting Breezy Function")
     conn = connectionHändler.getInstance()
-    detector = Object_Detector()
 
     MAP_SIZE_PIXELS         = 500
     MAP_SIZE_METERS         = 10
@@ -80,7 +79,6 @@ def BreezySlam():
         scan = conn.getLidar()
         if scan != prev_scan:
             prev_scan = scan
-            detector.get_scan(scan)
             items = [item for item in scan]
 
             # Extract distances and angles from triples

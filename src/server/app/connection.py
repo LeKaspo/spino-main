@@ -5,7 +5,7 @@ import json
 import struct
 import pickle
 
-from src.server.lidar_slam.mutex import Mutex
+from server.lidar_slam.mutex import Mutex
 
 import sys
 from pathlib import Path  
@@ -39,7 +39,7 @@ class connectionHändler:
 
         self.commandQ = queue.Queue()
         self.audioQ = queue.Queue()
-        self.lidarQ = queue.Queue()
+        #self.lidarQ = queue.Queue()
         self.lidarMutex = Mutex()
 
         print("Starting Connection Threads")

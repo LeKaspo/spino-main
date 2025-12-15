@@ -26,4 +26,3 @@ class Mutex:
             if self.__readers == 0:
                 self.__resource_lock.release()
         return ret
- 

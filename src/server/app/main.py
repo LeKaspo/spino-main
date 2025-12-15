@@ -10,6 +10,8 @@ from server.app.connection import connectionHändler
 import server.app.ui as ui
 import server.config.config as config
 import server.lidar_slam.rpslam as lidar
+import server.lidar_slam.obstacle_detection as obstacleDetection
+import server.lidar_slam.lidarOnURLtest as lidarStream
 
 
 #from server.app.robo_start import RobotSSHController
@@ -23,8 +25,12 @@ connectionHändler.getInstance()
 # )
 # controller.run()
 try:
-    print("Starting Lidar")
-    lidar.main()
+    print("Start Obstacle Detection")
+    obstacleDetection.main()
+    print("Start Lidar Stream")
+    lidarStream.main()
+    print("Starting Slam")
+    #lidar.main()
     print("Starting UI")
     ui.start_ui()
 except Exception as e:
