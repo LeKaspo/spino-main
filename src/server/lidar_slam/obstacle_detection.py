@@ -41,7 +41,7 @@ class Object_Detector:
         def _get_scan(self):
             while True:
                 scan = self.conn.getLidar()
-                if self.scan != self.prev_scan:
+                if scan != self.prev_scan:
                     
                     self.prev_scan = scan
 

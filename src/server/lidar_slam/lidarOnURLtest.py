@@ -19,23 +19,33 @@ app = Flask(__name__)
 # Globaler Frame Buffer
 current_frame = None
 frame_lock = threading.Lock()
+frame_count = 0
+last_frame = None
 
 def generate_frames():
     """Generiere MJPEG Frames"""
-    global current_frame
-    
-    conn_lidar = connectionHändler.getInstance()
-    frame_count = 0
+    global current_frame, frame_count
+    prev_scan = None
+
+    try:
+        conn_lidar = connectionHändler.getInstance()
+        print("✓ LiDAR Verbindung hergestellt")
+    except Exception as e:
+        print(f"✗ LiDAR Verbindung fehler: {e}")
+        return
     
     while True:
         try:
             scan = conn_lidar.getLidar()
             
-            if not scan or len(scan) == 0:
-                time.sleep(0.01)
+            if not scan or len(scan) == 0 or scan == prev_scan:
+                prev_scan = scan
+                print("⚠ Keine LiDAR-Daten erhalten")
+                time.sleep(0.5)
                 continue
             
             frame_count += 1
+            print(f"📊 Frame #{frame_count} generiert ({len(scan)} Punkte)")
             
             fig, ax = plt.subplots(figsize=(10, 10), facecolor='black')
             ax.set_facecolor('black')
@@ -54,8 +64,8 @@ def generate_frames():
                                 s=120, alpha=0.95, vmin=0, vmax=8000,
                                 edgecolors='white', linewidth=0.5)
             
-            ax.set_xlim(-15, 15)
-            ax.set_ylim(-15, 15)
+            ax.set_xlim(-5, 5)
+            ax.set_ylim(-5, 5)
             ax.set_aspect('equal')
             ax.grid(True, alpha=0.2, color='white', linestyle='--', linewidth=0.5)
             ax.set_xlabel('X (m)', color='white', fontsize=12, fontweight='bold')
@@ -80,20 +90,28 @@ def generate_frames():
             with frame_lock:
                 current_frame = buf.read()
             
+            print(f"💾 Frame gespeichert ({len(current_frame)} bytes)")
             time.sleep(0.05)
             
         except Exception as e:
-            print(f"Fehler: {e}")
-            time.sleep(0.1)
+            print(f"✗ Frame Fehler: {e}")
+            time.sleep(1)
 
 def mjpeg_generator():
     """Generator für MJPEG Stream"""
+    print("▶ MJPEG Generator gestartet")
+    frame_num = 0
+    global last_frame
+    
     while True:
         with frame_lock:
-            if current_frame:
+            if current_frame and current_frame != last_frame:
                 frame = current_frame
+                last_frame = current_frame
+                frame_num += 1
+                print(f"📡 Frame #{frame_num} gesendet")
             else:
-                time.sleep(0.01)
+                time.sleep(0.1)
                 continue
         
         yield (b'--frame\r\n'
@@ -104,13 +122,20 @@ def mjpeg_generator():
 @app.route('/stream')
 def stream():
     """MJPEG Stream"""
+    print("🔗 Client verbunden - Stream gestartet")
     return Response(mjpeg_generator(),
                    mimetype='multipart/x-mixed-replace; boundary=frame')
 
-def main():
+if __name__ == '__main__':
+    print("=" * 50)
+    print("🚀 MJPEG Stream Server startet...")
+    print("=" * 50)
+    
     # Starte Frame-Generator
     generator_thread = threading.Thread(target=generate_frames, daemon=True)
     generator_thread.start()
     
-    print("Server läuft auf http://192.168.0.78:50010/stream")
-    app.run(host='192.168.0.78', port=50010, debug=False, threaded=True)
+    print(f"📍 Server läuft auf http://192.168.0.78:8090/stream")
+    print("=" * 50)
+    
+    app.run(host='192.168.0.78', port=8090, debug=False, threaded=True)

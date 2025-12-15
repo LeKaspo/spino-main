@@ -5,6 +5,7 @@ sys.path.append(str(ROOT))
 
 from robo.ext_libs.rplidar import RPLidar, RPLidarException
 from robo.sockets.sendLidar import lidarSänder
+from robo.lidar.mutex import Mutex
 import time
 import threading
 import atexit
@@ -22,6 +23,8 @@ class RoboLidar:
         '''
 
         self.sender = lidarSänder.getInstance()
+
+        self.lidarMutex = Mutex()
         
 
         # Validate parameters
@@ -44,7 +47,6 @@ class RoboLidar:
         print(f"Health: {health}")
         
         # Attributes
-        self.scan_queue = queue.Queue()
         self._stop_update_thread = False
         self._stop_tcp_thread = False
         self._stop_object_detection_thread = False
@@ -82,7 +84,7 @@ class RoboLidar:
             
                     # Update latest_scan
                     if i % 1 == 0:
-                        self.scan_queue.put(scan)
+                        self.lidarMutex(scan)
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -96,7 +98,7 @@ class RoboLidar:
         while True:
             try:
                 while not self._stop_tcp_thread:
-                    scan = self.scan_queue.get()
+                    scan = self.lidarMutex.read()
                     self.sender.putLidarData(scan)
 
             except Exception as e:

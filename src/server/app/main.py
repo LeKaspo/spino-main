@@ -28,7 +28,7 @@ try:
     print("Start Obstacle Detection")
     obstacleDetection.main()
     print("Start Lidar Stream")
-    lidarStream.main()
+    #lidarStream.main()
     print("Starting Slam")
     #lidar.main()
     print("Starting UI")
