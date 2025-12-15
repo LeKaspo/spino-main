@@ -11,7 +11,7 @@ import atexit
 
 class RoboLidar:
 
-    def __init__(self, port='/dev/rplidar', max_distance=300, min_distance=100, field_of_view:int=20):
+    def __init__(self, port='/dev/rplidar'):
         '''
         Parameters:
         - port: Serial port that the lidar is connected to.
@@ -24,10 +24,6 @@ class RoboLidar:
 
         self.lidarMutex = Mutex()
         
-
-        # Validate parameters
-        assert (field_of_view % 2 == 0), TypeError("field_of_view needs to be an even integer")
-
         self.prev_scan = None
 
         # Initialise lidar
@@ -71,7 +67,7 @@ class RoboLidar:
         self._object_detection_thread = threading.Thread(target=self._object_detection, args=())
         self._object_detection_thread.start()
 
-    def _update(self, max_distance:int, min_distance:int): 
+    def _update(self): 
         while True:
             try:
                 for i, scan in enumerate(self.lidar.iter_scans()):
