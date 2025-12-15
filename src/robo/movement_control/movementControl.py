@@ -136,7 +136,7 @@ class MovementControl:
 
     def beep(self):
         self.g_bot.set_beep(20)
-        time.sleep(0.02)
+        time.sleep(0.2)
         self.g_bot.set_beep(20)
 
         

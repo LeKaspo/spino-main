@@ -23,7 +23,8 @@ class CommandExecutor:
             "turnRight" : mc.turnRight,
             "turnLeft" : mc.turnLeft,
             "setSpeed" : mc.setSpeed,
-            "turn180" : mc.turn180
+            "turn180" : mc.turn180,
+            "beep" : mc.beep
         }
         
     def executeCommand(self, command):      

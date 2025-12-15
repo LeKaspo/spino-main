@@ -23,10 +23,6 @@ python -m venv spino_venv
 
 # Virtuelle Umgebung aktivieren (Linux/Mac)
 source spino_venv/bin/activate
-# Auf Windows (Eingabeaufforderung):
-spino_venv\Scripts\activate.bat
-# Auf Windows (Powershell):
-spino_venv\Scripts\Activate.ps1
 
 # Abhängigkeiten installieren
 pip install -r requirements_robo.txt
@@ -34,6 +30,4 @@ pip install -r requirements_robo.txt
 
 ## To Startup and let the Spino drive
 
-Controller on Laptop side must be started first!
-
- SSH onto the spino, activate the venv (camera-venv), and execute the main.sh in this folder.
+See README in the root folder
