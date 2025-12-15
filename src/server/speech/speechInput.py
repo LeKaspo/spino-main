@@ -10,7 +10,6 @@ Continuous speech -> Whisper (de/en) -> command execution.
 
 Example command:
 - "move forward", "go forward", "fahre geradeaus", "fahre vorwärts", "fahre nach vorne"
-  -> call move.py with: --direction forward
 """
 
 import argparse
@@ -28,7 +27,6 @@ from pathlib import Path
 import numpy as np
 import sounddevice as sd
 import soundfile as sf
-from scipy import signal
 from huggingface_hub.errors import LocalEntryNotFoundError
 
 
@@ -62,6 +60,29 @@ FRAME_SIZE = int(SAMPLE_RATE * FRAME_DURATION_MS / 1000)
 DEFAULT_MODELS_ROOT = (Path(__file__).resolve().parent.parent / "models").as_posix()
 
 
+
+@dataclass
+class SpeechConfig:
+    """Configuration for the speech input system."""
+    model: str = "tiny"
+    model_path: str | None = None
+    models_root: str = DEFAULT_MODELS_ROOT
+    language: str = "de"
+    device: str = "cpu"
+    compute_type: str = "int8"
+    vad_aggressiveness: int = 2
+    vad_hangover_ms: int = 380
+    vad_attack_ms: int = 55
+    vad_min_energy: float = 40.0
+    silence_ms: int = 400
+    min_utterance_ms: int = 300
+    min_avg_amplitude: float = 650.0
+    dump_utterances: str | None = None
+    queue_warn: int = 80
+    workers: int = 2
+    max_pending: int = 10
+
+
 class EnergyVAD:
     """Energy-based VAD with hangover to avoid premature cut-offs."""
 
@@ -92,12 +113,14 @@ class EnergyVAD:
         self._hangover_left = 0
 
     def _frame_energy(self, frame_bytes: bytes) -> float:
+        """Calculate the RMS energy of a frame."""
         frame = np.frombuffer(frame_bytes, dtype=np.int16)
         if not frame.size:
             return 0.0
         return float(np.sqrt(np.mean(frame.astype(np.float32) ** 2)))
 
     def _update_noise_floor(self, energy: float, threshold: float) -> None:
+        """Update the estimated noise floor based on current energy."""
         if energy <= 0.0:
             return
         if energy < threshold:
@@ -136,6 +159,7 @@ class EnergyVAD:
 
 
 class Recorder:
+    """Handles audio recording from the microphone."""
     def __init__(self, sample_rate=SAMPLE_RATE, frame_ms=FRAME_DURATION_MS):
         self.sample_rate = sample_rate
         self.frame_ms = frame_ms
@@ -144,6 +168,7 @@ class Recorder:
         self.running = False
 
     def _callback(self, indata, frames, time_info, status):
+        """Callback for sounddevice InputStream."""
         if status:
             print("Input stream status:", status, file=sys.stderr)
         # convert float32 [-1,1] to int16 PCM
@@ -151,6 +176,7 @@ class Recorder:
         self.frames_queue.put(audio.tobytes())
 
     def start(self):
+        """Start recording."""
         if self.running:
             return
         self.running = True
@@ -164,6 +190,7 @@ class Recorder:
         self._stream.start()
 
     def stop(self):
+        """Stop recording."""
         if not self.running:
             return
         self.running = False
@@ -171,26 +198,6 @@ class Recorder:
             self._stream.stop()
             self._stream.close()
             self._stream = None
-
-
-def frames_from_wav(path):
-    """Yield 20 ms frames from a WAV file as int16 bytes at SAMPLE_RATE."""
-    data, sr = sf.read(path, dtype="int16")
-    mono = np.asarray(data)
-    if mono.ndim > 1:
-        mono = mono[:, 0]
-    if sr != SAMPLE_RATE:
-        mono = signal.resample(
-            mono.astype(np.float32),
-            int(len(mono) * SAMPLE_RATE / sr),
-        ).astype(np.int16)
-
-    step = FRAME_SIZE
-    i = 0
-    while i + step <= len(mono):
-        chunk = mono[i : i + step].astype(np.int16)
-        yield chunk.tobytes()
-        i += step
 
 
 def save_temp_wav(samples_bytes: bytes) -> str:
@@ -203,11 +210,13 @@ def save_temp_wav(samples_bytes: bytes) -> str:
 
 
 def samples_duration_ms(samples_bytes: bytes) -> float:
+    """Calculate duration of samples in milliseconds."""
     sample_count = len(samples_bytes) / 2  # int16
     return float(sample_count / SAMPLE_RATE * 1000.0)
 
 
 def average_amplitude(samples_bytes: bytes) -> float:
+    """Calculate average amplitude of samples."""
     arr = np.frombuffer(samples_bytes, dtype=np.int16)
     if not arr.size:
         return 0.0
@@ -216,6 +225,7 @@ def average_amplitude(samples_bytes: bytes) -> float:
 
 @dataclass
 class UtteranceMeta:
+    """Metadata for a captured utterance."""
     idx: int
     started_at: float
     ended_at: float
@@ -225,6 +235,7 @@ class UtteranceMeta:
 
 
 def should_drop_utterance(meta: UtteranceMeta, min_ms: int, min_amp: float) -> bool:
+    """Check if utterance should be dropped based on duration and amplitude."""
     if meta.duration_ms < min_ms:
         return True
     if meta.avg_amplitude < min_amp:
@@ -233,6 +244,7 @@ def should_drop_utterance(meta: UtteranceMeta, min_ms: int, min_amp: float) -> b
 
 
 def dump_utterance(samples_bytes: bytes, dump_dir: str, utterance_idx: int) -> str | None:
+    """Save utterance to a file for debugging."""
     if not dump_dir:
         return None
     os.makedirs(dump_dir, exist_ok=True)
@@ -379,6 +391,7 @@ COMMANDS = [
 
 
 def _normalize_command_text(text: str) -> str:
+    """Normalize text for command matching."""
     cleaned = [
         (ch if (ch.isalnum() or ch.isspace()) else " ")
         for ch in text.lower()
@@ -426,6 +439,7 @@ def transcribe_utterance(
 
 
 def handle_utterance(wmodel, samples, language, dump_dir, meta):
+    """Handle a single utterance: transcribe and check for commands."""
     try:
         text = transcribe_utterance(wmodel, samples, language, meta, dump_dir)
     except Exception:
@@ -439,16 +453,18 @@ def handle_utterance(wmodel, samples, language, dump_dir, meta):
 
 
 def _cleanup_done_futures(pending: deque):
+    """Remove completed futures from the pending queue."""
     while pending and pending[0][1].done():
         pending.popleft()
 
 
-def resolve_model_dir(args) -> Path:
-    if args.model_path:
-        candidate = Path(args.model_path).expanduser().resolve()
+def resolve_model_dir(config: SpeechConfig) -> Path:
+    """Resolve the path to the Whisper model directory."""
+    if config.model_path:
+        candidate = Path(config.model_path).expanduser().resolve()
     else:
-        root = Path(args.models_root).expanduser().resolve()
-        candidate = root / f"faster-whisper-{args.model}"
+        root = Path(config.models_root).expanduser().resolve()
+        candidate = root / f"faster-whisper-{config.model}"
 
     if not candidate.exists():
         raise FileNotFoundError(
@@ -458,15 +474,15 @@ def resolve_model_dir(args) -> Path:
     return candidate
 
 
-def create_whisper_model(args, model_dir: Path | None = None):
+def create_whisper_model(config: SpeechConfig, model_dir: Path | None = None):
     """Create a Faster-Whisper model with CLI overrides."""
-    model_dir = model_dir or resolve_model_dir(args)
+    model_dir = model_dir or resolve_model_dir(config)
 
     try:
         return WhisperModel(
             str(model_dir),
-            device=args.device,
-            compute_type=args.compute_type,
+            device=config.device,
+            compute_type=config.compute_type,
             local_files_only=True,
         )
     except LocalEntryNotFoundError as err:
@@ -474,30 +490,35 @@ def create_whisper_model(args, model_dir: Path | None = None):
         raise err
 
 
-
-def run_live(args):
+def run_live(config: SpeechConfig = SpeechConfig()):
+    """
+    Main loop for live speech recognition.
+    
+    Args:
+        config: Configuration object for speech input.
+    """
     recorder = Recorder()
     vad = EnergyVAD(
-        aggressiveness=args.vad_aggressiveness,
-        hangover_ms=args.vad_hangover_ms,
-        attack_ms=args.vad_attack_ms,
-        min_energy=args.vad_min_energy,
+        aggressiveness=config.vad_aggressiveness,
+        hangover_ms=config.vad_hangover_ms,
+        attack_ms=config.vad_attack_ms,
+        min_energy=config.vad_min_energy,
     )
 
-    model_dir = resolve_model_dir(args)
+    model_dir = resolve_model_dir(config)
     print(f"Loading Faster Whisper model from {model_dir}")
-    wmodel = create_whisper_model(args, model_dir)
+    wmodel = create_whisper_model(config, model_dir)
 
-    executor = ThreadPoolExecutor(max_workers=args.workers, thread_name_prefix="whisper")
+    executor = ThreadPoolExecutor(max_workers=config.workers, thread_name_prefix="whisper")
     pending: deque = deque()
 
     recorder.start()
-    print(f"Listening (language={args.language}). Press Ctrl-C to stop.")
+    print(f"Listening (language={config.language}). Press Ctrl-C to stop.")
 
     frame_buffer: list[bytes] = []
     speech = False
     silence_frames = 0
-    silence_ms_threshold = args.silence_ms
+    silence_ms_threshold = config.silence_ms
     utterance_counter = 0
     speech_started_at = None
 
@@ -510,7 +531,7 @@ def run_live(args):
                 continue
 
             queue_depth = recorder.frames_queue.qsize()
-            if queue_depth > args.queue_warn:
+            if queue_depth > config.queue_warn:
                 backlog_sec = queue_depth * FRAME_DURATION_MS / 1000.0
                 print(f"Input queue backlog: {queue_depth} frames (~{backlog_sec:.1f} s). Whisper still busy.")
 
@@ -545,13 +566,13 @@ def run_live(args):
                         )
                         if should_drop_utterance(
                             meta,
-                            args.min_utterance_ms,
-                            args.min_avg_amplitude,
+                            config.min_utterance_ms,
+                            config.min_avg_amplitude,
                         ):
                             continue
 
                         _cleanup_done_futures(pending)
-                        if len(pending) >= args.max_pending:
+                        if len(pending) >= config.max_pending:
                             dropped_id, dropped_future = pending.popleft()
                             if not dropped_future.done():
                                 print(f"Cancelling utterance {dropped_id} because pending queue is full.")
@@ -561,8 +582,8 @@ def run_live(args):
                             handle_utterance,
                             wmodel,
                             samples,
-                            args.language,
-                            args.dump_utterances,
+                            config.language,
+                            config.dump_utterances,
                             meta,
                         )
                         pending.append((meta.idx, future))
@@ -574,90 +595,22 @@ def run_live(args):
         executor.shutdown(wait=True)
 
 
-def run_file(args):
-    """Optional: process a WAV file instead of microphone (for quick testing)."""
-    vad = EnergyVAD(
-        aggressiveness=args.vad_aggressiveness,
-        hangover_ms=args.vad_hangover_ms,
-        attack_ms=args.vad_attack_ms,
-        min_energy=args.vad_min_energy,
-    )
-    model_dir = resolve_model_dir(args)
-    print(f"Loading Faster Whisper model from {model_dir}")
-    wmodel = create_whisper_model(args, model_dir)
-    print("Processing file:", args.file)
-
-    frame_buffer: list[bytes] = []
-    speech = False
-    silence_frames = 0
-    utterance_counter = 0
-    speech_started_at = None
-
-    for frame in frames_from_wav(args.file):
-        is_speech = vad.is_speech(frame, SAMPLE_RATE)
-        if is_speech:
-            if not speech:
-                speech_started_at = time.perf_counter()
-            frame_buffer.append(frame)
-            speech = True
-            silence_frames = 0
-        else:
-            if speech:
-                silence_frames += 1
-                if silence_frames * FRAME_DURATION_MS > args.silence_ms:
-                    frame_count = len(frame_buffer)
-                    samples = b"".join(frame_buffer)
-                    frame_buffer = []
-                    speech = False
-                    silence_frames = 0
-
-                    if not samples:
-                        continue
-
-                    utterance_counter += 1
-                    meta = UtteranceMeta(
-                        idx=utterance_counter,
-                        started_at=speech_started_at or time.perf_counter(),
-                        ended_at=time.perf_counter(),
-                        duration_ms=samples_duration_ms(samples),
-                        avg_amplitude=average_amplitude(samples),
-                        frame_count=frame_count,
-                    )
-                    if should_drop_utterance(
-                        meta,
-                        args.min_utterance_ms,
-                        args.min_avg_amplitude,
-                    ):
-                        continue
-
-                    handle_utterance(
-                        wmodel,
-                        samples,
-                        args.language,
-                        args.dump_utterances,
-                        meta,
-                    )
-            # else: silence without active speech -> ignore
-
-    # left-over partial utterance
-    if frame_buffer:
-        samples = b"".join(frame_buffer)
-        meta = UtteranceMeta(
-            idx=utterance_counter + 1,
-            started_at=speech_started_at or time.perf_counter(),
-            ended_at=time.perf_counter(),
-            duration_ms=samples_duration_ms(samples),
-            avg_amplitude=average_amplitude(samples),
-            frame_count=len(frame_buffer),
-        )
-        handle_utterance(wmodel, samples, args.language, args.dump_utterances, meta)
-
-def start():
-    speech_thread = threading.Thread(target=main, name="SpeechThread", daemon=True)
+def start(config: SpeechConfig = SpeechConfig()):
+    """
+    Starts the speech input system in a separate thread.
+    
+    Args:
+        config: Configuration object for speech input.
+    """
+    speech_thread = threading.Thread(target=run_live, args=(config,), name="SpeechThread", daemon=True)
     speech_thread.start()
 
 
 def main():
+    """
+    Entry point for running the speech input system standalone.
+    Parses command line arguments and starts the system.
+    """
     parser = argparse.ArgumentParser(
         description="Microphone STT with Whisper (de/en) and simple command mapping."
     )
@@ -768,10 +721,28 @@ def main():
 
     args = parser.parse_args()
 
-    if args.file:
-        run_file(args)
-    else:
-        run_live(args)
+    # Convert args to SpeechConfig
+    config = SpeechConfig(
+        model=args.model,
+        model_path=args.model_path,
+        models_root=args.models_root,
+        language=args.language,
+        device=args.device,
+        compute_type=args.compute_type,
+        vad_aggressiveness=args.vad_aggressiveness,
+        vad_hangover_ms=args.vad_hangover_ms,
+        vad_attack_ms=args.vad_attack_ms,
+        vad_min_energy=args.vad_min_energy,
+        silence_ms=args.silence_ms,
+        min_utterance_ms=args.min_utterance_ms,
+        min_avg_amplitude=args.min_avg_amplitude,
+        dump_utterances=args.dump_utterances,
+        queue_warn=args.queue_warn,
+        workers=args.workers,
+        max_pending=args.max_pending
+    )
+
+    run_live(config)
 
 
 if __name__ == "__main__":
