@@ -109,11 +109,6 @@ def main():
     thread = threading.Thread(target=visualize, daemon=False)
     thread.start()
     
-    try:
-        while thread.is_alive():
-            thread.join(0.1)
-    except KeyboardInterrupt:
-        print("\n🛑 Beende...")
 
 if __name__ == "__main__":
     main()
