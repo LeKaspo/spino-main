@@ -9,9 +9,9 @@ sys.path.append(str(ROOT))
 from server.app.connection import connectionHändler
 from server.app.robo_start import RobotSSHController
 import server.app.ui as ui
-#import server.speech.speechInput as si
+import server.speech.speechInput as si
 import server.config.config as config
-#import server.gesture.gesture as gesture
+import server.gesture.gesture as gesture
 import server.lidar_slam.rpslam as lidar
 
 

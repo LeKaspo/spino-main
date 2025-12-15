@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
     }
+    
 
     const holdButtons = document.getElementsByClassName('holdButton');
     for (const button of holdButtons) {
@@ -137,6 +138,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         const payload = JSON.parse(evt.data);
         box1.value = payload.text || "";
         box1.scrollTop = box1.scrollHeight;
+        const beforeLast = payload.text.slice(0, payload.text.lastIndexOf("\n"));
+        const prevNL = beforeLast.lastIndexOf("\n");
+        let penultimate = prevNL >= 0 ? beforeLast.slice(prevNL + 1) : beforeLast;
+        console.log(penultimate)
+        if (penultimate.includes("emergency stop")) { //react to emergency stop
+            document.getElementById("ackstop").classList.remove("deactivated");
+            document.getElementById("ackstop").disabled = false;
+            console.log("emergency im log gelesen")
+            if (modesArray[4] === true)
+            {
+                simulateClick(document.getElementById("moderoam"));
+                console.log("moderoam x click simuliert")
+            }
+        }
     });
     es.addEventListener("box2", (evt) => {
         const payload = JSON.parse(evt.data);
@@ -154,6 +169,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
+    //emergenvy stop design
+    document.getElementById("ackstop").addEventListener('click', () => {
+            document.getElementById("ackstop").disabled = true;
+            document.getElementById("ackstop").classList.add("deactivated");
+            console.log("stop ack gedrückt")
+        });
+
 });
 
 // helper funktions

@@ -48,10 +48,11 @@ def ButtonClickedInside(clickedButton):
             msg = "Spino is comming back"
         case "safevideo":
             # TODO: methoden aufruf wür das video speichern
-            msg = "video safed"
+            msg = "video saved"
         case "ackstop":
-            config.system_status["stop_flag"] = not config.system_status["stop_flag"]
-            msg = f"ermergency stop aknowledged, Spino can go on {config.system_status["stop_flag"]}"
+            if config.system_status["stop_flag"]:
+                config.system_status["stop_flag"] = False
+                msg = f"stop aknowledged, Spino can go on"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
             msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"

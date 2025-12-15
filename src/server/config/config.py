@@ -1,5 +1,5 @@
 setup_data = {
-    "ip_address": "192.168.0.8",
+    "ip_address": "192.168.0.31"
 }
 
 # Variables that can be accesed from every part of the Project
