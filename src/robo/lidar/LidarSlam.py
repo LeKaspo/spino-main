@@ -81,7 +81,7 @@ class RoboLidar:
                         break
             
                     # Update latest_scan
-                    if i % 3 == 0:
+                    if i % 1 == 0:
                         self.lidarMutex.write(scan)
             except RPLidarException:
                 self.lidar.clean_input()
