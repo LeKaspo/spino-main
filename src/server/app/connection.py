@@ -103,7 +103,6 @@ class connectionHändler:
 
                 realdata = pickle.loads(data)
                 #self.lidarQ.put(realdata)
-                print(realdata)
                 self.lidarMutex.write(realdata)
         except KeyboardInterrupt:
             print("Closed getLidarThread")

@@ -77,7 +77,6 @@ class RoboLidar:
                     # Update latest_scan
                     #if i % 1 == 0:
                     self.lidarMutex.write(scan)
-                    print(f"In update {scan}")
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -93,7 +92,6 @@ class RoboLidar:
                 while not self._stop_tcp_thread:
                     scan = self.lidarMutex.read()
                     if scan != self.prev_scan:
-                        print(f"New Scan {scan}")
                         self.prev_scan = scan
                         self.sender.putLidarData(scan)
 

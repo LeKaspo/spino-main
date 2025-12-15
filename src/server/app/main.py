@@ -11,7 +11,7 @@ import server.app.ui as ui
 import server.config.config as config
 import server.lidar_slam.rpslam as lidar
 import server.lidar_slam.obstacle_detection as obstacleDetection
-import server.lidar_slam.lidarOnURLtest as lidarStream
+import server.lidar_slam.visualizecv as lidarStream
 
 
 #from server.app.robo_start import RobotSSHController
@@ -28,7 +28,7 @@ try:
     print("Start Obstacle Detection")
     obstacleDetection.main()
     print("Start Lidar Stream")
-    #lidarStream.main()
+    lidarStream.main()
     print("Starting Slam")
     #lidar.main()
     print("Starting UI")
