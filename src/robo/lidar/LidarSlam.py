@@ -50,7 +50,7 @@ class RoboLidar:
         '''
         Call this method once to continuously update self.latest_scan and self.latest_obstacle.
         '''
-        self._update_thread = threading.Thread(target=self._update, args=(self.max_distance, self.min_distance))
+        self._update_thread = threading.Thread(target=self._update)
         self._update_thread.start()
 
     def start_tcp_thread(self):
