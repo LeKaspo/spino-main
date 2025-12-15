@@ -6,10 +6,8 @@ sys.path.append(str(ROOT))
 from robo.ext_libs.rplidar import RPLidar, RPLidarException
 from robo.sockets.sendLidar import lidarSänder
 from robo.lidar.mutex import Mutex
-import time
 import threading
 import atexit
-import queue
 
 class RoboLidar:
 
@@ -84,7 +82,7 @@ class RoboLidar:
             
                     # Update latest_scan
                     if i % 1 == 0:
-                        self.lidarMutex(scan)
+                        self.lidarMutex.write(scan)
             except RPLidarException:
                 self.lidar.clean_input()
 
