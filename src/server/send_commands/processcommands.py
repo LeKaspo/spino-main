@@ -45,7 +45,7 @@ def ButtonClickedInside(clickedButton):
         case "undoMovement":
             undo.undoMovement()
             msg = "Spino is comming back"
-        case "safevideo":
+        case "savevideo":
             recorder = get_recorder()
             recorder.save_last_seconds()
             msg = "video saved"
