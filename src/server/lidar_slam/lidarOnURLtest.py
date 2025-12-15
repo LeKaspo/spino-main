@@ -38,7 +38,10 @@ def generate_frames():
         try:
             scan = conn_lidar.getLidar()
             
-            if not scan or len(scan) == 0 or scan == prev_scan:
+            if not scan or len(scan) == 0:
+                if scan == prev_scan:
+                    print("prev Scan")
+                    print(scan)
                 prev_scan = scan
                 print("⚠ Keine LiDAR-Daten erhalten")
                 time.sleep(0.5)
