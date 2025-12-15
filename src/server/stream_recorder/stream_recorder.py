@@ -78,13 +78,13 @@ class StreamRecorder:
             
         print("Stream capture thread stopped.")
 
-    def save_last_seconds(self, output_filename: Optional[str] = None, output_dir: str = "garmin"):
+    def save_last_seconds(self, output_filename: Optional[str] = None, output_dir: str = "recordings"):
         """
         Saves the current buffer to a file.
 
         Args:
             output_filename: Name of the output file. If None, a timestamped name is generated.
-            output_dir: Directory to save the file in. Defaults to "garmin".
+            output_dir: Directory to save the file in. Defaults to "recordings".
         """
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
