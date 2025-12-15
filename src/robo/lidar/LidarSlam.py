@@ -28,9 +28,7 @@ class RoboLidar:
         # Validate parameters
         assert (field_of_view % 2 == 0), TypeError("field_of_view needs to be an even integer")
 
-        self.max_distance = max_distance
-        self.min_distance = min_distance
-        self.field_of_view = field_of_view
+        self.prev_scan = None
 
         # Initialise lidar
         self.lidar2 = RPLidar('/dev/rplidar')
@@ -81,8 +79,8 @@ class RoboLidar:
                         break
             
                     # Update latest_scan
-                    if i % 1 == 0:
-                        self.lidarMutex.write(scan)
+                    #if i % 1 == 0:
+                    self.lidarMutex.write(scan)
             except RPLidarException:
                 self.lidar.clean_input()
 
@@ -97,8 +95,9 @@ class RoboLidar:
             try:
                 while not self._stop_tcp_thread:
                     scan = self.lidarMutex.read()
-                    print(scan)
-                    self.sender.putLidarData(scan)
+                    if scan != self.prev_scan:
+                        self.prev_scan = scan
+                        self.sender.putLidarData(scan)
 
             except Exception as e:
                 print(f"Error in sending LidarData: {e}")
