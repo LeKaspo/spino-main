@@ -48,7 +48,7 @@ def ButtonClickedInside(clickedButton):
         case "safevideo":
             recorder = get_recorder()
             recorder.save_last_seconds()
-            msg = "video safed"
+            msg = "video saved"
             sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]

@@ -65,12 +65,12 @@ class RobotSSHController:
 
         while self.running:
             if self.ssh_channel.recv_ready():
-                line = self.ssh_channel.recv(1024).decode("utf-8")
+                line = self.ssh_channel.recv(1024).decode("utf-8", errors="replace")
                 if line:
                     print("\033[33m[ROBOT]\033[0m", line, end="")
 
             if self.ssh_channel.recv_stderr_ready():
-                line = self.ssh_channel.recv_stderr(1024).decode("utf-8")
+                line = self.ssh_channel.recv_stderr(1024).decode("utf-8", errors="replace")
                 if line:
                     print("\033[31m[ROBOT-ERR]\033[0m", line, end="")
 

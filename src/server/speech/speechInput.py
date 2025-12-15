@@ -34,9 +34,9 @@ from huggingface_hub.errors import LocalEntryNotFoundError
 try:
     from faster_whisper import WhisperModel
 except ImportError:
-    print("Failed to import 'faster_whisper'.", file=sys.stderr)
+    print("Failed to import 'faster_whisper'. Speech recognition will not work.", file=sys.stderr)
     print("Install it with: pip install faster-whisper", file=sys.stderr)
-    sys.exit(1)
+    WhisperModel = None
 
 
 try:
@@ -476,6 +476,9 @@ def resolve_model_dir(config: SpeechConfig) -> Path:
 
 def create_whisper_model(config: SpeechConfig, model_dir: Path | None = None):
     """Create a Faster-Whisper model with CLI overrides."""
+    if WhisperModel is None:
+        raise ImportError("faster_whisper is not installed. Cannot create WhisperModel.")
+
     model_dir = model_dir or resolve_model_dir(config)
 
     try:
