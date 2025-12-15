@@ -97,6 +97,7 @@ class RoboLidar:
             try:
                 while not self._stop_tcp_thread:
                     scan = self.lidarMutex.read()
+                    print(scan)
                     self.sender.putLidarData(scan)
 
             except Exception as e:
