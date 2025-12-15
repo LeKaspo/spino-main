@@ -5,6 +5,7 @@ import pickle
 import struct
 import threading
 import sys
+from robo.lidar.mutex import Mutex
 
 PORT = 50002
 
@@ -27,7 +28,8 @@ class lidarSänder:
             return
         self._initialized = True
 
-        self.scanQueue = queue.Queue()
+        #self.scanQueue = queue.Queue()
+        self.lidarMutex = Mutex()
         
         socket = self.connectSocket()
         if socket == None:
@@ -59,14 +61,14 @@ class lidarSänder:
     def _sendLidarData(self, socket):  
         try:
             while True:
-                data = pickle.dumps(self.scanQueue.get())
+                data = pickle.dumps(self.lidarMutex.read())
                 length = struct.pack('!I', len(data))
                 socket.sendall(length + data)
-                time.sleep(0.5)  # Send data every 500ms
+                time.sleep(0.1)  # Send data every 500ms
         except Exception as e:
             print(f"Error: {e}")
         finally:
             socket.close()
 
     def putLidarData(self, data):
-        self.scanQueue.put(data)
+        self.lidarMutex.write(data)

@@ -40,10 +40,10 @@ def generate_frames():
             
             if not scan or len(scan) == 0:
                 if scan == prev_scan:
-                    print("prev Scan")
+                    #print("prev Scan")
                     print(scan)
                 prev_scan = scan
-                print("⚠ Keine LiDAR-Daten erhalten")
+                #print("⚠ Keine LiDAR-Daten erhalten")
                 time.sleep(0.5)
                 continue
             
