@@ -3,3 +3,4 @@ __pycache__/
 models/
 .vs/
 BreezySLAM.egg-info/
+*.mp4

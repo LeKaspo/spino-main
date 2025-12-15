@@ -3,6 +3,7 @@ import threading
 import time
 from collections import deque
 from datetime import datetime
+import os
 
 class StreamRecorder:
     def __init__(self, stream_url, buffer_duration=30, fps=30):
@@ -62,11 +63,17 @@ class StreamRecorder:
             
         print("Stream capture thread stopped.")
 
-    def save_last_seconds(self, output_filename=None):
+    def save_last_seconds(self, output_filename=None, output_dir=None):
         """Saves the current buffer to a file."""
+        if output_dir is None:
+            output_dir ="garmin"
+        os.makedirs(output_dir,exist_ok = True)
+        
         if not output_filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             output_filename = f"recording_{timestamp}.mp4"
+
+        full_path = os.path.join(output_dir, output_filename)
 
         with self.lock:
             # Create a snapshot of the buffer to write to disk
@@ -77,7 +84,7 @@ class StreamRecorder:
             print("Buffer is empty, nothing to save.")
             return
 
-        print(f"Saving {len(frames_to_write)} frames to {output_filename}...")
+        print(f"Saving {len(frames_to_write)} frames to {full_path}...")
         
         # Get dimensions from the first frame
         height, width, layers = frames_to_write[0].shape
@@ -85,13 +92,13 @@ class StreamRecorder:
         
         # 'mp4v' is a widely supported codec for .mp4
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        out = cv2.VideoWriter(output_filename, fourcc, self.fps, size)
+        out = cv2.VideoWriter(full_path, fourcc, self.fps, size)
 
         for frame in frames_to_write:
             out.write(frame)
             
         out.release()
-        print(f"Saved successfully to {output_filename}")
+        print(f"Saved successfully to {full_path}")
 
     def stop(self):
         """Stops the recording thread."""
