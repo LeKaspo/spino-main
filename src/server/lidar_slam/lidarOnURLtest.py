@@ -94,7 +94,6 @@ def generate_frames():
                 current_frame = buf.read()
             
             print(f"💾 Frame gespeichert ({len(current_frame)} bytes)")
-            time.sleep(0.05)
             
         except Exception as e:
             print(f"✗ Frame Fehler: {e}")

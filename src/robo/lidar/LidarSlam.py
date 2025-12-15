@@ -91,8 +91,7 @@ class RoboLidar:
         while True:
             try:
                 while not self._stop_tcp_thread:
-                    scan = self.lidarMutex.read()                  
-                    print(f"In send lidarSlam {scan}")
+                    scan = self.lidarMutex.read()
                     if scan != self.prev_scan:
                         print(f"New Scan {scan}")
                         self.prev_scan = scan
