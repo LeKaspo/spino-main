@@ -62,6 +62,7 @@ class lidarSänder:
         try:
             while True:
                 data = pickle.dumps(self.lidarMutex.read())
+                print(f"In send lidar connect {data}")
                 length = struct.pack('!I', len(data))
                 socket.sendall(length + data)
                 time.sleep(0.1)  # Send data every 500ms
