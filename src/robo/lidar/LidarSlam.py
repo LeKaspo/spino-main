@@ -113,7 +113,7 @@ class RoboLidar:
         self.cleanup()
 
 def main():
-    robolidar = RoboLidar('/dev/rplidar', field_of_view=40)
+    robolidar = RoboLidar('/dev/rplidar')
     try:
         
         print("Starting Lidar Threads")
