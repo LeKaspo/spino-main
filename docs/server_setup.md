@@ -2,7 +2,7 @@
 
 ## Virtuelle Umgebung einrichten
 
-You need Python3.11 or lower 
+You need Python3.11
 
 ```bash
 # Virtuelle Umgebung erstellen
@@ -64,3 +64,22 @@ Then go onto the website where the flask server is run and you can see the camer
 ### Finally
 
 - Restart the PC so that all settings are applied.
+
+# Voice activation
+
+- **Prerequisites:**
+    - Connection to the robot
+    - All libraries required for voice activation installed in the venv
+    - Create a folder named "models" in `spino-main\server`
+    - Download the model "faster-whisper-tiny" from https://huggingface.co/Systran/faster-whisper-tiny and move it into the `models` folder
+    - Other Faster-Whisper models also work, but then the default value in `src\server\speech\speechInput.py` in the CLI-Overrides must be adjusted accordingly
+
+
+- **Add commands:**
+    - In `server\speech\speechInput.py`, under `COMMANDS`:
+        - `name` = command sent to Spino via `sendcommands.voicecommand`
+        - `phrases` = the phrases that trigger the command
+    - Add the command to `server\send_commands\processcommands.py` in `voicecommand`
+    - Add the command to `robo\movement_control\executor.py` in `init`
+    - Add the command to `robo\movement_control\movementControl.py`
+

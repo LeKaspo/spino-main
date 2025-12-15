@@ -4,6 +4,11 @@ import queue
 import json
 import struct
 import pickle
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.append(str(ROOT))
+import server.config.config as config
 
 from server.lidar_slam.mutex import Mutex
 
@@ -16,8 +21,7 @@ sys.path.append(str(ROOT))
 PORT_AUDIO = 50001
 PORT_LIDAR = 50002
 PORT_COMMANDS = 50003
-IP = '192.168.0.78'
-BUFFER_SIZE = 128
+IP = config.setup_data["ip_address"]
 
 class connectionHändler:
     
@@ -25,28 +29,28 @@ class connectionHändler:
     _initialized = False
 
     def __new__(cls):
-        print("New Connection Object")
+        print("Initializing new Connection Singleton")
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
     def __init__(self):
-        print("Initialize Singleton")
         if hasattr(self, "_initialized") and self._initialized:
-            print("Singleton Already Initialized")
+            print("Connection Singleton Already Initialized")
             return
         self._initialized = True
 
         self.commandQ = queue.Queue()
-        self.audioQ = queue.Queue()
+        #self.audioQ = queue.Queue()
         #self.lidarQ = queue.Queue()
         self.lidarMutex = Mutex()
 
         print("Starting Connection Threads")
-        t1 = threading.Thread(target=self._getAudio, daemon=True)
+        #t1 = threading.Thread(target=self._getAudio, daemon=True)
         t2 = threading.Thread(target=self._getLidar, daemon=True)
         t3 = threading.Thread(target=self._sendCommand, daemon=True)
-        t1.start()
+
+        #t1.start()
         t2.start()
         t3.start()
 
@@ -73,7 +77,7 @@ class connectionHändler:
         s, conn = self._openConnection(IP, PORT_AUDIO)
         try:
             while True:
-                data = conn.recv(BUFFER_SIZE)
+                data = conn.recv()
                 if not data: break
                 self.audioQ.put(data)     
         except Exception as e:
@@ -96,11 +100,9 @@ class connectionHändler:
         s, conn = self._openConnection(IP, PORT_LIDAR)
         try:
             while True:
-                # Empfangen
                 length_data = conn.recv(4)
                 length = struct.unpack('!I', length_data)[0]
                 data = self.recv_all(conn, length)
-
                 realdata = pickle.loads(data)
                 #self.lidarQ.put(realdata)
                 self.lidarMutex.write(realdata)
@@ -119,7 +121,6 @@ class connectionHändler:
                 cmd = self.commandQ.get()       
                 cmd_json = json.dumps(cmd).encode('utf-8')
                 cmd_len = len(cmd_json)
-                print(f"sending command of length {cmd_len}")
                 pre_len = struct.pack("!I", cmd_len)
                 conn.sendall(pre_len + cmd_json)
         except Exception as e:

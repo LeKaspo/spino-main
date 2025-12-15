@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 import subprocess
 import atexit
+import time
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
@@ -10,7 +11,6 @@ from robo.sockets.sendLidar import lidarSänder
 import robo.lidar.LidarSlam as LidarSlam
 
 camera_script = ROOT / "robo" / "main" / "start_camera.sh"
-sendLidar = ROOT / "robo" / "sockets" / "sendLidar.py"
 sendAudio = ROOT / "robo" / "sockets" / "sendAudio.py"
 get_commands = ROOT / "robo" / "sockets" / "getCommands.py"
 
@@ -37,28 +37,44 @@ def cleanup():
 atexit.register(cleanup)
 
 try:
+    
+    print("\n")
+    print("Starting Camera Stream")
+    print("="*50)
     p1 = subprocess.Popen(["bash", str(camera_script)])
     processes.append(p1)
+    time.sleep(1)
 
-    # p_audio = subprocess.Popen(["python", str(sendAudio)])
-    # processes.append(p_audio)
+    #Audio sending was not implemented :(
+    #p_audio = subprocess.Popen(["python", str(sendAudio)])
+    #processes.append(p_audio)
 
+    print("\n")
+    print("="*50)
+    print("Starting Lidar Connection")
     lidarSänder.setIP(IP)
     lidarSänder.getInstance()
+    time.sleep(1)
 
+    print("\n")
+    print("Starting SLAM")
+    print("="*50)
     LidarSlam.main()
-    
-    #p_lidar = subprocess.Popen(["python", str(sendLidar)])
-    #processes.append(p_lidar)
+    time.sleep(1)
 
+    print("\n")
+    print("Starting Command Connection")
+    print("="*50)
     p_commands = subprocess.Popen(["python", str(get_commands), IP])
     processes.append(p_commands)
+    time.sleep(1)
+
+    print("\n")
 
     for p in processes:
         p.wait()
 except KeyboardInterrupt:
     print("Programm stopped by Keyboard Interrupt")
+    sys.exit(0)
 except Exception as e:
     print(f"Error in main.py: {e}")
-
-print("Disconnected and Shutdown")

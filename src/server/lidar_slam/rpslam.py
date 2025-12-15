@@ -34,7 +34,6 @@ def main():
 
 
 def BreezySlam():
-    print("Starting Breezy Function")
     conn = connectionHändler.getInstance()
 
     MAP_SIZE_PIXELS         = 500
@@ -53,6 +52,7 @@ def BreezySlam():
         from roboviz import MapVisualizer # type: ignore
     except Exception as e:
         print(f"Breezy Import failed: {e}")
+        print("Install BreezySLAM and Visualize as stated in docs")
         sys.exit(0)
 
 
@@ -85,24 +85,23 @@ def BreezySlam():
             distances = [item[2] for item in items]
             angles    = [item[1] for item in items]
 
+        # Update SLAM with current Lidar scan and scan angles if adequate
+        if len(distances) > MIN_SAMPLES:
+            slam.update(distances, scan_angles_degrees=angles)
+            previous_distances = distances.copy()
+            previous_angles    = angles.copy()
 
-            # Update SLAM with current Lidar scan and scan angles if adequate
-            if len(distances) > MIN_SAMPLES:
-                slam.update(distances, scan_angles_degrees=angles)
-                previous_distances = distances.copy()
-                previous_angles    = angles.copy()
+        # If not adequate, use previous
+        elif previous_distances is not None:
+            slam.update(previous_distances, scan_angles_degrees=previous_angles)
 
-            # If not adequate, use previous
-            elif previous_distances is not None:
-                slam.update(previous_distances, scan_angles_degrees=previous_angles)
-
-            # Get current robot position
-            x, y, theta = slam.getpos()
+        # Get current robot position
+        x, y, theta = slam.getpos()
 
             # Get current map bytes as grayscale
-            slam.getmap(mapbytes)
+        slam.getmap(mapbytes)
 
-            # Display map and robot pose, exiting gracefully if user closes it
-            if not viz.display(x/1000., y/1000., theta, mapbytes):
-                print("Exiting SLAM Thread")
-                exit(0)
+        # Display map and robot pose, exiting gracefully if user closes it
+        if not viz.display(x/1000., y/1000., theta, mapbytes):
+            print("Exiting SLAM Thread")
+            exit(0)

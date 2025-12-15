@@ -26,7 +26,7 @@ import logging
 import sys
 import time
 import codecs
-import serial
+import serial # type: ignore
 import struct
 
 from collections import namedtuple
@@ -386,10 +386,10 @@ class RPLidar(object):
             if max_buf_meas:
                 data_in_buf = self._serial.inWaiting()
                 if data_in_buf > max_buf_meas:
-                    self.logger.warning(
-                        'Too many bytes in the input buffer: %d/%d. '
-                        'Cleaning buffer...',
-                        data_in_buf, max_buf_meas)
+                    # self.logger.warning(
+                    #     'Too many bytes in the input buffer: %d/%d. '
+                    #     'Cleaning buffer...',
+                    #     data_in_buf, max_buf_meas)
                     self.stop()
                     self.start(self.scanning[2])
 
