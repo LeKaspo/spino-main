@@ -1,5 +1,5 @@
 setup_data = {
-    "ip_address": "192.168.0.8",
+    "ip_address": "192.168.0.31"
 }
 
 # Variables that can be accesed from every part of the Project
@@ -9,5 +9,6 @@ system_status = {
     "gesture_mode_active": False,
     "label_mode_active": False,
     "roaming_mode_active": False,
-    "cur_speed": 0.5
+    "cur_speed": 0.5,
+    "stop_flag": False
 }

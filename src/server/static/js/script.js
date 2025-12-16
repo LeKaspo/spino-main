@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
     });
     }
+    
 
     const holdButtons = document.getElementsByClassName('holdButton');
     for (const button of holdButtons) {
@@ -105,35 +106,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         conf.button_mode_active,
         conf.voice_mode_active,
         conf.gesture_mode_active,
-        conf.label_mode_active
+        conf.label_mode_active,
+        conf.roaming_mode_active
     ]
     const modiButtons = document.querySelectorAll('.modiButton');
     modiButtons.forEach((button, i) => {
-        if (modesArray[i] == true) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-        button.addEventListener("click", () => {
-            modesArray[i] = !modesArray[i]
-            if (modesArray[i] == true) {
-                button.classList.add('active');
-                if (button.classList.contains('textDe')){
-                    button.textContent = `de${button.textContent}`
-                    button.classList.add('text');
-                    button.classList.remove('textDe');
-                }
-            } else {
-                button.classList.remove('active');
-                if (button.classList.contains('text')){
-                    button.textContent = button.textContent.slice(2)
-                    button.classList.add('textDe');
-                    button.classList.remove('text');
-                }
-            }
-            saveStatus(modesArray)
+    if (modesArray[i] === true) {
+        button.classList.add('active');
+    } else {
+        button.classList.remove('active');
+    }  
+        button.addEventListener('click', () => {
+            modesArray[i] = !modesArray[i];
+            updateButtonUI(button, modesArray[i]);
+            enforceExclusivity(i, modesArray);
+            saveStatus(modesArray);
         });
     });
+
     // make buttons that can't be used gray
     deactiveButtons(modesArray[0]); //on load
     document.getElementById('modebtn').addEventListener("click", () => { //if button mode gets deactivated
@@ -148,6 +138,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         const payload = JSON.parse(evt.data);
         box1.value = payload.text || "";
         box1.scrollTop = box1.scrollHeight;
+        const beforeLast = payload.text.slice(0, payload.text.lastIndexOf("\n"));
+        const prevNL = beforeLast.lastIndexOf("\n");
+        let penultimate = prevNL >= 0 ? beforeLast.slice(prevNL + 1) : beforeLast;
+        console.log(penultimate)
+        if (penultimate.includes("emergency stop")) { //react to emergency stop
+            document.getElementById("ackstop").classList.remove("deactivated");
+            document.getElementById("ackstop").disabled = false;
+            console.log("emergency im log gelesen")
+            if (modesArray[4] === true)
+            {
+                simulateClick(document.getElementById("moderoam"));
+                console.log("moderoam x click simuliert")
+            }
+        }
     });
     es.addEventListener("box2", (evt) => {
         const payload = JSON.parse(evt.data);
@@ -165,6 +169,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
         });
     }
+    //emergenvy stop design
+    document.getElementById("ackstop").addEventListener('click', () => {
+            document.getElementById("ackstop").disabled = true;
+            document.getElementById("ackstop").classList.add("deactivated");
+            console.log("stop ack gedrückt")
+        });
+
 });
 
 // helper funktions
@@ -202,7 +213,8 @@ async function saveStatus(modesArray) {
         'button_mode_active',
         'voice_mode_active',
         'gesture_mode_active',
-        'label_mode_active'
+        'label_mode_active',
+        'roaming_mode_active'
     ];
     const status = {};
     keys.forEach((key, index) => {
@@ -236,5 +248,42 @@ function verify(id, input) {
   return true;
 }
 
+// if free roam is activated all other modes get deactivated
+function enforceExclusivity(changedIndex, modesArray) {
+    if (changedIndex === 4 && modesArray[4] === true) {
+      const voiceBtn = document.getElementById('modevoice');
+      const gestureBtn = document.getElementById('modegesture');
+      const buttonBtn = document.getElementById('modebtn');
 
+      if (modesArray[1] && voiceBtn)   simulateClick(voiceBtn);
+      if (modesArray[2] && gestureBtn) simulateClick(gestureBtn);
+      if (modesArray[0] && buttonBtn)  simulateClick(buttonBtn);
+    }
+    if (changedIndex !== 4 && modesArray[changedIndex] === true && modesArray[4] === true) {
+    const roamBtn = document.getElementById('moderoam');
+    if (roamBtn) simulateClick(roamBtn);
+    }
+  }
 
+// helper for de prefix
+function updateButtonUI(button, isActive) {
+    if (isActive) {
+      button.classList.add('active');
+      if (button.classList.contains('textDe')) {
+        button.textContent = `de${button.textContent}`;
+        button.classList.add('text');
+        button.classList.remove('textDe');
+      }
+    } else {
+      button.classList.remove('active');
+      if (button.classList.contains('text')) {
+        button.textContent = button.textContent.slice(2);
+        button.classList.add('textDe');
+        button.classList.remove('text');
+      }
+    }
+  }
+function simulateClick(el) {
+    if (!el) return;
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+  }
