@@ -130,7 +130,7 @@ def voicecommand(command):
 
         commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
         commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
-        if command in commandList:
+        if command in commandList and config.system_status["stop_flag"] == False:
             data = {
                     "type": command,
                     "params": {}
