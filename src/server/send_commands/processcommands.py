@@ -47,11 +47,11 @@ def ButtonClickedInside(clickedButton):
         case "undoMovement":
             undo.undoMovement()
             msg = "Spino is comming back"
-        case "safevideo":
+        case "savevideo":
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
             recorder = get_recorder()
             recorder.save_last_seconds()
-            msg = "video saved"
-            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
+            msg = "video saved" 
         case "ackstop":
             if config.system_status["stop_flag"]:
                 config.system_status["stop_flag"] = False
@@ -130,7 +130,7 @@ def voicecommand(command):
 
         commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
         commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
-        if command in commandList:
+        if command in commandList and config.system_status["stop_flag"] == False:
             data = {
                     "type": command,
                     "params": {}

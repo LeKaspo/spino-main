@@ -12,7 +12,6 @@ matplotlib>=3.9.0
 # Audio Processing
 sounddevice
 soundfile
-scipy
 huggingface_hub
 faster-whisper
 
