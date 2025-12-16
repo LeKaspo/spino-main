@@ -4,14 +4,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     const urls = [
         "http://192.168.0.145:8090/?action=stream", //dierekt camera image
         "http://localhost:5000/video_gesture", //camera image with gesture recognition overlay
-        "http://localhost:5000/video_label", //camera image with label recognition overlay not yet implementet
-        "http://localhost/8080", //lidar map, not yet implementen, probaply diffrent url
     ];
     const descriptions = [
         "regular view", 
         "gesture recognition", 
-        "label recognition", 
-        "lidar map", 
     ];
     let currentIndex = 0;
     function updateStream() {
