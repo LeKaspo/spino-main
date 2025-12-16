@@ -83,7 +83,7 @@ def BreezySlam():
 
             # Extract distances and angles from triples
             distances = [item[2] for item in items]
-            angles    = [item[1] for item in items]
+            angles    = [(180-item[1])%360 for item in items]
 
         # Update SLAM with current Lidar scan and scan angles if adequate
         if len(distances) > MIN_SAMPLES:
