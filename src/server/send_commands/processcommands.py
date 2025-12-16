@@ -9,6 +9,7 @@ from server.send_commands.undoMovement import  UndoMovement
 from server.send_commands.roaming import  Roaming
 import server.config.config as config
 from .logger import Logger
+from server.stream_recorder.stream_recorder import get_recorder
 
 #get instances from utility singeltons
 undo = UndoMovement.getInstance()
@@ -47,8 +48,10 @@ def ButtonClickedInside(clickedButton):
             undo.undoMovement()
             msg = "Spino is comming back"
         case "safevideo":
-            # TODO: methoden aufruf wür das video speichern
+            recorder = get_recorder()
+            recorder.save_last_seconds()
             msg = "video saved"
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
         case "ackstop":
             if config.system_status["stop_flag"]:
                 config.system_status["stop_flag"] = False
@@ -118,6 +121,13 @@ def ButtonRelease(releasedButton):
 # handle commands from other inputs
 def voicecommand(command):
     if (config.system_status["voice_mode_active"] == True):
+        if "garmin" in command.lower():
+            log.write("Garmin command detected: Saving video...", 1)
+            recorder = get_recorder()
+            recorder.save_last_seconds()
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
+            return
+
         commandList = {"forwards", "backwards", "left", "right", "turnLeft", "turnRight", "fullstop", "turn180" }
         commandParamsList = {"setSpeedSlower", "setSpeedFaster", "resetSpeed"}
         if command in commandList:
@@ -141,11 +151,16 @@ def voicecommand(command):
                 case "resetSpeed":
                     commandClean = "setSpeed"
                     params = {"val1" : 0.5}
+
+            if commandClean == "setSpeed":
+                config.system_status["cur_speed"] = float(params["val1"])
+
             data = {
                     "type": commandClean,
                     "params": params
                 }
             sendcommands.sendJson(json.dumps(data))
+
             log.write(f"from voice input: {command}",1)
             print("Sent voice command:", command, "with params:", params)
         else :

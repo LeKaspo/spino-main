@@ -13,7 +13,9 @@ import server.speech.speechInput as si
 import server.config.config as config
 import server.gesture.gesture as gesture
 import server.lidar_slam.rpslam as lidar
+import server.stream_recorder.stream_recorder as stream_recorder
 
+    
 
 try:
     # initialize connection handler singleton
@@ -28,11 +30,15 @@ try:
     controller.run()
     controller.ready.wait()
 
+    recorder = stream_recorder.get_recorder()
+
     # start inputs and ui in separate threads
     print("Starting Lidar Input")
     lidar.main()
     print("Starting Gesture Input")
     gesture.start()
+    print("Starting Stream Recorder")
+    recorder.start()
     print("Starting Speech Input")
     si.start()
     ui.start_ui()
