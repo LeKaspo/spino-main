@@ -36,7 +36,7 @@ try:
 
     # start inputs and ui in separate threads
     print("Starting Lidar Input")
-    lidar.main()
+    obstacleDetection.main()
     print("Starting Gesture Input")
     gesture.start()
     print("Starting Stream Recorder")
