@@ -19,6 +19,7 @@ PORT = 50003
 def connect():
     try:
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        client.settimeout(10.0)
         client.connect((IP, PORT))
         print(f"Connection with {IP} on Port {PORT}")
         return client

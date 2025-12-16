@@ -48,6 +48,7 @@ class lidarSänder:
     def connectSocket(self):
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(10.0)
             s.connect((lidarSänder.IP, PORT))
             print(f"Connection with {lidarSänder.IP} on Port {PORT}")
             return s
