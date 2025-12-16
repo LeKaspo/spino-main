@@ -77,7 +77,7 @@ class SpeechConfig:
     silence_ms: int = 400
     min_utterance_ms: int = 300
     min_avg_amplitude: float = 650.0
-    dump_utterances: str | None = None
+    dump_utterances: str | None = "recordings"
     queue_warn: int = 80
     workers: int = 2
     max_pending: int = 10
