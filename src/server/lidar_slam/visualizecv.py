@@ -36,7 +36,7 @@ def visualize():
             center_x, center_y = WINDOW_SIZE // 2, WINDOW_SIZE // 2
             cv2.circle(img, (center_x, center_y), 5, (0, 0, 255), -1)
 
-            # ✅ WICHTIG: Finde Min/Max Distanzen
+            # Min Max Distances
             distances = [d for _, _, d in scan if d > 0]
             if not distances:
                 time.sleep(0.01)
@@ -57,14 +57,11 @@ def visualize():
                     py = int(center_y + y * SCALE)
 
                     if 0 <= px < WINDOW_SIZE and 0 <= py < WINDOW_SIZE:
-                        # ✅ Berechne Helligkeit basierend auf Distanz
-                        # 0 = nah (hell), 1 = weit (dunkel)
+                        # Brightness based on Distance
                         normalized_dist = (distance - min_dist) / dist_range
                         brightness = 1 - normalized_dist  # 1 = hell, 0 = dunkel
                         
-                        # ✅ Lila in BGR: (B, G, R)
-                        # Hellstes Lila: (255, 0, 255)
-                        # Dunkelstes Lila: (80, 0, 80)
+                        # Color
                         min_value = 80
                         max_value = 255
                         color_value = int(min_value + brightness * (max_value - min_value))
@@ -74,12 +71,12 @@ def visualize():
                         cv2.circle(img, (px, py), 2, color, -1)
                         point_count += 1
 
-            # FPS berechnen
+            # FPS
             if frame_count % 30 == 0:
                 fps = 30 / (time.time() - fps_clock)
                 fps_clock = time.time()
 
-            # Info auf dem Fenster anzeigen
+            # Draw Info
             cv2.putText(img, f"Frame: {frame_count} | Points: {point_count} | FPS: {fps:.1f}", 
                     (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
             cv2.putText(img, f"Distanz: {min_dist} - {max_dist} mm", 
@@ -93,22 +90,20 @@ def visualize():
                 break
                 
     except KeyboardInterrupt:
-        print("\n✓ Programm beendet")
+        print("Keyboard Interrupt Live Viz")
     except Exception as e:
-        print(f"✗ Fehler: {e}")
+        print(f"Exception in Live Viz: {e}")
         import traceback
         traceback.print_exc()
     finally:
         cv2.destroyAllWindows()
 
 def main():
-    print("🚀 Starte kontinuierliche LiDAR Visualisierung...")
-    print("   Drücke 'q' zum Beenden")
-    
-    # ✅ WICHTIG: daemon=False damit das Fenster offen bleibt
-    thread = threading.Thread(target=visualize, daemon=False)
-    thread.start()
-    
+    try:
+        print("Start Live Viz")
+        thread = threading.Thread(target=visualize, daemon=False)
+        thread.start()
+    except Exception as e:
+        print(f"Live Viz Exception: {e}") 
 
-if __name__ == "__main__":
-    main()
+    

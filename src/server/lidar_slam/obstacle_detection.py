@@ -1,10 +1,8 @@
 import threading
 import time
 import sys
-import json
 from pathlib import Path
 from server.send_commands.logger import Logger
-import server.send_commands.sendcommands as sendcommands
 import server.config.config as config
 from server.app.connection import connectionHändler
 ROOT = Path(__file__).resolve().parents[2]
@@ -69,7 +67,9 @@ class Object_Detector:
 
         def _object_detection(self):
             while not self._stop_object_detection_thread:
-                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])): # and self.latest_obstacle is not self.previous_obstacle
+                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])) and self.latest_obstacle is not self.previous_obstacle:
+                    self.previous_obstacle = self.latest_obstacle
+                    config.system_status["stop_flag"] = True
                     self.log.write("Obstacle detection emergency stop", 1)
                 time.sleep(0.05)
 
