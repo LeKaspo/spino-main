@@ -48,10 +48,10 @@ def ButtonClickedInside(clickedButton):
             undo.undoMovement()
             msg = "Spino is comming back"
         case "savevideo":
+            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
             recorder = get_recorder()
             recorder.save_last_seconds()
-            msg = "video saved"
-            sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
+            msg = "video saved" 
         case "ackstop":
             if config.system_status["stop_flag"]:
                 config.system_status["stop_flag"] = False
