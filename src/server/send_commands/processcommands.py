@@ -78,8 +78,8 @@ def ButtonClickedInside(clickedButton):
                 if ok:
                     config.system_status["roaming_mode_active"] = True
         case "modeod":
-            config.system_status["obsticle_detection_active"] = not config.system_status["obsticle_detection_active"]
-            msg = "obsticle detection active" if config.system_status["obsticle_detection_active"] else "obsticle detection deactivated"
+            config.system_status["obstacle_detection_active"] = not config.system_status["obstacle_detection_active"]
+            msg = "obsticle detection active" if config.system_status["obstacle_detection_active"] else "obsticle detection deactivated"
         case "modeslam":
             config.system_status["slam_active"] = not config.system_status["slam_active"]
             msg = "slam active" if config.system_status["slam_active"] else "slam deactivated"
