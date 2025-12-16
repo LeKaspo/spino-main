@@ -40,34 +40,35 @@ class Object_Detector:
             
         def _get_scan(self):
             while True:
-                scan = self.conn.getLidar()
-                if scan != self.prev_scan:
-                    
-                    self.prev_scan = scan
+                if config.system_status["obstacle_detection_active"]:
+                    scan = self.conn.getLidar()
+                    if scan != self.prev_scan:
+                        
+                        self.prev_scan = scan
 
-                    fow = self.field_of_view / 2
+                        fow = self.field_of_view / 2
 
-                    # Update latest_obstacle
-                    left, center, right = False, False, False
-                    for measure in scan:
-                        quality, angle, distance = measure
-                        # object detection right
-                        if angle >= 90 - fow and angle <= 90 + fow and not right:
-                            right = distance <= self.max_distance and distance >= self.min_distance
-                        # object detection center
-                        elif angle >= -fow and angle <= fow and not center:
-                                center = distance <= self.max_distance and distance >= self.min_distance
-                        # object detection left
-                        elif angle >= 270 - fow and angle <= 270 + fow and not left:
-                            left = distance <= self.max_distance and distance >= self.min_distance
+                        # Update latest_obstacle
+                        left, center, right = False, False, False
+                        for measure in scan:
+                            quality, angle, distance = measure
+                            # object detection right
+                            if angle >= 90 - fow and angle <= 90 + fow and not right:
+                                right = distance <= self.max_distance and distance >= self.min_distance
+                            # object detection center
+                            elif angle >= -fow and angle <= fow and not center:
+                                    center = distance <= self.max_distance and distance >= self.min_distance
+                            # object detection left
+                            elif angle >= 270 - fow and angle <= 270 + fow and not left:
+                                left = distance <= self.max_distance and distance >= self.min_distance
 
-                    self.latest_obstacle = [left, center, right]
+                        self.latest_obstacle = [left, center, right]
 
 
 
         def _object_detection(self):
             while not self._stop_object_detection_thread:
-                if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])) and self.latest_obstacle is not self.previous_obstacle:
+                if (config.system_status["obstacle_detection_active"] and ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2]) and self.latest_obstacle is not self.previous_obstacle)):
                     self.previous_obstacle = self.latest_obstacle
                     config.system_status["stop_flag"] = True
                     self.log.write("Obstacle detection emergency stop", 1)
