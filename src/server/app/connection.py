@@ -60,7 +60,6 @@ class connectionHändler:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.bind((IP, PORT))
-            s.settimeout(10.0)
             s.listen(1)
             print(f"Listening on Port {PORT}")
             conn, _ = s.accept()
