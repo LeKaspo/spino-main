@@ -43,7 +43,6 @@ try:
     recorder.start()
     print("Starting Speech Input")
     si.start()
-    print("Starting UI")
     ui.start_ui()
 except Exception as e:
     print(f"ERROR: {e}")

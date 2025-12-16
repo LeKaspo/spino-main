@@ -18,7 +18,7 @@ roam = Roaming.getInstance()
 
 
 def ButtonClicked(clickedButton, param = None):
-    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop" or clickedButton == "setSpeed":
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False) or clickedButton == "fullstop" or clickedButton == "setSpeed":
         if param is not None: # if relevant sent param and update system_status
             data = {
                     "type": clickedButton,
@@ -50,8 +50,12 @@ def ButtonClickedInside(clickedButton):
         case "safevideo":
             recorder = get_recorder()
             recorder.save_last_seconds()
-            msg = "video safed"
             sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
+            msg = "video saved"
+        case "ackstop":
+            if config.system_status["stop_flag"]:
+                config.system_status["stop_flag"] = False
+                msg = f"stop aknowledged, Spino can go on"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
             msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"
@@ -76,7 +80,7 @@ def ButtonClickedInside(clickedButton):
     log.write(msg,1)
             
 def ButtonPress(pressedButton):
-    if (config.system_status["button_mode_active"] == True):
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False):
         commands = {
             "w": "forwards",
             "a": "left",

@@ -118,27 +118,29 @@ class UndoMovement:
             curz = 0
             while self.stack:
                 state = self.stack.pop()
-                
-                if state.get("special") is not None: #handle special commands
-                    param = {"var1" : state.get("var")} if state.get("var") != 0 else {}
-                    sendcommands.sendJson(json.dumps({"type": state.get("special"), "params": param}))
-                    time.sleep(state["duration"])
-                else:
-                    if state["x"] != curx: # send apropriate commands if it changed
-                        command_x = self.get_command(state["x"], 'x')
-                        sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
-                        curx = state["x"]
-                    if state["y"] != cury:
-                        command_y = self.get_command(state["y"], 'y')
-                        sendcommands.sendJson(json.dumps({"type":command_y, "params": {}}))
-                        cury = state["y"]
-                    if state["z"] != curz:
-                        command_z = self.get_command(state["z"], 'z')
-                        sendcommands.sendJson(json.dumps({"type": command_z, "params": {}}))
-                        curz = state["z"]
-                    # only wait the duration if the robot is actually driving
-                    if state["x"] != 0 or state["y"] != 0 or state["z"] != 0:   
+                if (config.system_status["stop_flag"] == False):
+                    if state.get("special") is not None: #handle special commands
+                        param = {"var1" : state.get("var")} if state.get("var") != 0 else {}
+                        sendcommands.sendJson(json.dumps({"type": state.get("special"), "params": param}))
                         time.sleep(state["duration"])
+                    else:
+                        if state["x"] != curx: # send apropriate commands if it changed
+                            command_x = self.get_command(state["x"], 'x')
+                            sendcommands.sendJson(json.dumps({"type": command_x, "params": {}}))
+                            curx = state["x"]
+                        if state["y"] != cury:
+                            command_y = self.get_command(state["y"], 'y')
+                            sendcommands.sendJson(json.dumps({"type":command_y, "params": {}}))
+                            cury = state["y"]
+                        if state["z"] != curz:
+                            command_z = self.get_command(state["z"], 'z')
+                            sendcommands.sendJson(json.dumps({"type": command_z, "params": {}}))
+                            curz = state["z"]
+                        # only wait the duration if the robot is actually driving
+                        if state["x"] != 0 or state["y"] != 0 or state["z"] != 0:   
+                            time.sleep(state["duration"])
+                else:
+                    self.stack = []
             self.started = False
 
     # get the command name
