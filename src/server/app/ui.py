@@ -121,4 +121,4 @@ def video_feed():
 
 # starting method
 def start_ui():
-    app.run(host='0.0.0.0', port=50004, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=False)

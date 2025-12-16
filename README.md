@@ -28,4 +28,4 @@ source .\spino_venv\bin\activate
 pip install -r requirements_robo.txt
 python3 .\src\robo\main\main.py
 ```
-Dann im Browser öffnen (http://localhost:50004/)
+Dann im Browser öffnen (http://localhost:5000/)
