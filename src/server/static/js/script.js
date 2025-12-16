@@ -107,21 +107,35 @@ document.addEventListener('DOMContentLoaded', async function() {
         conf.voice_mode_active,
         conf.gesture_mode_active,
         conf.label_mode_active,
-        conf.roaming_mode_active
+        conf.roaming_mode_active,
+        conf.obsticle_detection_active,
+        conf.slam_active,
+        conf.visualiation_active
     ]
-    const modiButtons = document.querySelectorAll('.modiButton');
+    
+    // get the buttons in the right order to avoid bugs
+    const modeIds = [
+    'modebtn',     
+    'modevoice',   
+    'modegesture', 
+    'modelabel',   
+    'moderoam',    
+    'modeod',     
+    'modeslam',   
+    'modevisual'  
+    ];
+    const modiButtons = modeIds.map(id => document.getElementById(id)).filter(Boolean);
     modiButtons.forEach((button, i) => {
     if (modesArray[i] === true) {
         button.classList.add('active');
     } else {
         button.classList.remove('active');
-    }  
-        button.addEventListener('click', () => {
-            modesArray[i] = !modesArray[i];
-            updateButtonUI(button, modesArray[i]);
-            enforceExclusivity(i, modesArray);
-            saveStatus(modesArray);
-        });
+    }
+    button.addEventListener('click', () => {
+        modesArray[i] = !modesArray[i];
+        updateButtonUI(button, modesArray[i]);
+        enforceExclusivity(i, modesArray); 
+    });
     });
 
     // make buttons that can't be used gray
@@ -141,7 +155,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const beforeLast = payload.text.slice(0, payload.text.lastIndexOf("\n"));
         const prevNL = beforeLast.lastIndexOf("\n");
         let penultimate = prevNL >= 0 ? beforeLast.slice(prevNL + 1) : beforeLast;
-        console.log(penultimate)
         if (penultimate.includes("emergency stop")) { //react to emergency stop
             document.getElementById("ackstop").classList.remove("deactivated");
             document.getElementById("ackstop").disabled = false;
@@ -149,7 +162,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (modesArray[4] === true)
             {
                 simulateClick(document.getElementById("moderoam"));
-                console.log("moderoam x click simuliert")
             }
         }
     });
@@ -214,7 +226,10 @@ async function saveStatus(modesArray) {
         'voice_mode_active',
         'gesture_mode_active',
         'label_mode_active',
-        'roaming_mode_active'
+        'roaming_mode_active',
+        "obsticle_detection_active",
+        "slam_active",
+        "visualiation_active"
     ];
     const status = {};
     keys.forEach((key, index) => {

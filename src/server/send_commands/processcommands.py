@@ -74,6 +74,15 @@ def ButtonClickedInside(clickedButton):
                 ok, msg = roam.start()
                 if ok:
                     config.system_status["roaming_mode_active"] = True
+        case "modeod":
+            config.system_status["obsticle_detection_active"] = not config.system_status["obsticle_detection_active"]
+            msg = "obsticle detection active" if config.system_status["obsticle_detection_active"] else "obsticle detection deactivated"
+        case "modeslam":
+            config.system_status["slam_active"] = not config.system_status["slam_active"]
+            msg = "slam active" if config.system_status["slam_active"] else "slam deactivated"
+        case "modevisual":
+            config.system_status["visualiation_active"] = not config.system_status["visualiation_active"]
+            msg = "live visualiation active" if config.system_status["visualiation_active"] else "live visualiation deactivated"
     log.write(msg,1)
             
 def ButtonPress(pressedButton):

@@ -68,7 +68,10 @@ def update_config():
             "voice_mode_active",
             "gesture_mode_active",
             "label_mode_active",
-            "roaming_mode_active"
+            "roaming_mode_active",
+            "obsticle_detection_active",
+            "slam_active",
+            "visualiation_active"
         }
     for key in allowed_keys:
         if key in data:
