@@ -72,7 +72,7 @@ def capture_loop():
             timestamp_ms = int(time.time() * 1000)
 
             annotated = rgb.copy()
-            if config.system_status["gesture_mode_active"]:
+            if config.system_status["gesture_mode_active"] and not config.system_status["stop_flag"]:
                 was_stopped = False
                 try:
                     hand_result = hand_detector.detect_for_video(mp_image, timestamp_ms)

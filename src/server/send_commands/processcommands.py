@@ -6,6 +6,7 @@ sys.path.append(str(ROOT))
 
 import server.send_commands.sendcommands as sendcommands
 from server.send_commands.undoMovement import  UndoMovement
+from server.send_commands.roaming import  Roaming
 import server.config.config as config
 from .logger import Logger
 from server.stream_recorder.stream_recorder import get_recorder
@@ -13,10 +14,11 @@ from server.stream_recorder.stream_recorder import get_recorder
 #get instances from utility singeltons
 undo = UndoMovement.getInstance()
 log = Logger.getInstance()
+roam = Roaming.getInstance()
 
 
 def ButtonClicked(clickedButton, param = None):
-    if config.system_status["button_mode_active"] == True or clickedButton == "fullstop" or clickedButton == "setSpeed":
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False) or clickedButton == "fullstop" or clickedButton == "setSpeed":
         if param is not None: # if relevant sent param and update system_status
             data = {
                     "type": clickedButton,
@@ -48,8 +50,12 @@ def ButtonClickedInside(clickedButton):
         case "safevideo":
             recorder = get_recorder()
             recorder.save_last_seconds()
-            msg = "video safed"
+            msg = "video saved"
             sendcommands.sendJson(json.dumps({"type": "beep", "params": {}}))
+        case "ackstop":
+            if config.system_status["stop_flag"]:
+                config.system_status["stop_flag"] = False
+                msg = f"stop aknowledged, Spino can go on"
         case "modebtn":
             config.system_status["button_mode_active"] = not config.system_status["button_mode_active"]
             msg = "button control active" if config.system_status["button_mode_active"] else "button control deactivated"
@@ -62,10 +68,19 @@ def ButtonClickedInside(clickedButton):
         case "modelabel":
             config.system_status["label_mode_active"] = not config.system_status["label_mode_active"]
             msg = "label recognition active" if config.system_status["label_mode_active"] else "label recognition deactivated"
+        case "moderoam":
+            if config.system_status["roaming_mode_active"]:
+                ok, msg = roam.stop()
+                if ok:
+                    config.system_status["roaming_mode_active"] = False
+            else:
+                ok, msg = roam.start()
+                if ok:
+                    config.system_status["roaming_mode_active"] = True
     log.write(msg,1)
             
 def ButtonPress(pressedButton):
-    if (config.system_status["button_mode_active"] == True):
+    if (config.system_status["button_mode_active"] == True and config.system_status["stop_flag"] == False):
         commands = {
             "w": "forwards",
             "a": "left",
