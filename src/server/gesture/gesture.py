@@ -175,9 +175,9 @@ def detect_rotation(lm):
     if abs(dx) < threshold:
         return "normal"
     elif dx > 0:
-        return "rotated_left"
-    else:
         return "rotated_right"
+    else:
+        return "rotated_left"
 
 def classify_gesture(lm, handedness_label):
     if detect_fist(lm):
