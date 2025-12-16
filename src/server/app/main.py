@@ -32,17 +32,21 @@ try:
     # controller.run()
     # controller.ready.wait()
 
-    #recorder = stream_recorder.get_recorder()
+    recorder = stream_recorder.get_recorder()
 
     # start inputs and ui in separate threads
-    print("Starting Lidar Input")
+    print("Starting Object Detection")
     obstacleDetection.main()
+    print("Starting Slam")
+    lidar.main()
+    print("Starting Lidar Live Visualization")
+    lidarStream.main()
     print("Starting Gesture Input")
-    #gesture.start()
+    gesture.start()
     print("Starting Stream Recorder")
-    #recorder.start()
+    recorder.start()
     print("Starting Speech Input")
-    #si.start()
+    si.start()
     ui.start_ui()
 except KeyboardInterrupt:
     print("Keyboard Interrupt in server main.py")
