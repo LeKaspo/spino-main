@@ -70,12 +70,14 @@ class Object_Detector:
         def _object_detection(self):
             while not self._stop_object_detection_thread:
                 if ((self.latest_obstacle[0] or self.latest_obstacle[1] or self.latest_obstacle[2])): # and self.latest_obstacle is not self.previous_obstacle
-                    self.log.write("Obstacle detection emergency stop")
+                    self.log.write("Obstacle detection emergency stop", 1)
                 time.sleep(0.05)
 
 def main():
-    detector = Object_Detector()
+    try:
+        detector = Object_Detector()
 
-    detector.start_update_scan_thread()
-    detector.start_object_detection_thread()
-
+        detector.start_update_scan_thread()
+        detector.start_object_detection_thread()
+    finally: 
+        del detector
